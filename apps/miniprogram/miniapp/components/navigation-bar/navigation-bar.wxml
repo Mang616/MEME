@@ -1,0 +1,97 @@
+<view
+  class="weui-navigation-bar {{extClass}}"
+  style="color: {{color}}; background: {{background}}; {{metricsStyle}}; {{displayStyle}};"
+>
+  <view class="weui-navigation-bar__inner {{isIos ? 'is-ios' : 'is-android'}}">
+    <view class="weui-navigation-bar__bar">
+      <block wx:if="{{isHome}}">
+        <view class="weui-navigation-bar__brand">
+          <image class="weui-navigation-bar__logo" src="{{logoSrc}}" mode="aspectFit" />
+          <view class="weui-navigation-bar__brand-meta">
+            <text wx:if="{{brandName}}" class="weui-navigation-bar__brand-name">{{brandName}}</text>
+            <view
+              wx:if="{{showPromo}}"
+              class="weui-navigation-bar__promo"
+              hover-class="is-active"
+              hover-stay-time="100"
+              aria-role="button"
+              bindtap="onPromoTap"
+            >
+              <text>{{promoLabel}}</text>
+            </view>
+          </view>
+        </view>
+      </block>
+
+      <block wx:else>
+        <view class="weui-navigation-bar__left">
+          <view
+            wx:if="{{back}}"
+            class="weui-navigation-bar__hit weui-navigation-bar__hit--back"
+            hover-class="is-active"
+            hover-stay-time="100"
+            aria-role="button"
+            aria-label="返回"
+            bindtap="back"
+          >
+            <view class="weui-navigation-bar__icon weui-navigation-bar__icon--back" />
+          </view>
+          <view
+            wx:elif="{{showSearch}}"
+            class="weui-navigation-bar__hit weui-navigation-bar__hit--search"
+            hover-class="is-active"
+            hover-stay-time="100"
+            aria-role="button"
+            aria-label="搜索"
+            bindtap="onSearchTap"
+          >
+            <view class="weui-navigation-bar__icon weui-navigation-bar__icon--search" />
+          </view>
+          <view
+            wx:elif="{{showThemeToggle}}"
+            class="weui-navigation-bar__hit weui-navigation-bar__hit--theme"
+            hover-class="is-active"
+            hover-stay-time="100"
+            aria-role="button"
+            aria-label="{{theme === 'dark' ? '切换浅色模式' : '切换深色模式'}}"
+            bindtap="onThemeToggleTap"
+          >
+            <image
+              class="weui-navigation-bar__theme-icon"
+              src="{{theme === 'dark' ? themeIconDark : themeIconLight}}"
+              mode="aspectFit"
+            />
+          </view>
+          <view
+            wx:elif="{{showNavAction}}"
+            class="weui-navigation-bar__hit weui-navigation-bar__hit--action"
+            hover-class="is-active"
+            hover-stay-time="100"
+            aria-role="button"
+            aria-label="{{navActionLabel}}"
+            bindtap="onNavActionTap"
+          >
+            <image
+              class="weui-navigation-bar__action-icon"
+              src="{{navActionIcon}}"
+              mode="aspectFit"
+            />
+          </view>
+          <slot wx:else name="left" />
+        </view>
+
+        <view class="weui-navigation-bar__center">
+          <view wx:if="{{loading}}" class="weui-navigation-bar__loading" aria-role="alert">
+            <view class="weui-navigation-bar__spinner" aria-role="img" aria-label="加载中" />
+          </view>
+          <text wx:if="{{title}}" class="weui-navigation-bar__title">{{title}}</text>
+          <slot wx:else name="center" />
+        </view>
+
+        <view class="weui-navigation-bar__right">
+          <slot name="right" />
+        </view>
+      </block>
+    </view>
+  </view>
+</view>

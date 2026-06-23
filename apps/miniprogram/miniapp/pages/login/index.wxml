@@ -1,0 +1,95 @@
+<page-shell
+  title="登录"
+  back
+  theme="{{theme}}"
+  nav-color="{{navColor}}"
+  nav-bg="{{navBg}}"
+>
+  <view class="login-page">
+    <view class="login-hero page-pad-x">
+      <view class="login-hero__logo-wrap level-icon-wrap level-icon-wrap--lg">
+        <view class="level-icon-wrap__glow" />
+        <image class="login-hero__logo level-icon" src="{{brandLogo}}" mode="aspectFit" />
+      </view>
+      <text class="login-hero__brand">{{storeName}}</text>
+      <text class="login-hero__tagline">{{tagline}}</text>
+    </view>
+
+    <view class="login-form page-pad-x">
+      <view class="login-form__field">
+        <text class="login-form__label">手机号</text>
+        <input
+          class="login-form__input"
+          type="number"
+          maxlength="11"
+          value="{{phone}}"
+          placeholder="请输入下单手机号"
+          placeholder-class="login-form__placeholder"
+          bindinput="onPhoneInput"
+        />
+      </view>
+
+      <view class="login-form__field login-form__field--code">
+        <text class="login-form__label">验证码</text>
+        <view class="login-form__code-row">
+          <input
+            class="login-form__input login-form__input--code"
+            type="number"
+            maxlength="6"
+            value="{{smsCode}}"
+            placeholder="请输入6位验证码"
+            placeholder-class="login-form__placeholder"
+            bindinput="onCodeInput"
+          />
+          <button
+            class="login-form__code-btn"
+            disabled="{{countdown > 0 || sending}}"
+            bindtap="onSendCode"
+          >
+            {{codeBtnText}}
+          </button>
+        </view>
+      </view>
+
+      <view class="login-form__agree">
+        <view
+          class="login-form__check {{agreed ? 'is-checked' : ''}}"
+          bindtap="onToggleAgree"
+        >
+          <text wx:if="{{agreed}}" class="login-form__check-icon">✓</text>
+        </view>
+        <view class="login-form__agree-text" bindtap="onToggleAgree">
+          <text>我已阅读并同意</text>
+          <text class="login-form__link" catchtap="onOpenAgreement">《用户协议》</text>
+          <text>和</text>
+          <text class="login-form__link" catchtap="onOpenPrivacy">《隐私政策》</text>
+        </view>
+      </view>
+
+      <button
+        class="login-form__submit btn-primary"
+        loading="{{submitting}}"
+        disabled="{{submitting}}"
+        bindtap="onSmsLogin"
+      >
+        登录
+      </button>
+    </view>
+
+    <view class="login-page__footer page-pad-x">
+      <view class="login-page__divider">
+        <view class="login-page__divider-line" />
+        <text class="login-page__divider-text">其他登录方式</text>
+        <view class="login-page__divider-line" />
+      </view>
+      <button
+        class="login-page__wechat-btn"
+        loading="{{wechatSubmitting}}"
+        disabled="{{wechatSubmitting || submitting}}"
+        bindtap="onWechatLogin"
+      >
+        微信快捷登录
+      </button>
+    </view>
+  </view>
+</page-shell>

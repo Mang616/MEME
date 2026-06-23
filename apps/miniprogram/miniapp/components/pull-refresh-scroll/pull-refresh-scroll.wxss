@@ -1,0 +1,90 @@
+/* 作为 page-shell__body / page-tab-main 子节点时须占满剩余高度 */
+:host {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.pull-refresh-scroll {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.pull-refresh-scroll__indicator {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 140rpx;
+  padding-bottom: 8rpx;
+  pointer-events: none;
+  transform-origin: 50% 100%;
+  box-sizing: border-box;
+}
+
+.pull-refresh-scroll__logo-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1rpx solid var(--color-mint-strong-dim);
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.25);
+  box-sizing: border-box;
+}
+
+.theme-scope.theme-light .pull-refresh-scroll__logo-wrap {
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 6rpx 20rpx rgba(0, 0, 0, 0.08);
+}
+
+.pull-refresh-scroll__logo {
+  width: 52rpx;
+  height: 52rpx;
+  display: block;
+}
+
+.pull-refresh-scroll__logo--spin {
+  animation: pull-refresh-logo-spin 0.85s linear infinite;
+}
+
+@keyframes pull-refresh-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.pull-refresh-scroll__hint {
+  margin-top: 10rpx;
+  font-size: 22rpx;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.08em;
+}
+
+/* 与 layout.wxss 中 .page-scroll 同构，勿再叠加 page-scroll 类 */
+.pull-refresh-scroll__main {
+  flex: 1;
+  min-height: 0;
+  height: 0;
+  width: 100%;
+}

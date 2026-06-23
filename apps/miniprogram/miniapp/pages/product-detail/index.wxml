@@ -1,0 +1,137 @@
+<page-shell
+  title="商品详情"
+  back="{{true}}"
+  subpage="{{true}}"
+  theme="{{theme}}"
+  nav-color="{{navColor}}"
+  nav-bg="{{navBg}}"
+>
+  <block wx:if="{{product}}">
+    <scroll-view
+      class="page-scroll detail-scroll"
+      scroll-y
+      type="list"
+      scroll-top="{{scrollTop}}"
+      scroll-with-animation="{{false}}"
+      enhanced
+      show-scrollbar="{{false}}"
+    >
+      <view class="detail-hero">
+        <cover-media
+          class="detail-hero__cover"
+          src="{{product.cover}}"
+          color="{{product.coverColor}}"
+        />
+        <view class="detail-hero__mask" />
+        <view class="detail-hero__text">
+          <text class="detail-hero__title">{{product.heroTitle}}</text>
+          <text class="detail-hero__subtitle">{{product.heroSubtitle}}</text>
+        </view>
+      </view>
+
+      <view class="detail-panel">
+        <view class="detail-price-row">
+          <price-badge value="{{product.priceDisplay}}" size="lg" />
+          <view class="detail-share" bindtap="onShare" hover-class="detail-share--active">
+            <image
+              class="detail-share__icon"
+              src="/assets/products/share.png"
+              mode="aspectFit"
+            />
+          </view>
+        </view>
+
+        <view class="detail-title-row">
+          <text class="detail-title">{{product.title}}</text>
+          <text
+            wx:if="{{product.tag}}"
+            class="detail-tag {{product.tagClass}}"
+          >{{product.tag}}</text>
+        </view>
+
+        <view class="detail-chips">
+          <text wx:if="{{product.limitText}}" class="detail-chip detail-chip--accent">{{product.limitText}}</text>
+          <text class="detail-chip">已售 {{product.soldText}}</text>
+          <text class="detail-chip">浏览 {{product.viewsText}}</text>
+        </view>
+
+        <text class="detail-desc">{{product.detailDesc}}</text>
+
+        <view class="detail-notice">
+          <text class="detail-notice__icon">ⓘ</text>
+          <text class="detail-notice__text">{{platformNotice}}</text>
+        </view>
+
+        <view class="detail-block card" wx:if="{{showReviewsBlock}}">
+          <view class="detail-block__head">
+            <view class="detail-block__title-wrap">
+              <view class="detail-block__bar" />
+              <text class="detail-block__title">评价</text>
+              <text class="detail-block__count">({{product.reviewCount}})</text>
+            </view>
+            <text class="detail-block__meta">好评率 {{product.positiveRate}}%</text>
+          </view>
+
+          <view class="detail-reviews__list" wx:if="{{latestReviews.length}}">
+            <view
+              class="detail-review-item"
+              wx:for="{{latestReviews}}"
+              wx:key="id"
+            >
+              <view class="detail-review-item__avatar">{{item.userInitial}}</view>
+              <view class="detail-review-item__body">
+                <view class="detail-review-item__head">
+                  <text class="detail-review-item__user">{{item.user}}</text>
+                  <text class="detail-review-item__meta">{{item.rate}}分 · {{item.time}}</text>
+                </view>
+                <text class="detail-review-item__content">{{item.content}}</text>
+              </view>
+            </view>
+          </view>
+
+          <view
+            class="detail-reviews__more"
+            wx:if="{{hasMoreReviews}}"
+            bindtap="onMoreReviews"
+            hover-class="detail-reviews__more--active"
+          >
+            <text class="detail-reviews__more-text">查看更多评价</text>
+            <text class="detail-reviews__more-arrow">›</text>
+          </view>
+        </view>
+
+        <view class="detail-block card" wx:if="{{product.introNodes.length}}">
+          <view class="detail-block__head">
+            <view class="detail-block__title-wrap">
+              <view class="detail-block__bar" />
+              <text class="detail-block__title">玩法介绍</text>
+            </view>
+          </view>
+          <rich-text
+            class="detail-intro__rich"
+            nodes="{{product.introNodes}}"
+          />
+        </view>
+
+        <view class="page-bottom-spacer" />
+      </view>
+    </scroll-view>
+
+    <view class="page-footer-bar page-footer-bar--fixed detail-footer">
+      <view class="page-footer-bar__inner">
+        <view
+          class="detail-footer__cs"
+          bindtap="onContact"
+          hover-class="detail-footer__cs--active"
+        >
+          <image
+            class="detail-footer__cs-icon"
+            src="/assets/products/service.png"
+            mode="aspectFit"
+          />
+        </view>
+        <button class="detail-footer__buy" bindtap="onBuy">立即购买</button>
+      </view>
+    </view>
+  </block>
+</page-shell>

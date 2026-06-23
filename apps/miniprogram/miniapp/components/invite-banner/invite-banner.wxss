@@ -1,0 +1,160 @@
+/* —— 导航栏：Logo 旁横条 —— */
+.invite-banner--nav {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  height: 56rpx;
+  padding: 0 14rpx 0 10rpx;
+  box-sizing: border-box;
+  border-radius: var(--radius-pill);
+  border: 1rpx solid var(--color-mint-strong-dim);
+  background: linear-gradient(90deg, #1a2a18 0%, #243828 100%);
+}
+
+.invite-banner--nav:active {
+  opacity: 0.88;
+}
+
+.invite-banner__nav-tag {
+  flex-shrink: 0;
+  font-size: 18rpx;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--color-text-on-accent);
+  background: var(--color-mint);
+  padding: 2rpx 10rpx;
+  border-radius: var(--radius-pill);
+}
+
+.invite-banner__nav-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 22rpx;
+  font-weight: 600;
+  color: var(--color-banner-title);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.invite-banner__nav-arrow {
+  flex-shrink: 0;
+  font-size: 24rpx;
+  line-height: 1;
+  color: var(--color-mint);
+}
+
+/* —— 卡片：我的页等 —— */
+.invite-banner--card {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1rpx solid var(--color-mint-strong-dim);
+  background: linear-gradient(135deg, #1a2a18 0%, #243828 45%, #1a2218 100%);
+  box-sizing: border-box;
+}
+
+.invite-banner--card:active {
+  opacity: 0.92;
+}
+
+.invite-banner__glow {
+  position: absolute;
+  right: -40rpx;
+  top: -60rpx;
+  width: 240rpx;
+  height: 240rpx;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(209, 255, 189, 0.28) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.invite-banner__body {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+  padding: 28rpx 28rpx 28rpx 32rpx;
+  box-sizing: border-box;
+}
+
+.invite-banner--compact .invite-banner__body {
+  padding: 22rpx 24rpx 22rpx 28rpx;
+  gap: 16rpx;
+}
+
+.invite-banner__text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.invite-banner--compact .invite-banner__text {
+  gap: 6rpx;
+}
+
+.invite-banner__tag {
+  align-self: flex-start;
+  font-size: 20rpx;
+  font-weight: 600;
+  color: var(--color-text-on-accent);
+  background: var(--color-mint);
+  padding: 4rpx 12rpx;
+  border-radius: var(--radius-pill);
+  line-height: 1.2;
+}
+
+.invite-banner__title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--color-banner-title);
+  line-height: 1.25;
+}
+
+.invite-banner--compact .invite-banner__title {
+  font-size: 30rpx;
+}
+
+.invite-banner__subtitle {
+  font-size: 24rpx;
+  color: var(--color-banner-subtitle);
+  line-height: 1.35;
+}
+
+.invite-banner--compact .invite-banner__subtitle {
+  font-size: 22rpx;
+}
+
+.invite-banner__cta {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+  padding: 14rpx 22rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--color-text-on-accent);
+  background: var(--color-cta-gradient);
+  border-radius: var(--radius-pill);
+  box-sizing: border-box;
+}
+
+.invite-banner--compact .invite-banner__cta {
+  padding: 12rpx 20rpx;
+  font-size: 24rpx;
+}
+
+.invite-banner__arrow {
+  font-size: 28rpx;
+  line-height: 1;
+}

@@ -1,0 +1,132 @@
+.chat-item {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 24rpx;
+  box-sizing: border-box;
+}
+
+.chat-item__avatar {
+  position: relative;
+  width: 96rpx;
+  height: 96rpx;
+  flex-shrink: 0;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1rpx solid var(--color-border);
+}
+
+.chat-item__avatar-text {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: var(--color-banner-title);
+}
+
+.chat-item__online {
+  position: absolute;
+  right: -4rpx;
+  bottom: -4rpx;
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: 50%;
+  background: var(--color-mint-deep);
+  border: 3rpx solid var(--color-card);
+}
+
+.chat-item__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.chat-item__head {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  min-width: 0;
+}
+
+.chat-item__name-row {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.chat-item__level-icon {
+  width: 32rpx;
+  height: 32rpx;
+  flex-shrink: 0;
+  display: block;
+}
+
+.chat-item__name {
+  flex: 1;
+  min-width: 0;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-item__tag {
+  flex-shrink: 0;
+  font-size: 20rpx;
+  padding: 4rpx 12rpx;
+  border-radius: var(--radius-pill);
+  line-height: 1.2;
+}
+
+.chat-item__tag--service {
+  color: var(--color-price);
+  background: var(--color-mint-dim);
+}
+
+.chat-item__tag--player {
+  color: var(--color-text-secondary);
+  background: var(--color-bg-elevated);
+  border: 1rpx solid var(--color-border);
+}
+
+.chat-item__time {
+  margin-left: auto;
+  font-size: 22rpx;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.chat-item__foot {
+  margin-top: 10rpx;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  min-width: 0;
+}
+
+.chat-item__preview {
+  flex: 1;
+  min-width: 0;
+  font-size: 26rpx;
+  color: var(--color-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-item__badge {
+  flex-shrink: 0;
+  min-width: 32rpx;
+  height: 32rpx;
+  padding: 0 10rpx;
+  border-radius: var(--radius-pill);
+  font-size: 20rpx;
+  font-weight: 600;
+  line-height: 32rpx;
+  text-align: center;
+  color: var(--color-text-on-accent);
+  background: var(--color-mint);
+}

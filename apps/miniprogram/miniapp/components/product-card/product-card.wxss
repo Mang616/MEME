@@ -1,0 +1,83 @@
+/** service-panel 双列网格内嵌；避免 Skyline 下子节点撑满整行 */
+.product-card--embed {
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  box-sizing: border-box;
+}
+
+.cover-wrap {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--color-cover-placeholder);
+  border-radius: var(--radius-md);
+}
+
+.cover-wrap::after {
+  content: '';
+  display: block;
+  padding-top: 100%;
+}
+
+.cover-tag {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 2;
+}
+
+.cover-foot {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8rpx;
+  padding: 28rpx 12rpx 12rpx;
+  background: var(--color-cover-foot-shade);
+  box-sizing: border-box;
+}
+
+.cover-sold {
+  flex-shrink: 0;
+  font-size: 20rpx;
+  font-weight: 500;
+  color: var(--color-cover-foot-text);
+  line-height: 1.2;
+  text-shadow: var(--color-cover-foot-text-shadow);
+  padding-bottom: 4rpx;
+}
+
+.info {
+  padding: 12rpx 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.title {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--color-service-on-surface-fg, var(--color-text));
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.desc {
+  font-size: 22rpx;
+  color: var(--color-service-on-surface-muted, var(--color-text-secondary));
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}

@@ -1,0 +1,26 @@
+<view class="theme-scope theme-{{theme}} page-root {{subpage ? 'page-root--subpage' : ''}}">
+  <navigation-bar
+    nav-variant="{{navVariant}}"
+    title="{{title}}"
+    back="{{back}}"
+    show-search="{{navSearch}}"
+    show-theme-toggle="{{navThemeToggle}}"
+    brand-name="{{brandName}}"
+    show-promo="{{navPromo}}"
+    promo-label="{{promoLabel}}"
+    logo-src="{{logoSrc}}"
+    theme="{{theme}}"
+    color="{{navColor}}"
+    background="{{navBg}}"
+    show-nav-action="{{navAction}}"
+    nav-action-icon="{{navActionIcon}}"
+    nav-action-label="{{navActionLabel}}"
+    bind:search="onNavSearchTap"
+    bind:themechange="onNavThemeChange"
+    bind:promo="onNavPromoTap"
+    bind:navaction="onNavActionTap"
+  />
+  <view class="page-shell__body">
+    <slot />
+  </view>
+</view>

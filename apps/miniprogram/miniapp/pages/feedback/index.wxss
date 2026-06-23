@@ -1,0 +1,231 @@
+.feedback-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  box-sizing: border-box;
+}
+
+.feedback-hero {
+  position: relative;
+  padding: 0;
+  overflow: hidden;
+}
+
+.feedback-hero__stripe {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6rpx;
+  background: var(--color-cta-gradient);
+  border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+}
+
+.feedback-hero__inner {
+  padding: 28rpx 28rpx 28rpx 36rpx;
+  box-sizing: border-box;
+}
+
+.feedback-hero__title {
+  display: block;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  line-height: 1.35;
+}
+
+.feedback-hero__desc {
+  display: block;
+  margin-top: 12rpx;
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.feedback-block {
+  padding: 24rpx;
+  box-sizing: border-box;
+}
+
+.feedback-block__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16rpx;
+}
+
+.feedback-block__label {
+  display: block;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+  line-height: 1.4;
+}
+
+.feedback-block__row .feedback-block__label {
+  margin-bottom: 0;
+}
+
+.feedback-block__count {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.feedback-types {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  margin-top: 16rpx;
+}
+
+.feedback-type {
+  padding: 14rpx 24rpx;
+  border-radius: var(--radius-pill);
+  border: 1rpx solid var(--color-border);
+  background: var(--color-bg-elevated);
+  box-sizing: border-box;
+}
+
+.feedback-type--active {
+  border-color: var(--color-mint-strong);
+  background: var(--color-mint-dim);
+}
+
+.feedback-type--active .feedback-type__text {
+  color: var(--color-price);
+  font-weight: var(--font-weight-semibold);
+}
+
+.feedback-type__text {
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+  line-height: 1.35;
+}
+
+.feedback-textarea {
+  width: 100%;
+  min-height: 240rpx;
+  padding: 20rpx 22rpx;
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+  line-height: 1.6;
+  border-radius: var(--radius-md);
+  background: var(--color-bg-elevated);
+  border: 1rpx solid var(--color-border);
+  box-sizing: border-box;
+}
+
+.feedback-textarea__placeholder {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-md);
+}
+
+.feedback-input {
+  width: 100%;
+  height: 88rpx;
+  margin-top: 16rpx;
+  padding: 0 22rpx;
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-elevated);
+  border: 1rpx solid var(--color-border);
+  box-sizing: border-box;
+}
+
+.feedback-input__placeholder {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-md);
+}
+
+.feedback-aside {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6rpx;
+  padding: 4rpx 8rpx 8rpx;
+}
+
+.feedback-aside__icon {
+  font-size: 26rpx;
+  color: var(--color-price);
+}
+
+.feedback-aside__text {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.feedback-aside__link {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-price);
+}
+
+.feedback-submit {
+  width: 100%;
+  height: 96rpx;
+  line-height: 96rpx;
+  margin-top: 8rpx;
+  padding: 0;
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+.feedback-submit::after {
+  border: none;
+}
+
+/* —— 提交成功 —— */
+.feedback-done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 56rpx 40rpx 48rpx;
+  margin-top: 40rpx;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.feedback-done__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  background: var(--color-mint-dim);
+  border: 2rpx solid var(--color-mint-strong);
+  font-size: 44rpx;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-price);
+  line-height: 1;
+}
+
+.feedback-done__title {
+  margin-top: 28rpx;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+}
+
+.feedback-done__desc {
+  margin-top: 16rpx;
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.feedback-done__btn {
+  width: 100%;
+  height: 88rpx;
+  line-height: 88rpx;
+  margin-top: 24rpx;
+  padding: 0;
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.feedback-done__btn::after {
+  border: none;
+}

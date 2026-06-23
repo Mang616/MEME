@@ -1,0 +1,4 @@
+/* 组件占位；主样式在 styles/theme/line-tabs.wxss */
+.line-tabs {
+  width: 100%;
+}

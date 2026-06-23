@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "page-shell": "/components/page-shell/page-shell",
+    "filter-tab-page": "/components/filter-tab-page/filter-tab-page",
+    "chat-item": "/components/chat-item/chat-item"
+  }
+}

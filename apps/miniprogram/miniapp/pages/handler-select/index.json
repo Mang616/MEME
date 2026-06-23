@@ -1,0 +1,8 @@
+{
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "page-shell": "/components/page-shell/page-shell",
+    "line-tabs": "/components/line-tabs/line-tabs",
+    "list-empty": "/components/list-empty/list-empty"
+  }
+}

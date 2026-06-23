@@ -1,0 +1,92 @@
+<view wx:if="{{visible && guide}}" class="guide-modal">
+  <view class="guide-modal__mask" bindtap="onMaskTap" />
+  <view class="guide-modal__panel card" catchtap="">
+    <view class="guide-modal__header">
+      <text class="guide-modal__icon">{{guide.icon}}</text>
+      <text class="guide-modal__title">{{guide.title}}</text>
+      <view
+        class="guide-modal__close"
+        hover-class="guide-modal__close--active"
+        hover-stay-time="80"
+        bindtap="close"
+        aria-role="button"
+        aria-label="关闭"
+      >
+        <view class="guide-modal__close-icon" aria-hidden="true">
+          <view class="guide-modal__close-line guide-modal__close-line--a" />
+          <view class="guide-modal__close-line guide-modal__close-line--b" />
+        </view>
+      </view>
+    </view>
+
+    <scroll-view
+      class="guide-modal__body"
+      scroll-y
+      type="list"
+      enhanced
+      show-scrollbar="{{false}}"
+    >
+      <view class="guide-modal__body-inner">
+        <block
+          wx:for="{{guide.blocks}}"
+          wx:key="blockKey"
+          wx:for-item="block"
+        >
+          <text
+            wx:if="{{block.type === 'paragraph'}}"
+            class="guide-para {{block.center ? 'guide-para--center' : ''}}"
+          >{{block.text}}</text>
+
+          <view wx:elif="{{block.type === 'rich'}}" class="guide-para">
+            <text
+              wx:for="{{block.parts}}"
+              wx:key="partKey"
+              wx:for-item="part"
+              class="guide-rich guide-rich--{{part.tone || 'default'}}"
+            >{{part.text}}</text>
+          </view>
+
+          <view wx:elif="{{block.type === 'list'}}" class="guide-list">
+            <text
+              wx:for="{{block.items}}"
+              wx:key="*this"
+              wx:for-item="line"
+              class="guide-list__item"
+            >· {{line}}</text>
+          </view>
+
+          <view wx:elif="{{block.type === 'tip'}}" class="guide-tip">{{block.text}}</view>
+
+          <view wx:elif="{{block.type === 'warning'}}" class="guide-warning">{{block.text}}</view>
+
+          <view wx:elif="{{block.type === 'qrcode'}}" class="guide-qrcode">
+            <text class="guide-qrcode__headline">{{block.headline}}</text>
+            <image
+              wx:if="{{block.image}}"
+              class="guide-qrcode__image"
+              src="{{block.image}}"
+              mode="widthFix"
+              show-menu-by-longpress
+            />
+            <view wx:else class="guide-qrcode__placeholder">
+              <view
+                wx:for="{{block.items}}"
+                wx:key="name"
+                wx:for-item="qr"
+                class="guide-qrcode__item"
+              >
+                <view class="guide-qrcode__box" />
+                <text class="guide-qrcode__name">{{qr.name}}</text>
+              </view>
+            </view>
+            <text wx:if="{{block.footer}}" class="guide-qrcode__footer">{{block.footer}}</text>
+          </view>
+        </block>
+      </view>
+    </scroll-view>
+
+    <view class="guide-modal__footer">
+      <view class="guide-modal__btn btn-primary" bindtap="onConfirm">我知道了</view>
+    </view>
+  </view>
+</view>

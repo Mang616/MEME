@@ -1,0 +1,18 @@
+/**
+ * service-panel 类名（WXML 中 module="sp"）
+ * Tab 项须含 id；文案用 label（由 normalizeTabs 从 tabLabel 归一）
+ */
+var TAB = 'service-panel__tab service-panel__col-half'
+
+function tabClass(activeType, tabId) {
+  return activeType === tabId ? TAB + ' is-active' : TAB
+}
+
+function bodyLayoutClass(productCount) {
+  return productCount > 0 ? 'service-panel__body--grid' : 'service-panel__body--empty'
+}
+
+module.exports = {
+  tabClass: tabClass,
+  bodyLayoutClass: bodyLayoutClass,
+}

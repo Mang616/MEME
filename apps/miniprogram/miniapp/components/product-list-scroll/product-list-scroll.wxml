@@ -1,0 +1,17 @@
+<scroll-view class="product-list-scroll page-scroll" scroll-y type="list" show-scrollbar="{{false}}">
+  <view class="product-list-scroll__inner product-list-scroll__inner--{{layout}}">
+    <product-row
+      wx:for="{{products}}"
+      wx:key="id"
+      product="{{item}}"
+      bind:tap="onProductTap"
+      bind:buy="onBuy"
+    />
+    <list-empty
+      wx:if="{{products.length === 0}}"
+      icon="{{emptyIcon}}"
+      text="{{emptyText}}"
+      hint="{{emptyHint}}"
+    />
+  </view>
+</scroll-view>

@@ -1,0 +1,112 @@
+<page-shell
+  title="VIP等级"
+  back
+  theme="dark"
+  nav-color="#ffffff"
+  nav-bg="rgba(0,0,0,0)"
+>
+  <scroll-view class="page-scroll" scroll-y show-scrollbar="{{false}}">
+    <view class="vip-page">
+      <view class="vip-top">
+        <image
+          class="vip-top__bg"
+          src="{{assets.bg}}"
+          mode="widthFix"
+        />
+
+        <view class="vip-status">
+          <view class="vip-status__icon-wrap level-icon-wrap level-icon-wrap--lg">
+            <view class="level-icon-wrap__glow" />
+            <image
+              class="vip-status__icon level-icon"
+              src="{{current.icon}}"
+              mode="aspectFit"
+            />
+          </view>
+          <view class="vip-status__info">
+            <view class="vip-status__title-row">
+              <text class="vip-status__level">{{levelTag}}</text>
+              <text class="vip-status__member">会员</text>
+            </view>
+            <view class="vip-status__metric">
+              <text class="vip-status__metric-value">{{progress.consumeAmount}}</text>
+              <text class="vip-status__metric-label">{{progress.consumeLabel}}</text>
+            </view>
+            <view class="vip-status__progress" bindtap="onProgressTap">
+              <view class="vip-status__progress-track">
+                <view
+                  class="vip-status__progress-fill"
+                  style="width: {{progress.progressPercent}}%;"
+                />
+              </view>
+            </view>
+            <text class="vip-status__hint">{{progress.upgradeHint}}</text>
+          </view>
+        </view>
+
+        <view class="vip-timeline">
+          <view class="vip-timeline__track" />
+          <view class="vip-timeline__nodes">
+            <view
+              wx:for="{{timeline}}"
+              wx:key="level"
+              class="vip-timeline__node"
+              data-level="{{item.level}}"
+              bindtap="onTimelineNodeTap"
+            >
+              <view class="vip-timeline__dot-slot">
+                <view
+                  class="vip-timeline__dot"
+                  style="{{item.dotStyle}}"
+                />
+              </view>
+              <text
+                class="vip-timeline__label"
+                style="{{item.labelStyle}}"
+              >{{item.label}}</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="vip-reward">
+          <text class="vip-reward__text">{{progress.promotionReward.text}}</text>
+          <image
+            class="vip-reward__icon"
+            src="{{assets.gift}}"
+            mode="widthFix"
+          />
+        </view>
+      </view>
+
+      <view class="vip-body">
+        <view class="vip-deco-title">
+          <image
+            class="vip-deco-title__wing"
+            src="{{assets.decoLeft}}"
+            mode="aspectFit"
+          />
+          <text class="vip-deco-title__text">{{privilegeSectionTitle}}</text>
+          <image
+            class="vip-deco-title__wing vip-deco-title__wing--right"
+            src="{{assets.decoRight}}"
+            mode="aspectFit"
+          />
+        </view>
+        <text class="vip-body__subtitle">{{privilegeSectionSubtitle}}</text>
+
+        <view class="vip-privilege">
+          <view
+            wx:for="{{privilegeRows}}"
+            wx:key="id"
+            class="vip-privilege__row {{item.unlocked ? '' : 'vip-privilege__row--locked'}}"
+          >
+            <text class="vip-privilege__name">{{item.name}}</text>
+            <text class="vip-privilege__value">{{item.value}}</text>
+          </view>
+        </view>
+
+        <text class="vip-footnote">点击上方进度条或等级节点可切换预览；消费金额达标后自动升级，规则以平台公告为准。</text>
+      </view>
+    </view>
+  </scroll-view>
+</page-shell>

@@ -1,0 +1,48 @@
+/**
+ * 等级图标底部椭圆光晕（浮起感）
+ * 用法：level-icon-wrap > level-icon-wrap__glow + image.level-icon
+ */
+
+.level-icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.level-icon-wrap__glow {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+    ellipse 100% 100% at 50% 50%,
+    rgba(255, 255, 255, 0.34) 0%,
+    rgba(255, 255, 255, 0.14) 40%,
+    rgba(255, 255, 255, 0.04) 62%,
+    transparent 78%
+  );
+}
+
+.level-icon {
+  position: relative;
+  z-index: 1;
+  display: block;
+}
+
+/* VIP 等级页大图标 */
+.level-icon-wrap--lg .level-icon-wrap__glow {
+  bottom: 20rpx;
+  width: 168rpx;
+  height: 40rpx;
+}
+
+/* 我的页徽章小图标 */
+.level-icon-wrap--sm .level-icon-wrap__glow {
+  bottom: 0;
+  width: 44rpx;
+  height: 10rpx;
+}

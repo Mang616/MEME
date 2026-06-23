@@ -1,0 +1,89 @@
+.card {
+  background: var(--color-card);
+  border-radius: var(--radius-lg);
+  border: 1rpx solid var(--color-border);
+  box-shadow: var(--shadow-card);
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--color-price);
+  letter-spacing: 0.02em;
+}
+
+.section-title--accent {
+  color: var(--color-accent);
+}
+
+.text-accent {
+  color: var(--color-accent);
+}
+
+.price {
+  color: var(--color-price);
+  font-weight: 700;
+}
+
+.price-symbol {
+  font-size: 24rpx;
+}
+
+.price-value {
+  font-size: 36rpx;
+}
+
+.cover-placeholder {
+  background-color: var(--color-cover-placeholder);
+}
+
+.tag-recommend {
+  display: inline-block;
+  padding: 4rpx 12rpx;
+  font-size: 20rpx;
+  color: var(--color-text-on-accent);
+  background: var(--color-mint);
+  border-radius: 8rpx 8rpx 8rpx 0;
+  font-weight: 600;
+}
+
+.tag-new {
+  display: inline-block;
+  padding: 4rpx 12rpx;
+  font-size: 20rpx;
+  color: var(--color-text-on-accent-red);
+  background: var(--color-accent);
+  border-radius: 8rpx 8rpx 8rpx 0;
+  font-weight: 600;
+}
+
+.btn-primary {
+  background: var(--color-mint);
+  color: var(--color-text-on-accent);
+  border-radius: var(--radius-pill);
+  font-size: 28rpx;
+  font-weight: 600;
+  border: none;
+}
+
+.btn-cta {
+  background: var(--color-cta-gradient);
+  color: var(--color-text-on-accent);
+  border-radius: var(--radius-pill);
+  font-size: 28rpx;
+  font-weight: 600;
+  border: none;
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--color-price);
+  border: 2rpx solid var(--color-mint);
+  border-radius: var(--radius-pill);
+  font-size: 26rpx;
+}
+
+.btn-outline--muted {
+  color: var(--color-text-secondary);
+  border-color: var(--color-outline-muted);
+}

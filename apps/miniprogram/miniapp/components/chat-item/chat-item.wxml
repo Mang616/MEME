@@ -1,0 +1,28 @@
+<view class="chat-item card" bindtap="onTap">
+  <view
+    class="chat-item__avatar"
+    style="background-color: {{conversation.avatarColor}}"
+  >
+    <text class="chat-item__avatar-text">{{conversation.avatarText}}</text>
+    <view wx:if="{{conversation.online}}" class="chat-item__online" />
+  </view>
+  <view class="chat-item__body">
+    <view class="chat-item__head">
+      <view class="chat-item__name-row">
+        <image
+          wx:if="{{conversation.showLevelIcon}}"
+          class="chat-item__level-icon"
+          src="{{conversation.levelIcon}}"
+          mode="aspectFit"
+        />
+        <text class="chat-item__name">{{conversation.name}}</text>
+      </view>
+      <text class="chat-item__tag chat-item__tag--{{conversation.type}}">{{conversation.typeLabel}}</text>
+      <text class="chat-item__time">{{conversation.lastTime}}</text>
+    </view>
+    <view class="chat-item__foot">
+      <text class="chat-item__preview">{{conversation.lastMessage}}</text>
+      <view wx:if="{{conversation.showUnread}}" class="chat-item__badge">{{conversation.unreadText}}</view>
+    </view>
+  </view>
+</view>

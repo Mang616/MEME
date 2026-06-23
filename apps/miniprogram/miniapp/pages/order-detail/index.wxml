@@ -1,0 +1,24 @@
+<page-shell
+  title="订单详情"
+  back="{{true}}"
+  theme="{{theme}}"
+  nav-color="{{navColor}}"
+  nav-bg="{{navBg}}"
+>
+  <scroll-view class="page-scroll" scroll-y show-scrollbar="{{false}}">
+    <view class="order-detail-page page-tab-scroll-body">
+      <block wx:if="{{found}}">
+        <order-card
+          mode="detail"
+          order="{{order}}"
+          bind:event="onOrderCardEvent"
+        />
+      </block>
+      <view wx:else class="order-detail-empty card">
+        <text class="order-detail-empty__icon">📋</text>
+        <text class="order-detail-empty__title">订单不存在</text>
+        <text class="order-detail-empty__hint">请返回订单列表重试</text>
+      </view>
+    </view>
+  </scroll-view>
+</page-shell>

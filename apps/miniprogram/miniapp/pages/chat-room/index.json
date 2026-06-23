@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "page-shell": "/components/page-shell/page-shell",
+    "price-badge": "/components/price-badge/price-badge"
+  }
+}

@@ -1,0 +1,225 @@
+.handler-select {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.handler-select__filters {
+  flex-shrink: 0;
+  margin-bottom: 0;
+}
+
+.handler-select__scroll {
+  flex: 1;
+  min-height: 0;
+}
+
+.handler-select__body {
+  padding-top: 16rpx;
+  padding-bottom: 24rpx;
+  box-sizing: border-box;
+}
+
+.handler-select__meta {
+  margin-bottom: 16rpx;
+}
+
+.handler-select__meta-text {
+  font-size: 24rpx;
+  color: var(--color-text-muted);
+}
+
+.handler-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20rpx;
+}
+
+.handler-card {
+  width: calc((100% - 20rpx) / 2);
+  box-sizing: border-box;
+}
+
+.handler-card__photo-wrap {
+  position: relative;
+  width: 100%;
+  padding-top: 133.33%;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-bg-elevated);
+  border: 2rpx solid transparent;
+  box-sizing: border-box;
+}
+
+.handler-card--selected .handler-card__photo-wrap {
+  border-color: var(--color-mint);
+}
+
+.handler-card__photo {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.handler-card__shade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 52%;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.72) 100%
+  );
+  pointer-events: none;
+}
+
+.handler-card__info {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  padding: 16rpx 14rpx 14rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  box-sizing: border-box;
+}
+
+.handler-card__name-row {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  min-width: 0;
+}
+
+.handler-card__level-icon {
+  width: 36rpx;
+  height: 36rpx;
+  flex-shrink: 0;
+  display: block;
+}
+
+.handler-card__name {
+  flex: 1;
+  min-width: 0;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.handler-card__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8rpx;
+}
+
+.handler-card__gender {
+  padding: 4rpx 12rpx;
+  border-radius: var(--radius-pill);
+  background: rgba(0, 0, 0, 0.45);
+  border: 1rpx solid rgba(255, 255, 255, 0.2);
+  box-sizing: border-box;
+}
+
+.handler-card__gender--male {
+  background: rgba(120, 180, 255, 0.22);
+  border-color: rgba(160, 200, 255, 0.4);
+}
+
+.handler-card__gender--female {
+  background: rgba(255, 140, 180, 0.22);
+  border-color: rgba(255, 180, 210, 0.42);
+}
+
+.handler-card__gender-text {
+  font-size: 22rpx;
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.handler-card__level {
+  align-self: flex-start;
+  padding: 4rpx 12rpx;
+  border-radius: var(--radius-pill);
+  background: rgba(0, 0, 0, 0.45);
+  border: 1rpx solid rgba(255, 255, 255, 0.2);
+  box-sizing: border-box;
+}
+
+.handler-card__level--demon {
+  background: rgba(180, 120, 255, 0.28);
+  border-color: rgba(210, 170, 255, 0.45);
+}
+
+.handler-card__level--ace {
+  background: rgba(255, 200, 80, 0.24);
+  border-color: rgba(255, 220, 140, 0.45);
+}
+
+.handler-card__level--rookie {
+  background: rgba(120, 200, 255, 0.22);
+  border-color: rgba(160, 220, 255, 0.4);
+}
+
+.handler-card__level-text {
+  font-size: 22rpx;
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.handler-card__online {
+  position: absolute;
+  top: 12rpx;
+  left: 12rpx;
+  z-index: 2;
+  padding: 4rpx 10rpx;
+  border-radius: var(--radius-pill);
+  background: rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
+}
+
+.handler-card__online-text {
+  font-size: 20rpx;
+  color: var(--color-mint);
+  line-height: 1.2;
+}
+
+.handler-card__picked {
+  position: absolute;
+  top: 12rpx;
+  right: 12rpx;
+  z-index: 2;
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  background: var(--color-mint);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.handler-card__picked-icon {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #000000;
+  line-height: 1;
+}
+
+.handler-card:active .handler-card__photo-wrap {
+  opacity: 0.92;
+}

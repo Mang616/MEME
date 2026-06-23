@@ -1,0 +1,23 @@
+<view class="minor-notice-bar">
+  <view class="minor-notice-bar__badge">
+    <text class="minor-notice-bar__icon">!</text>
+  </view>
+  <text class="minor-notice-bar__line">
+    <text class="minor-notice-bar__prefix">合规提示</text>
+    <text class="minor-notice-bar__sep"> · </text>
+    <text>{{text}}</text>
+  </text>
+  <view
+    class="minor-notice-bar__close"
+    hover-class="minor-notice-bar__close--active"
+    hover-stay-time="80"
+    bindtap="onCloseTap"
+    aria-role="button"
+    aria-label="关闭提示"
+  >
+    <view class="minor-notice-bar__close-icon" aria-hidden="true">
+      <view class="minor-notice-bar__close-line minor-notice-bar__close-line--a" />
+      <view class="minor-notice-bar__close-line minor-notice-bar__close-line--b" />
+    </view>
+  </view>
+</view>

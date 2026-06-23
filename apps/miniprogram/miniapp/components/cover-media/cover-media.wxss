@@ -1,0 +1,30 @@
+.cover-media {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.cover-media__placeholder {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.cover-media__image {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  display: block;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.cover-media__image--visible {
+  opacity: 1;
+}

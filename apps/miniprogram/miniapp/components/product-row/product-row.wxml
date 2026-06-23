@@ -1,0 +1,33 @@
+<wxs src="../../wxs/product.wxs" module="p" />
+
+<view class="product-row" bindtap="onTap">
+  <view class="product-row__thumb">
+    <cover-media
+      src="{{product.cover}}"
+      color="{{product.coverColor}}"
+      lazy-load="{{true}}"
+    />
+    <text
+      wx:if="{{product.tag}}"
+      class="product-row__tag {{p.tagClass(product.tag)}}"
+    >{{product.tag}}</text>
+    <view class="product-row__foot">
+      <price-badge value="{{product.priceDisplay}}" size="xs" thin />
+      <text class="product-row__sold">已售{{product.sold}}</text>
+    </view>
+  </view>
+
+  <view class="product-row__body">
+    <text class="product-row__title">{{product.title}}</text>
+    <text class="product-row__desc">{{product.desc}}</text>
+    <view class="product-row__actions">
+      <view class="product-row__buy" catchtap="onBuy">
+        <image
+          class="product-row__buy-icon"
+          src="/assets/products/buy.png"
+          mode="aspectFit"
+        />
+      </view>
+    </view>
+  </view>
+</view>

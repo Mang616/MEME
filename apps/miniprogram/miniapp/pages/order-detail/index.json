@@ -1,0 +1,7 @@
+{
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "page-shell": "/components/page-shell/page-shell",
+    "order-card": "/components/order-card/order-card"
+  }
+}

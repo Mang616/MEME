@@ -1,0 +1,104 @@
+/**
+ * 顶栏下划线 Tab（尺寸见 tokens.wxss --line-tabs-*）
+ * 真机兼容：scroll-view 不用 enable-flex / enhanced；选中态用 border-bottom 替代 ::after
+ */
+
+.line-tabs {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--color-bg);
+  border-bottom: 1rpx solid var(--color-border);
+}
+
+/* —— 横向滚动模式 —— */
+.line-tabs--scroll {
+  height: var(--line-tabs-bar-height);
+  white-space: nowrap;
+}
+
+.line-tabs__track--scroll {
+  display: inline-block;
+  white-space: nowrap;
+  height: 100%;
+  padding: 0 var(--line-tabs-track-pad-x);
+  box-sizing: border-box;
+  vertical-align: top;
+}
+
+.line-tabs--scroll .line-tabs__item {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: top;
+  height: 100%;
+  margin-right: var(--line-tabs-item-gap-between);
+}
+
+.line-tabs--scroll .line-tabs__item:last-child {
+  margin-right: 0;
+}
+
+/* —— 等分模式 —— */
+.line-tabs--evenly {
+  height: var(--line-tabs-bar-height);
+}
+
+.line-tabs__track--evenly {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.line-tabs--evenly .line-tabs__item {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+}
+
+/* —— Tab 项通用 —— */
+.line-tabs__item {
+  position: relative;
+  justify-content: center;
+  gap: var(--line-tabs-item-gap);
+  padding: var(--line-tabs-item-pt) var(--line-tabs-item-px) var(--line-tabs-item-pb);
+  box-sizing: border-box;
+  border-bottom: var(--line-tabs-indicator-h) solid transparent;
+}
+
+.line-tabs__item--active {
+  border-bottom-color: var(--line-tabs-indicator-active);
+}
+
+.line-tabs__label {
+  font-size: var(--line-tabs-font-size);
+  font-weight: 500;
+  color: var(--color-text-muted);
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.line-tabs__item--active .line-tabs__label {
+  color: var(--color-text);
+  font-weight: 700;
+}
+
+.line-tabs__count {
+  flex-shrink: 0;
+  min-width: var(--line-tabs-count-min-w);
+  height: var(--line-tabs-count-h);
+  padding: 0 var(--line-tabs-count-px);
+  border-radius: var(--radius-pill);
+  font-size: var(--line-tabs-count-font);
+  font-weight: 600;
+  line-height: var(--line-tabs-count-h);
+  text-align: center;
+  color: var(--color-text-muted);
+  background: var(--color-bg-elevated);
+  box-sizing: border-box;
+}
+
+.line-tabs__item--active .line-tabs__count {
+  color: var(--color-price);
+  background: var(--color-mint-dim);
+}

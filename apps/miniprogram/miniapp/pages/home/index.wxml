@@ -1,0 +1,74 @@
+<page-shell
+  nav-variant="home"
+  brand-name="{{storeName}}"
+  nav-promo="{{true}}"
+  logo-src="{{brandLogo}}"
+  theme="{{theme}}"
+  nav-color="{{navColor}}"
+  nav-bg="{{navBg}}"
+  bind:promo="onPromoTap"
+>
+  <pull-refresh-scroll id="pullRefresh" bind:refresh="onPullRefresh">
+    <view class="page-tab-bottom-gap">
+      <view wx:if="{{showMinorNotice}}" class="home-top-notice">
+        <minor-notice-bar bind:closetap="onMinorNoticeClose" />
+      </view>
+
+      <swiper
+        wx:if="{{bannerCount}}"
+        class="home-banner"
+        indicator-dots="{{bannerShowDots}}"
+        indicator-color="rgba(255,255,255,0.35)"
+        indicator-active-color="#d1ffbd"
+        autoplay="{{bannerAutoplay}}"
+        circular="{{bannerCircular}}"
+        interval="4000"
+        duration="400"
+      >
+        <swiper-item
+          wx:for="{{banners}}"
+          wx:key="id"
+          class="home-banner__item"
+        >
+          <view
+            class="banner-card {{item.showPhoto ? 'banner-card--photo' : ''}}"
+            data-index="{{index}}"
+            bindtap="onBannerTap"
+          >
+            <view class="banner-card__media-stack">
+              <view
+                class="banner-card__media banner-card__media--fallback"
+                style="{{item.fallbackStyle}}"
+              />
+              <image
+                wx:if="{{item.hasImage}}"
+                class="banner-card__media banner-card__media--photo {{item.showImage ? 'banner-card__media--visible' : ''}}"
+                src="{{item.image}}"
+                mode="aspectFill"
+                lazy-load
+                data-id="{{item.id}}"
+                bindload="onBannerImageLoad"
+                binderror="onBannerImageError"
+              />
+            </view>
+            <view class="banner-card__shade" />
+            <view class="banner-card__content">
+              <text class="banner-card__title">{{item.title}}</text>
+              <text class="banner-card__subtitle">{{item.subtitle}}</text>
+            </view>
+          </view>
+        </swiper-item>
+      </swiper>
+
+      <view class="page-content">
+        <service-panel
+          tabs="{{serviceTypes}}"
+          active-type="{{activeType}}"
+          products="{{products}}"
+          bind:tabchange="onTabChange"
+          bind:producttap="onProductTap"
+        />
+      </view>
+    </view>
+  </pull-refresh-scroll>
+</page-shell>

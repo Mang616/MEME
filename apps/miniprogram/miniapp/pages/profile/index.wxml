@@ -1,0 +1,116 @@
+<page-shell
+  title="我的"
+  nav-theme-toggle
+  theme="{{theme}}"
+  nav-color="{{navColor}}"
+  nav-bg="{{navBg}}"
+  bind:themechange="onThemeChange"
+>
+  <pull-refresh-scroll id="pullRefresh" bind:refresh="onPullRefresh">
+    <view class="profile-page page-tab-scroll-body">
+      <!-- 用户 + 资产：无卡片底，与页面背景一体 -->
+      <view class="profile-head">
+        <view
+          class="profile-head__user {{loggedIn ? '' : 'profile-head__user--guest'}}"
+          bindtap="onHeroTap"
+        >
+          <view class="profile-head__avatar-box">
+            <image
+              class="profile-head__avatar-img"
+              src="{{user.avatarSrc}}"
+              mode="aspectFill"
+            />
+          </view>
+          <view class="profile-head__info">
+            <view class="profile-head__name-row">
+              <text class="profile-head__name">{{user.nickname}}</text>
+              <view
+                class="profile-vip"
+                style="background: {{user.vipDisplay.bg}};"
+                catchtap="onVipLevelTap"
+              >
+                <view class="profile-vip__icon-wrap level-icon-wrap level-icon-wrap--sm">
+                  <view class="level-icon-wrap__glow" />
+                  <image
+                    class="profile-vip__icon level-icon"
+                    src="{{user.vipDisplay.icon}}"
+                    mode="aspectFit"
+                  />
+                </view>
+                <text
+                  class="profile-vip__label"
+                  style="color: {{user.vipDisplay.color}};"
+                >{{user.vipDisplay.label}}</text>
+              </view>
+            </view>
+            <text wx:if="{{loggedIn}}" class="profile-head__sub">ID {{user.userId}}</text>
+          </view>
+          <text class="profile-head__chevron">›</text>
+        </view>
+        <view class="profile-head__wallet">
+          <view class="profile-head__wallet-item" bindtap="toggleBalance">
+            <text class="profile-head__wallet-label">账户余额</text>
+            <text class="profile-head__wallet-value">{{loggedIn && balanceVisible ? '¥' + user.balanceText : '****'}}</text>
+          </view>
+          <view class="profile-head__wallet-divider" />
+          <view class="profile-head__wallet-item">
+            <text class="profile-head__wallet-label">优惠券</text>
+            <text class="profile-head__wallet-value">{{loggedIn ? user.couponCount + ' 张' : '--'}}</text>
+          </view>
+        </view>
+      </view>
+
+      <invite-banner bind:tap="onInviteTap" />
+
+      <view class="profile-section profile-section--help">
+        <view class="profile-help-grid">
+          <view
+            wx:for="{{helpQuickEntries}}"
+            wx:for-item="entry"
+            wx:key="id"
+            class="profile-help-grid__item"
+            data-id="{{entry.id}}"
+            bindtap="onHelpTap"
+          >
+            <image
+              class="profile-help-grid__icon-img"
+              src="{{entry.iconSrc}}"
+              mode="aspectFit"
+            />
+            <text class="profile-help-grid__name">{{entry.name}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="profile-section card profile-section--menu">
+        <view class="profile-menu">
+          <view
+            wx:for="{{menuItems}}"
+            wx:key="id"
+            class="profile-menu__cell"
+            data-id="{{item.id}}"
+            bindtap="onMenuTap"
+          >
+            <text class="profile-menu__label">{{item.label}}</text>
+            <text class="profile-menu__arrow">›</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="profile-section card profile-section--menu profile-section--settings">
+        <view class="profile-menu">
+          <view class="profile-menu__cell" data-id="settings" bindtap="onMenuTap">
+            <text class="profile-menu__label">设置</text>
+            <text class="profile-menu__arrow">›</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </pull-refresh-scroll>
+
+  <guide-modal
+    visible="{{guideVisible}}"
+    guide="{{activeGuide}}"
+    bind:close="onGuideClose"
+  />
+</page-shell>

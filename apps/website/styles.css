@@ -88,7 +88,7 @@ button {
     radial-gradient(circle at 60% 38%, var(--meme-lime) 0 12%, transparent 13%),
     radial-gradient(circle at 43% 45%, #101410 0 5%, transparent 6%),
     linear-gradient(135deg, #426e4b, #101810 65%);
-  box-shadow: 0 0 0 6px rgba(201, 255, 184, 0.08);
+  box-shadow: 0 0 0 6px rgba(209, 255, 189, 0.08);
 }
 
 .brand-mark::after {
@@ -223,7 +223,7 @@ button {
   width: fit-content;
   min-height: 36px;
   padding: 7px 13px;
-  border: 1px solid rgba(201, 255, 184, 0.28);
+  border: 1px solid rgba(209, 255, 189, 0.28);
   border-radius: 999px;
   background: rgba(17, 24, 18, 0.7);
   color: var(--meme-lime);
@@ -268,7 +268,7 @@ h1 {
   gap: 4px;
   min-width: 88px;
   padding: 12px 16px;
-  border: 1px solid rgba(201, 255, 184, 0.16);
+  border: 1px solid rgba(209, 255, 189, 0.16);
   border-radius: 8px;
   background: rgba(13, 18, 14, 0.72);
 }
@@ -313,7 +313,7 @@ h1 {
   min-height: 50px;
   margin-top: 34px;
   padding: 10px 14px;
-  border: 1px solid rgba(201, 255, 184, 0.16);
+  border: 1px solid rgba(209, 255, 189, 0.16);
   border-radius: 8px;
   background: rgba(13, 18, 14, 0.78);
   color: rgba(244, 255, 241, 0.66);
@@ -440,7 +440,7 @@ h1 {
   border-radius: 8px;
   background:
     linear-gradient(140deg, #253a2b, #101610),
-    radial-gradient(circle at 70% 30%, rgba(201, 255, 184, 0.18), transparent 30%);
+    radial-gradient(circle at 70% 30%, rgba(209, 255, 189, 0.18), transparent 30%);
 }
 
 .sticker {
@@ -643,7 +643,7 @@ h1 {
 
   .nav-links a:hover,
   .nav-links a:focus-visible {
-    background: rgba(201, 255, 184, 0.08);
+    background: rgba(209, 255, 189, 0.08);
   }
 
   .nav-cta {

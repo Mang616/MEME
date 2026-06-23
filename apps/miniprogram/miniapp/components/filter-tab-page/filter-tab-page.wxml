@@ -1,0 +1,22 @@
+<view class="page-tab-main">
+  <view class="page-line-tabs-host">
+    <line-tabs
+      tabs="{{tabs}}"
+      active-id="{{activeId}}"
+      mode="{{mode}}"
+      bind:tabchange="onTabChange"
+    />
+  </view>
+
+  <pull-refresh-scroll id="pullRefresh" bind:refresh="onPullRefresh">
+    <view class="page-tab-list-inner">
+      <slot />
+      <list-empty
+        wx:if="{{showEmpty}}"
+        icon="{{emptyIcon}}"
+        text="{{emptyText}}"
+        hint="{{emptyHint}}"
+      />
+    </view>
+  </pull-refresh-scroll>
+</view>

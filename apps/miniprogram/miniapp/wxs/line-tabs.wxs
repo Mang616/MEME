@@ -1,0 +1,10 @@
+/** 与 utils/line-tabs.js getTabLabel 规则一致 */
+
+function tabLabel(tab) {
+  if (!tab) return ''
+  return tab.label || tab.tabLabel || ''
+}
+
+module.exports = {
+  tabLabel: tabLabel,
+}

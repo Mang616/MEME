@@ -1,0 +1,82 @@
+/**
+ * 价格展示：红底黑字 + 粗斜体
+ * 字体由 app.js → utils/font.js（readFile + Data URL + loadFontFace）加载，勿在此 @font-face 本地路径
+ */
+
+.price-badge {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 6rpx 14rpx 6rpx 10rpx;
+  background: var(--color-accent);
+  color: #000000;
+  border-radius: 8rpx;
+  transform: skewX(-10deg);
+  line-height: 1;
+  box-shadow: 0 4rpx 14rpx rgba(255, 59, 48, 0.3);
+}
+
+.price-badge__inner {
+  display: inline-flex;
+  align-items: baseline;
+  transform: skewX(10deg);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-style: italic;
+  letter-spacing: -0.04em;
+  color: #000000;
+}
+
+.price-badge__symbol {
+  font-size: 0.7em;
+  line-height: 1;
+  margin-right: 2rpx;
+}
+
+.price-badge__value {
+  font-size: 1em;
+  line-height: 1;
+}
+
+/* 列表商品卡（非封面场景） */
+.price-badge--sm .price-badge__value {
+  font-size: 34rpx;
+}
+
+.price-badge--sm .price-badge__symbol {
+  font-size: 24rpx;
+}
+
+/* 详情页主价格 */
+.price-badge--lg {
+  padding: 10rpx 22rpx 10rpx 16rpx;
+  border-radius: 12rpx;
+}
+
+.price-badge--lg .price-badge__value {
+  font-size: 64rpx;
+}
+
+.price-badge--lg .price-badge__symbol {
+  font-size: 40rpx;
+}
+
+/* 订单等正文内小价格 */
+.price-badge--xs {
+  padding: 4rpx 10rpx 4rpx 8rpx;
+  border-radius: 6rpx;
+  vertical-align: middle;
+}
+
+.price-badge--xs .price-badge__value {
+  font-size: 28rpx;
+}
+
+.price-badge--xs .price-badge__symbol {
+  font-size: 20rpx;
+}
+
+/* 封面叠加价：字重更轻 */
+.price-badge--thin .price-badge__inner {
+  font-weight: 600;
+}

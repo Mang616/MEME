@@ -1,0 +1,33 @@
+:host {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-list-scroll {
+  flex: 1;
+  min-height: 0;
+  height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg);
+  box-sizing: border-box;
+}
+
+.product-list-scroll__inner {
+  box-sizing: border-box;
+}
+
+/** 嵌入商品 Tab 右栏：列表底与原生 TabBar 间距 */
+.product-list-scroll__inner--tab {
+  padding-bottom: var(--page-content-bottom-gap);
+}
+
+/** navigateTo 全屏子页：左右边距 + 底安全区（勿用 page-root--subpage） */
+.product-list-scroll__inner--subpage {
+  padding: 8rpx var(--page-pad-x)
+    calc(var(--page-content-bottom-gap) + env(safe-area-inset-bottom));
+}

@@ -1,0 +1,360 @@
+/* 顶部封面 */
+.detail-hero {
+  position: relative;
+  height: 560rpx;
+  background: var(--color-detail-hero-bg);
+  overflow: hidden;
+}
+
+.detail-hero__cover {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.detail-hero__mask {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 60%;
+  background: var(--color-detail-hero-mask);
+  pointer-events: none;
+}
+
+.detail-hero__text {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 56rpx;
+  z-index: 2;
+  padding: 0 32rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+.detail-hero__title {
+  font-size: 44rpx;
+  font-weight: 700;
+  color: var(--color-detail-hero-title);
+  line-height: 1.25;
+  text-shadow: 0 2rpx 16rpx rgba(0, 0, 0, 0.5);
+}
+
+.detail-hero__subtitle {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--color-detail-hero-subtitle);
+  line-height: 1.35;
+  text-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.45);
+}
+
+/* 上浮主内容区 */
+.detail-panel {
+  position: relative;
+  z-index: 2;
+  margin-top: -40rpx;
+  padding: 32rpx 24rpx 0;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  background: var(--color-bg);
+  box-shadow: 0 -12rpx 40rpx rgba(0, 0, 0, 0.08);
+}
+
+.theme-dark .detail-panel {
+  box-shadow: 0 -12rpx 40rpx rgba(0, 0, 0, 0.35);
+}
+
+.detail-price-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.detail-share {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8rpx;
+  box-sizing: border-box;
+}
+
+.detail-share--active {
+  opacity: 0.65;
+}
+
+.detail-share__icon {
+  width: 48rpx;
+  height: 48rpx;
+  display: block;
+}
+
+.detail-title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12rpx;
+  margin-top: 24rpx;
+}
+
+.detail-title {
+  flex: 1;
+  font-size: 34rpx;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.4;
+}
+
+.detail-tag {
+  flex-shrink: 0;
+  margin-top: 6rpx;
+  padding: 4rpx 12rpx;
+  font-size: 20rpx;
+  font-weight: 600;
+  border-radius: 8rpx 8rpx 8rpx 0;
+}
+
+.detail-tag.tag-recommend,
+.detail-tag.tag-new {
+  /* 复用全局 tag 类 */
+}
+
+.detail-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 20rpx;
+}
+
+.detail-chip {
+  padding: 8rpx 18rpx;
+  font-size: 22rpx;
+  color: var(--color-text-secondary);
+  background: var(--color-card);
+  border: 1rpx solid var(--color-border);
+  border-radius: var(--radius-pill);
+}
+
+.detail-chip--accent {
+  color: var(--color-price);
+  background: var(--color-mint-dim);
+  border-color: transparent;
+}
+
+.detail-desc {
+  display: block;
+  margin-top: 24rpx;
+  padding-top: 24rpx;
+  font-size: 28rpx;
+  color: var(--color-text-secondary);
+  line-height: 1.65;
+  border-top: 1rpx solid var(--color-border);
+}
+
+.detail-notice {
+  margin-top: 24rpx;
+  padding: 20rpx 22rpx;
+  border-radius: var(--radius-md);
+  background: var(--color-mint-dim);
+  border: 1rpx solid var(--color-border);
+  display: flex;
+  align-items: flex-start;
+  gap: 12rpx;
+}
+
+.detail-notice__icon {
+  font-size: 28rpx;
+  color: var(--color-price);
+  line-height: 1.4;
+  flex-shrink: 0;
+}
+
+.detail-notice__text {
+  flex: 1;
+  font-size: 24rpx;
+  color: var(--color-text-secondary);
+  line-height: 1.55;
+}
+
+/* 内容区块 */
+.detail-block {
+  margin-top: 24rpx;
+  padding: 28rpx 24rpx;
+}
+
+.detail-block__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24rpx;
+}
+
+.detail-block__title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.detail-block__bar {
+  width: 6rpx;
+  height: 28rpx;
+  border-radius: var(--radius-pill);
+  background: var(--color-price);
+}
+
+.detail-block__title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.detail-block__count {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.detail-block__meta {
+  font-size: 24rpx;
+  color: var(--color-text-secondary);
+}
+
+.detail-review-item {
+  display: flex;
+  gap: 16rpx;
+}
+
+.detail-review-item + .detail-review-item {
+  margin-top: 24rpx;
+  padding-top: 24rpx;
+  border-top: 1rpx solid var(--color-border);
+}
+
+.detail-review-item__avatar {
+  flex-shrink: 0;
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  background: var(--color-mint-dim);
+  color: var(--color-price);
+  font-size: 26rpx;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.detail-review-item__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.detail-review-item__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12rpx;
+}
+
+.detail-review-item__user {
+  font-size: 26rpx;
+  color: var(--color-text);
+  font-weight: 600;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.detail-review-item__meta {
+  font-size: 22rpx;
+  color: var(--color-price);
+  flex-shrink: 0;
+}
+
+.detail-review-item__content {
+  display: block;
+  margin-top: 10rpx;
+  font-size: 26rpx;
+  color: var(--color-text-secondary);
+  line-height: 1.55;
+}
+
+.detail-reviews__more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  margin-top: 24rpx;
+  padding-top: 24rpx;
+  border-top: 1rpx solid var(--color-border);
+}
+
+.detail-reviews__more--active {
+  opacity: 0.65;
+}
+
+.detail-reviews__more-text {
+  font-size: 28rpx;
+  color: var(--color-price);
+  font-weight: 600;
+}
+
+.detail-reviews__more-arrow {
+  font-size: 32rpx;
+  color: var(--color-price);
+  line-height: 1;
+}
+
+.detail-intro__rich {
+  display: block;
+  color: var(--color-text-secondary);
+  word-break: break-word;
+}
+
+/* 底栏：继承 page-footer-bar 固定高度，内容与购买按钮同高 88rpx */
+.detail-footer__cs {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  padding: 8rpx;
+  box-sizing: border-box;
+}
+
+.detail-footer__cs--active {
+  opacity: 0.65;
+}
+
+.detail-footer__cs-icon {
+  width: 48rpx;
+  height: 48rpx;
+  flex-shrink: 0;
+  display: block;
+}
+
+.detail-footer__buy {
+  flex: 1;
+  height: 72rpx;
+  line-height: 72rpx;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--color-cta-gradient);
+  color: var(--color-text-on-accent);
+  font-size: 30rpx;
+  font-weight: 700;
+  box-shadow: 0 8rpx 24rpx rgba(109, 184, 90, 0.22);
+}
+
+.theme-dark .detail-footer__buy {
+  box-shadow: 0 8rpx 24rpx rgba(209, 255, 189, 0.12);
+}
+
+.detail-footer__buy::after {
+  border: none;
+}

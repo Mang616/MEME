@@ -1,0 +1,65 @@
+<page-shell
+  title="绑定手机号"
+  back="{{true}}"
+  subpage="{{true}}"
+  theme="{{theme}}"
+  nav-color="{{navColor}}"
+  nav-bg="{{navBg}}"
+>
+  <scroll-view class="page-scroll bind-scroll" scroll-y show-scrollbar="{{false}}">
+    <view class="bind-page page-pad-x">
+      <text class="bind-page__hint">用于下单通知、找回账号与安全验证</text>
+      <text wx:if="{{showBound}}" class="bind-page__current">当前已绑定：{{maskedPhone}}</text>
+
+      <view class="bind-page__form card">
+        <view class="phone-field">
+          <text class="phone-field__label">手机号</text>
+          <input
+            class="phone-field__input"
+            type="number"
+            maxlength="11"
+            value="{{phone}}"
+            placeholder="请输入手机号"
+            placeholder-class="phone-field__placeholder"
+            bindinput="onPhoneInput"
+          />
+        </view>
+
+        <view class="phone-field">
+          <text class="phone-field__label">验证码</text>
+          <view class="phone-field__code-row">
+            <input
+              class="phone-field__input phone-field__input--code"
+              type="number"
+              maxlength="6"
+              value="{{smsCode}}"
+              placeholder="6位验证码"
+              placeholder-class="phone-field__placeholder"
+              bindinput="onCodeInput"
+            />
+            <button
+              class="phone-code-btn"
+              disabled="{{countdown > 0 || sending}}"
+              bindtap="onSendCode"
+            >
+              {{codeBtnText}}
+            </button>
+          </view>
+        </view>
+      </view>
+
+      <view class="page-bottom-spacer" />
+    </view>
+  </scroll-view>
+
+  <view class="page-footer-bar page-footer-bar--fixed bind-footer">
+    <view class="page-footer-bar__inner">
+      <view
+        class="bind-footer__submit btn-primary {{submitting ? 'is-loading' : ''}}"
+        bindtap="onSubmit"
+      >
+        {{submitting ? '提交中…' : '确认绑定'}}
+      </view>
+    </view>
+  </view>
+</page-shell>

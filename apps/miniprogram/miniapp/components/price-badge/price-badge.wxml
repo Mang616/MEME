@@ -1,0 +1,6 @@
+<view class="price-badge price-badge--{{size}} {{thin ? 'price-badge--thin' : ''}}">
+  <view class="price-badge__inner">
+    <text class="price-badge__symbol">¥</text>
+    <text class="price-badge__value">{{value}}</text>
+  </view>
+</view>

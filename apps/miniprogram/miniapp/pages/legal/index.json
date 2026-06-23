@@ -1,0 +1,6 @@
+{
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "page-shell": "/components/page-shell/page-shell"
+  }
+}

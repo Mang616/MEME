@@ -1,0 +1,221 @@
+/* CSS 变量：黑/白底 + 淡绿主色 + 红色点缀 */
+
+.theme-scope {
+  /* 点缀色（用户提供 #FF3B30） */
+  --color-accent: #ff3b30;
+  --color-accent-deep: #e6352b;
+  --color-accent-soft: #ff6b63;
+  --color-accent-dim: rgba(255, 59, 48, 0.14);
+  --color-accent-gradient: linear-gradient(135deg, #ff5248 0%, #ff3b30 100%);
+  --color-text-on-accent-red: #ffffff;
+  --color-mint: #d1ffbd;
+  --color-mint-soft: #e8ffd9;
+  --color-mint-strong: #9ed482;
+  --color-mint-deep: #6db85a;
+  --color-mint-strong-dim: rgba(158, 212, 130, 0.22);
+  --color-primary: #d1ffbd;
+  --color-primary-gradient: linear-gradient(135deg, #d1ffbd 0%, #b8f0a4 100%);
+  --color-cta-gradient: linear-gradient(135deg, #c8f5b4 0%, #9ed482 100%);
+  --color-cta-accent-gradient: var(--color-accent-gradient);
+  --color-text-on-accent: #000000;
+  --color-success: #7bc96f;
+  --color-warning: #9ed482;
+  --radius-sm: 12rpx;
+  --radius-md: 20rpx;
+  --radius-lg: 28rpx;
+  --radius-pill: 999rpx;
+  /* service-panel 结构（样式见 components/service-panel/service-panel.wxss） */
+  --service-tab-height: 112rpx;
+  --service-tab-bleed-top: 64rpx;
+  --service-head-height: calc(var(--service-tab-bleed-top) + var(--service-tab-height));
+  --service-tab-label-left: 32rpx;
+  --service-tab-label-bottom: 38rpx;
+  --service-body-seam: 2rpx;
+  --service-figure-width: 58%;
+  --service-figure-clip-extra: 16rpx;
+  --service-figure-scale-active: 1.2;
+  --service-figure-scale-inactive: 1.1;
+  --service-grid-gap-x: 16rpx;
+  --service-grid-gap-y: 20rpx;
+  --service-grid-pad-x: 20rpx;
+  --service-grid-pad-y: 20rpx;
+  --service-grid-pad-bottom: 24rpx;
+  --service-grid-cell-width: calc((100% - var(--service-grid-gap-x)) / 2);
+  --service-figure-transition-duration: 0.2s;
+  --service-transition-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  /* Banner / 详情 hero：固定深底 + 薄荷绿标题 */
+  --color-banner-title: #d1ffbd;
+  --color-banner-subtitle: rgba(255, 255, 255, 0.88);
+  --color-banner-fallback: linear-gradient(
+    135deg,
+    #1a2a1f 0%,
+    #2d4a35 48%,
+    #1e3a28 100%
+  );
+  --color-detail-hero-title: var(--color-banner-title);
+  --color-detail-hero-subtitle: var(--color-banner-subtitle);
+  /* 原生 TabBar 占位（与 theme.js TabBar 背景一致，首页可视区已扣除该高度） */
+  --tab-bar-inner-h: 100rpx;
+  --tab-bar-safe: env(safe-area-inset-bottom);
+  --tab-bar-total-h: calc(var(--tab-bar-inner-h) + var(--tab-bar-safe));
+  /* 非 Tab 页底栏：总高度与 TabBar 对齐，避免详情页比首页「多出一块」 */
+  --page-footer-inner-h: var(--tab-bar-inner-h);
+  --page-footer-pad-y: 0;
+  --page-footer-safe: var(--tab-bar-safe);
+  --page-footer-total-h: var(--tab-bar-total-h);
+  /* Tab 页水平边距（与 .page-pad-x 一致） */
+  --page-pad-x: 24rpx;
+  /* Tab 页内容区底部留白（原生 TabBar 已由系统占位，此为内容与 TabBar 间统一间距） */
+  --page-content-bottom-gap: 32rpx;
+  /* 商品 Tab 左侧子分类栏（窄栏，主内容区在右侧列表） */
+  --products-side-w: 168rpx;
+  /* 顶栏下划线 Tab（line-tabs 组件，分类 / 订单等共用） */
+  --line-tabs-font-size: 28rpx;
+  --line-tabs-bar-height: 88rpx;
+  --line-tabs-item-pt: 16rpx;
+  --line-tabs-item-pb: 20rpx;
+  --line-tabs-item-px: 24rpx;
+  --line-tabs-item-gap: 8rpx;
+  --line-tabs-item-gap-between: 4rpx;
+  --line-tabs-indicator-h: 5rpx;
+  --line-tabs-indicator-active: var(--color-mint-deep);
+  --line-tabs-indicator-radius: 4rpx 4rpx 0 0;
+  --line-tabs-indicator-inset-x: 24rpx;
+  --line-tabs-indicator-inset-ratio: 20%;
+  --line-tabs-track-pad-x: 24rpx;
+  --line-tabs-track-pad-b: 0;
+  --line-tabs-count-min-w: 28rpx;
+  --line-tabs-count-h: 28rpx;
+  --line-tabs-count-font: 20rpx;
+  --line-tabs-count-px: 8rpx;
+  --line-tabs-host-pad-top: 4rpx;
+  --line-tabs-host-pad-x: 0;
+  --line-tabs-host-gap-below: 8rpx;
+  --page-header-block-gap: 20rpx;
+  --page-header-content-gap: 24rpx;
+  --order-card-gap: 16rpx;
+  /* 字号阶梯（业务页优先引用变量，避免散落 rpx） */
+  --font-size-xs: 20rpx;
+  --font-size-sm: 22rpx;
+  --font-size-md: 24rpx;
+  --font-size-base: 28rpx;
+  --font-size-lg: 30rpx;
+  --font-size-xl: 34rpx;
+  --font-size-2xl: 40rpx;
+  --font-size-display: 44rpx;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  /* 展示字体：价格斜体、首页 Tab 大标题（中文回退系统黑体） */
+  --font-display: 'DIN Alternate', 'Helvetica Neue', Arial, sans-serif;
+  --font-tab: var(--font-display);
+  /* 封面底部渐变遮罩（商品卡/行共用） */
+  --color-cover-foot-shade: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(0, 0, 0, 0.72) 100%
+  );
+  --color-cover-foot-text: rgba(255, 255, 255, 0.92);
+  --color-cover-foot-text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.45);
+  /* Swiper 指示点（与 TabBar 选中色一致） */
+  --color-swiper-dot: rgba(255, 255, 255, 0.35);
+  --color-swiper-dot-active: var(--color-mint);
+  font-size: var(--font-size-base);
+  box-sizing: border-box;
+}
+
+.theme-scope.theme-dark {
+  --color-bg: #000000;
+  --color-bg-elevated: #0d0d0d;
+  --color-card: #141414;
+  --color-cover-placeholder: #2d4a35;
+  --color-border: rgba(209, 255, 189, 0.12);
+  --color-mint-dim: rgba(209, 255, 189, 0.14);
+  --color-price: #d1ffbd;
+  --color-text: #ffffff;
+  --color-text-secondary: rgba(255, 255, 255, 0.68);
+  --color-text-muted: rgba(255, 255, 255, 0.42);
+  --color-outline-muted: rgba(255, 255, 255, 0.25);
+  --shadow-card: 0 12rpx 40rpx rgba(0, 0, 0, 0.55);
+  /* service-panel：未选 Tab 透明融入页面，选中/内容区深底 */
+  --color-service-surface: #1a1d1c;
+  --color-service-tab-active-fg: #ffffff;
+  --color-service-tab-inactive-bg: transparent;
+  --color-service-tab-inactive-fg: rgba(255, 255, 255, 0.45);
+  --color-service-on-surface-fg: #ffffff;
+  --color-service-on-surface-muted: rgba(255, 255, 255, 0.72);
+  --color-service-on-surface-price: #d1ffbd;
+  --color-service-empty-fg: rgba(255, 255, 255, 0.65);
+  --color-minor-notice-bg: linear-gradient(
+    135deg,
+    rgba(255, 59, 48, 0.18) 0%,
+    rgba(30, 42, 32, 0.92) 42%,
+    rgba(26, 36, 28, 0.96) 100%
+  );
+  --color-minor-notice-stripe: linear-gradient(180deg, #ff6b63 0%, #ff3b30 100%);
+  --color-minor-notice-shine: radial-gradient(
+    circle,
+    rgba(209, 255, 189, 0.12) 0%,
+    transparent 70%
+  );
+  --color-minor-notice-border: rgba(255, 107, 99, 0.28);
+  --color-minor-notice-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.28);
+  --color-minor-notice-badge-bg: linear-gradient(145deg, #ff6b63 0%, #ff3b30 100%);
+  --color-minor-notice-badge-fg: #ffffff;
+  --color-minor-notice-badge-shadow: rgba(255, 59, 48, 0.45);
+  --color-minor-notice-label: rgba(209, 255, 189, 0.72);
+  --color-minor-notice-fg: #ffe8e6;
+  --service-figure-shadow: 0 6rpx 18rpx rgba(0, 0, 0, 0.35);
+  /* 商品详情 */
+  --color-detail-hero-bg: linear-gradient(180deg, #1a2a1f 0%, #2d4a35 50%, #1e3a28 100%);
+  --color-detail-hero-mask: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.78) 100%);
+  --color-detail-footer-shadow: 0 -8rpx 24rpx rgba(0, 0, 0, 0.4);
+}
+
+.theme-scope.theme-light {
+  --color-bg: #ffffff;
+  --color-bg-elevated: #f4f6f4;
+  --color-card: #f7f8f7;
+  --color-cover-placeholder: #e2ebe0;
+  --color-border: rgba(109, 184, 90, 0.22);
+  --color-mint-dim: rgba(109, 184, 90, 0.12);
+  --color-price: #5a9e47;
+  --color-text: #111111;
+  --color-text-secondary: rgba(0, 0, 0, 0.55);
+  --color-text-muted: rgba(0, 0, 0, 0.38);
+  --color-outline-muted: rgba(0, 0, 0, 0.15);
+  --shadow-card: 0 8rpx 28rpx rgba(0, 0, 0, 0.06);
+  /* service-panel：未选白底 Tab + 选中/内容区淡绿底 */
+  --color-service-surface: #dfffd6;
+  --color-service-tab-active-fg: #111111;
+  --color-service-tab-inactive-bg: #ffffff;
+  --color-service-tab-inactive-fg: rgba(0, 0, 0, 0.55);
+  --color-service-on-surface-fg: #111111;
+  --color-service-on-surface-muted: rgba(0, 0, 0, 0.55);
+  --color-service-on-surface-price: #4a8f3a;
+  --color-service-empty-fg: rgba(0, 0, 0, 0.42);
+  --color-minor-notice-bg: linear-gradient(
+    135deg,
+    rgba(255, 59, 48, 0.1) 0%,
+    rgba(232, 255, 217, 0.85) 55%,
+    rgba(255, 245, 243, 0.95) 100%
+  );
+  --color-minor-notice-stripe: linear-gradient(180deg, #ff6b63 0%, #e6352b 100%);
+  --color-minor-notice-shine: radial-gradient(
+    circle,
+    rgba(158, 212, 130, 0.35) 0%,
+    transparent 70%
+  );
+  --color-minor-notice-border: rgba(255, 59, 48, 0.22);
+  --color-minor-notice-shadow: 0 6rpx 20rpx rgba(255, 59, 48, 0.1);
+  --color-minor-notice-badge-bg: linear-gradient(145deg, #ff6b63 0%, #ff3b30 100%);
+  --color-minor-notice-badge-fg: #ffffff;
+  --color-minor-notice-badge-shadow: rgba(255, 59, 48, 0.28);
+  --color-minor-notice-label: #6db85a;
+  --color-minor-notice-fg: #b71c1c;
+  --service-figure-shadow: 0 6rpx 16rpx rgba(109, 184, 90, 0.2);
+  /* 商品详情：hero 仍深底展示封面，渐变偏绿与 Banner 一致 */
+  --color-detail-hero-bg: linear-gradient(180deg, #141414 0%, #1e2e24 55%, #2a4032 100%);
+  --color-detail-hero-mask: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.62) 100%);
+  --color-detail-footer-shadow: 0 -8rpx 24rpx rgba(0, 0, 0, 0.06);
+}

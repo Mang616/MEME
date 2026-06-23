@@ -1,0 +1,16 @@
+/** 商品展示辅助：标签样式、封面色（规则须与 utils/format.js tagClass 一致） */
+
+function tagClass(tag) {
+  if (tag === '新品') return 'tag-new'
+  return 'tag-recommend'
+}
+
+function coverStyle(coverColor) {
+  if (!coverColor) return ''
+  return 'background-color:' + coverColor
+}
+
+module.exports = {
+  tagClass: tagClass,
+  coverStyle: coverStyle,
+}

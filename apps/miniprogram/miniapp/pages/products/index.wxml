@@ -1,0 +1,26 @@
+<page-shell
+  title="商品"
+  nav-search="{{true}}"
+  theme="{{theme}}"
+  nav-color="{{navColor}}"
+  nav-bg="{{navBg}}"
+  bind:search="onOpenSearch"
+>
+  <products-panel
+    id="productsPanel"
+    service-types="{{serviceTypes}}"
+    active-type="{{activeType}}"
+    sub-categories="{{subCategories}}"
+    active-sub-category-id="{{activeSubCategoryId}}"
+    active-sub-category-name="{{activeSubCategoryName}}"
+    products="{{products}}"
+    product-count="{{productCount}}"
+    list-empty-text="{{listEmptyText}}"
+    list-empty-hint="{{listEmptyHint}}"
+    bind:tabchange="onTabChange"
+    bind:subcategorychange="onSubCategoryChange"
+    bind:producttap="onProductTap"
+    bind:buy="onBuy"
+    bind:refresh="onPullRefresh"
+  />
+</page-shell>

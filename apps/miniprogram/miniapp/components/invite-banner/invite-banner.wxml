@@ -1,0 +1,26 @@
+<block wx:if="{{variant === 'nav'}}">
+  <view class="invite-banner invite-banner--nav" bindtap="onTap">
+    <text class="invite-banner__nav-tag">{{banner.navTag}}</text>
+    <text class="invite-banner__nav-title">{{banner.navTitle}}</text>
+    <text class="invite-banner__nav-arrow">›</text>
+  </view>
+</block>
+<block wx:else>
+  <view
+    class="invite-banner invite-banner--card {{compact ? 'invite-banner--compact' : ''}}"
+    bindtap="onTap"
+  >
+    <view class="invite-banner__glow" />
+    <view class="invite-banner__body">
+      <view class="invite-banner__text">
+        <text class="invite-banner__tag">{{banner.tag}}</text>
+        <text class="invite-banner__title">{{banner.title}}</text>
+        <text class="invite-banner__subtitle">{{banner.subtitle}}</text>
+      </view>
+      <view class="invite-banner__cta">
+        <text>{{banner.cta}}</text>
+        <text class="invite-banner__arrow">›</text>
+      </view>
+    </view>
+  </view>
+</block>

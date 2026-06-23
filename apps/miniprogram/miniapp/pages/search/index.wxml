@@ -1,0 +1,42 @@
+<page-shell
+  title="搜索"
+  back
+  theme="{{theme}}"
+  nav-color="{{navColor}}"
+  nav-bg="{{navBg}}"
+>
+  <view class="search-page">
+    <view class="search-page__bar page-pad-x">
+      <view class="search-page__field">
+        <text class="search-page__icon">⌕</text>
+        <input
+          class="search-page__input"
+          value="{{keyword}}"
+          placeholder="搜索全部商品"
+          placeholder-class="search-page__placeholder"
+          confirm-type="search"
+          focus="{{focusInput}}"
+          bindinput="onInput"
+          bindconfirm="onConfirm"
+        />
+        <text
+          wx:if="{{keyword}}"
+          class="search-page__clear"
+          bindtap="onClear"
+        >×</text>
+      </view>
+      <text wx:if="{{resultHint}}" class="search-page__hint">{{resultHint}}</text>
+    </view>
+
+    <product-list-scroll
+      class="search-page__list"
+      layout="subpage"
+      products="{{products}}"
+      empty-icon="🔍"
+      empty-text="{{emptyText}}"
+      empty-hint="{{hasKeyword && resultCount === 0 ? '试试缩短或更换关键词' : ''}}"
+      bind:producttap="onProductTap"
+      bind:buy="onBuy"
+    />
+  </view>
+</page-shell>

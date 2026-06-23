@@ -1,0 +1,62 @@
+<!-- 根节点复用 page-tab-main，与订单 filter-tab-page 同构 -->
+<view class="page-tab-main products-panel">
+  <view class="page-line-tabs-host">
+    <line-tabs
+      tabs="{{serviceTypes}}"
+      active-id="{{activeType}}"
+      mode="scroll"
+      bind:tabchange="onTabChange"
+    />
+  </view>
+
+  <view class="products-panel__split">
+    <scroll-view
+      class="products-panel__side"
+      scroll-y
+      show-scrollbar="{{false}}"
+    >
+      <view
+        wx:for="{{subCategories}}"
+        wx:key="id"
+        class="products-panel__side-item {{activeSubCategoryId === item.id ? 'is-active' : ''}}"
+        data-id="{{item.id}}"
+        bindtap="onSubCategoryTap"
+      >
+        <view
+          wx:if="{{activeSubCategoryId === item.id}}"
+          class="products-panel__side-indicator"
+        />
+        <text class="products-panel__side-label">{{item.name}}</text>
+        <text wx:if="{{item.count}}" class="products-panel__side-count">{{item.count}}</text>
+      </view>
+    </scroll-view>
+
+    <pull-refresh-scroll
+      id="pullRefresh"
+      class="products-panel__main"
+      bind:refresh="onPullRefresh"
+    >
+      <view class="products-panel__main-inner">
+        <view class="products-panel__head">
+          <text class="products-panel__head-title">{{activeSubCategoryName}}</text>
+          <text wx:if="{{productCount}}" class="products-panel__head-meta">共 {{productCount}} 件</text>
+        </view>
+
+        <product-row
+          wx:for="{{products}}"
+          wx:key="id"
+          product="{{item}}"
+          bind:tap="onProductTap"
+          bind:buy="onBuy"
+        />
+
+        <list-empty
+          wx:if="{{productCount === 0}}"
+          icon="📦"
+          text="{{listEmptyText}}"
+          hint="{{listEmptyHint}}"
+        />
+      </view>
+    </pull-refresh-scroll>
+  </view>
+</view>

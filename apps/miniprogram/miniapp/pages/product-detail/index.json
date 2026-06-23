@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "page-shell": "/components/page-shell/page-shell",
+    "cover-media": "/components/cover-media/cover-media",
+    "price-badge": "/components/price-badge/price-badge"
+  }
+}

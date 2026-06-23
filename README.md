@@ -9,7 +9,7 @@ apps/
   website/      SEO website and brand entry
   client/       PWA ordering client
   admin/        Operations dashboard
-  miniprogram/  Reserved for the existing mini program
+  miniprogram/  Migrated WeChat mini program
 packages/
   theme/        Shared color tokens and visual system
 docs/           Product and SEO planning
@@ -31,4 +31,4 @@ Open:
 
 ## Product Direction
 
-The first version keeps the small-program visual language: black and white modes, neon lime highlights, deep forest-green product surfaces, red price stickers, and original meme-esports imagery.
+The mini program is the visual source of truth. Web surfaces should follow its black/white modes, primary mint `#d1ffbd`, accent red `#ff3b30`, deep service surfaces, red price stickers, and meme-esports imagery. See `docs/design-system.md`.

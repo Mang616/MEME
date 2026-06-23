@@ -1,0 +1,97 @@
+.page-root {
+  min-height: 100vh;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  overflow: hidden;
+}
+
+/* 与 theme.js 中 windowBg 保持一致，减轻切换时闪白 */
+page {
+  background-color: #000000;
+}
+
+.page-scroll {
+  flex: 1;
+  min-height: 0;
+  height: 0;
+  width: 100%;
+}
+
+/** 顶栏 line-tabs 外层：与下方内容区的标准间距 */
+.page-line-tabs-host {
+  flex-shrink: 0;
+  width: 100%;
+  padding: var(--line-tabs-host-pad-top) var(--line-tabs-host-pad-x) 0;
+  margin-bottom: var(--line-tabs-host-gap-below);
+  box-sizing: border-box;
+  background: var(--color-bg);
+  overflow: hidden;
+}
+
+.page-header-stack {
+  flex-shrink: 0;
+}
+
+.page-header-stack__block + .page-header-stack__block {
+  margin-top: var(--page-header-block-gap);
+}
+
+.page-header-stack__content-gap {
+  margin-top: var(--page-header-content-gap);
+}
+
+/** 页面左右标准边距 */
+.page-pad-x {
+  padding-left: var(--page-pad-x);
+  padding-right: var(--page-pad-x);
+  box-sizing: border-box;
+}
+
+/**
+ * Tab 页主列：顶栏 Tab + 可滚动区（订单 / 聊天等）
+ */
+.page-tab-main {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+/** Tab 页：滚动内容底部与原生 TabBar 之间的统一间距 */
+.page-tab-bottom-gap {
+  padding-bottom: var(--page-content-bottom-gap);
+  box-sizing: border-box;
+}
+
+/**
+ * Tab 页：整块滚动区内边距（首页 Banner 除外、我的等）
+ */
+.page-tab-scroll-body {
+  padding: 24rpx var(--page-pad-x) var(--page-content-bottom-gap);
+  box-sizing: border-box;
+}
+
+/**
+ * Tab 页：列表型 scroll 内层（订单 / 聊天）
+ */
+.page-tab-list-inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--order-card-gap);
+  padding: var(--page-header-content-gap) var(--page-pad-x) var(--page-content-bottom-gap);
+  box-sizing: border-box;
+}
+
+/**
+ * 子页（商品详情等）：可视区减去 TabBar 高度，底栏 fixed 与 Tab 页底栏区域对齐。
+ * navigateTo 全屏子页（搜索/聊天室）一般不用此 class。
+ */
+.page-root--subpage {
+  height: calc(100vh - var(--tab-bar-total-h));
+  min-height: calc(100vh - var(--tab-bar-total-h));
+  max-height: calc(100vh - var(--tab-bar-total-h));
+}

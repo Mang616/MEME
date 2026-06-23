@@ -1,0 +1,26 @@
+<page-shell
+  title="设置"
+  back
+  theme="{{theme}}"
+  nav-color="{{navColor}}"
+  nav-bg="{{navBg}}"
+>
+  <view class="settings-page page-pad-x">
+    <view class="settings-group card">
+      <view
+        wx:if="{{loggedIn}}"
+        class="settings-cell settings-cell--danger"
+        bindtap="onLogout"
+      >
+        <text class="settings-cell__label">退出登录</text>
+      </view>
+      <view
+        wx:else
+        class="settings-cell settings-cell--primary"
+        bindtap="onLogin"
+      >
+        <text class="settings-cell__label">登录账号</text>
+      </view>
+    </view>
+  </view>
+</page-shell>

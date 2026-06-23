@@ -1,0 +1,205 @@
+/**
+ * 高度模型（变量由 JS 注入，见 utils/nav-layout.js）：
+ *   inner  padding-top = --nav-safe-top
+ *   bar    height      = --nav-bar-h
+ *   总高   --nav-total-h = safe-top + bar-h
+ */
+.weui-navigation-bar {
+  --nav-pad-x: 16px;
+  --nav-total-h: calc(var(--nav-safe-top) + var(--nav-bar-h));
+  flex: none;
+  height: var(--nav-total-h);
+  overflow: hidden;
+  position: relative;
+  z-index: 100;
+  box-sizing: border-box;
+}
+
+.weui-navigation-bar__inner {
+  height: 100%;
+  padding-top: var(--nav-safe-top);
+  box-sizing: border-box;
+}
+
+.weui-navigation-bar__bar {
+  position: relative;
+  height: var(--nav-bar-h);
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+/* —— 默认：标题屏幕水平居中（限定在 bar 内，不重复安全区） —— */
+.weui-navigation-bar__left {
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+  height: 100%;
+  padding-left: var(--nav-pad-x);
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.weui-navigation-bar__center {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: var(--nav-bar-h);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+.weui-navigation-bar__title {
+  font-size: 17px;
+  font-weight: bold;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.weui-navigation-bar__right {
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+  height: 100%;
+  margin-left: auto;
+  padding-right: var(--nav-pad-x);
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.weui-navigation-bar__hit--action {
+  padding: 10px 12px 10px 0;
+  margin: -10px 0;
+}
+
+.weui-navigation-bar__action-icon {
+  width: 44rpx;
+  height: 44rpx;
+  display: block;
+}
+
+.weui-navigation-bar__loading {
+  margin-right: 4px;
+}
+
+.weui-navigation-bar__spinner {
+  width: 16px;
+  height: 16px;
+  background: transparent url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd' opacity='0.9'%3E%3Cpath d='M40 0c22.09 0 40 17.91 40 40s-17.91 40-40 40V73c18.23 0 33-14.77 33-33S58.23 7 40 7V0z' fill='%23606060' fill-opacity='0.3'/%3E%3Cpath d='M40 0v7C21.77 7 7 21.77 7 40s14.77 33 33 33v7C17.91 80 0 62.09 0 40S17.91 0 40 0z' fill='%23606060'/%3E%3Ccircle cx='40.5' cy='3.5' r='3.5' fill='%23606060'/%3E%3C/g%3E%3C/svg%3E") no-repeat center / contain;
+  animation: nav-spin 1s linear infinite;
+}
+
+@keyframes nav-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* —— 首页品牌区 —— */
+.weui-navigation-bar__brand {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12rpx;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  padding: 0 var(--nav-pad-x);
+  box-sizing: border-box;
+}
+
+.weui-navigation-bar__logo {
+  width: 48rpx;
+  height: 48rpx;
+  flex-shrink: 0;
+  display: block;
+}
+
+.weui-navigation-bar__brand-meta {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10rpx;
+  flex: 1;
+  min-width: 0;
+}
+
+.weui-navigation-bar__brand-name {
+  flex-shrink: 0;
+  font-size: 28rpx;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.weui-navigation-bar__promo {
+  flex-shrink: 0;
+  padding: 8rpx 16rpx;
+  font-size: 20rpx;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--color-text-on-accent);
+  background: var(--color-mint);
+  border-radius: var(--radius-pill);
+  box-sizing: border-box;
+}
+
+.weui-navigation-bar__promo.is-active {
+  opacity: 0.85;
+}
+
+/* —— 左侧图标热区 —— */
+.weui-navigation-bar__hit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.weui-navigation-bar__hit.is-active {
+  opacity: 0.5;
+}
+
+.weui-navigation-bar__hit--back {
+  padding: 11px 18px 11px 0;
+  margin: -11px 0;
+}
+
+.weui-navigation-bar__hit--search,
+.weui-navigation-bar__hit--theme {
+  padding: 10px 12px 10px 0;
+  margin: -10px 0;
+}
+
+.weui-navigation-bar__icon {
+  background-color: currentColor;
+}
+
+.weui-navigation-bar__icon--back {
+  width: 12px;
+  height: 24px;
+  -webkit-mask: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='24' viewBox='0 0 12 24'%3E%3Cpath fill-rule='evenodd' d='M10 19.438L8.955 20.5l-7.666-7.79a1.02 1.02 0 0 1 0-1.42L8.955 3.5 10 4.563 2.682 12 10 19.438z'/%3E%3C/svg%3E") center / cover no-repeat;
+  mask: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='24' viewBox='0 0 12 24'%3E%3Cpath fill-rule='evenodd' d='M10 19.438L8.955 20.5l-7.666-7.79a1.02 1.02 0 0 1 0-1.42L8.955 3.5 10 4.563 2.682 12 10 19.438z'/%3E%3C/svg%3E") center / cover no-repeat;
+}
+
+.weui-navigation-bar__icon--search {
+  width: 24px;
+  height: 24px;
+  -webkit-mask: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill-rule='evenodd' d='M10.5 3a7.5 7.5 0 1 0 4.77 13.27l4.12 4.11 1.42-1.41-4.11-4.12A7.47 7.47 0 0 0 10.5 3zm0 2a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill-rule='evenodd' d='M10.5 3a7.5 7.5 0 1 0 4.77 13.27l4.12 4.11 1.42-1.41-4.11-4.12A7.47 7.47 0 0 0 10.5 3zm0 2a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.weui-navigation-bar__theme-icon {
+  width: 44rpx;
+  height: 44rpx;
+  display: block;
+}

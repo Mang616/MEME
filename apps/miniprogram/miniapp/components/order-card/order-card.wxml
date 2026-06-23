@@ -1,0 +1,211 @@
+<template name="copyBtn">
+  <view
+    class="order-card__copy-btn"
+    data-text="{{text}}"
+    catchtap="onCopy"
+    aria-role="button"
+    aria-label="复制"
+  >
+    <view class="order-card__copy-icon" aria-hidden="true">
+      <view class="order-card__copy-sheet order-card__copy-sheet--back" />
+      <view class="order-card__copy-sheet order-card__copy-sheet--front" />
+    </view>
+  </view>
+</template>
+
+<template name="orderThumb">
+  <view class="order-card__thumb-wrap {{wrapClass}}">
+    <cover-media
+      src="{{cover}}"
+      color="{{coverColor}}"
+      lazy-load="{{true}}"
+      placeholder-class="order-card__thumb cover-placeholder"
+      image-class="order-card__thumb"
+    />
+  </view>
+</template>
+
+<template name="orderSnRow">
+  <view class="order-card__row order-card__row--sn">
+    <text class="order-card__row-label">订单号</text>
+    <view class="order-card__row-content">
+      <text class="order-card__row-value order-card__sn">{{sn}}</text>
+      <view
+        class="order-card__copy-btn"
+        data-text="{{sn}}"
+        catchtap="onCopy"
+        aria-role="button"
+        aria-label="复制订单号"
+      >
+        <view class="order-card__copy-icon" aria-hidden="true">
+          <view class="order-card__copy-sheet order-card__copy-sheet--back" />
+          <view class="order-card__copy-sheet order-card__copy-sheet--front" />
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<view class="order-card card {{order.compact ? 'order-card--compact' : ''}}">
+  <!-- 已完成：列表精简 -->
+  <block wx:if="{{order.compact}}">
+    <view class="order-card__compact" bindtap="onCardTap">
+      <view class="order-card__head">
+        <text class="order-card__status {{order.statusClass}}">{{order.statusText}}</text>
+        <text class="order-card__time">{{order.orderTime}}</text>
+      </view>
+      <template is="orderSnRow" data="{{sn: order.id}}" />
+      <view class="order-card__product">
+        <template
+          is="orderThumb"
+          data="{{cover: order.product.cover, coverColor: order.product.coverColor, wrapClass: 'order-card__thumb-wrap--sm'}}"
+        />
+        <view class="order-card__product-main">
+          <text class="order-card__title">{{order.product.title}}</text>
+          <view class="order-card__product-meta">
+            <text class="order-card__qty">×{{order.product.quantity}}</text>
+          </view>
+        </view>
+        <view class="order-card__sum-col">
+          <text class="order-card__sum-label">实付</text>
+          <text class="order-card__sum-value">¥{{order.totalPaidDisplay}}</text>
+        </view>
+      </view>
+      <view class="order-card__more">
+        <text class="order-card__more-text">查看详情</text>
+        <text class="order-card__arrow">›</text>
+      </view>
+    </view>
+  </block>
+
+  <!-- 详情页：信息更全，仍保持扁平 -->
+  <block wx:elif="{{mode === 'detail'}}">
+    <view class="order-card__pad">
+      <view class="order-card__head">
+        <text class="order-card__status {{order.statusClass}}">{{order.statusText}}</text>
+        <text class="order-card__time">{{order.orderTime}}</text>
+      </view>
+
+      <view class="order-card__product" bindtap="onProductTap">
+        <template
+          is="orderThumb"
+          data="{{cover: order.product.cover, coverColor: order.product.coverColor, wrapClass: ''}}"
+        />
+        <view class="order-card__product-main">
+          <text class="order-card__title">{{order.product.title}}</text>
+          <text wx:if="{{order.product.desc}}" class="order-card__desc">{{order.product.desc}}</text>
+          <view class="order-card__product-meta">
+            <price-badge value="{{order.product.priceDisplay}}" size="xs" thin />
+            <text class="order-card__qty">×{{order.product.quantity}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="order-card__rows">
+        <template is="orderSnRow" data="{{sn: order.id}}" />
+        <view
+          wx:for="{{order.infoRows}}"
+          wx:key="label"
+          class="order-card__row"
+        >
+          <text class="order-card__row-label">{{item.label}}</text>
+          <view class="order-card__row-content">
+            <text class="order-card__row-value">{{item.value}}</text>
+            <template
+              wx:if="{{item.copyable}}"
+              is="copyBtn"
+              data="{{text: item.copyText}}"
+            />
+          </view>
+        </view>
+      </view>
+
+      <view class="order-card__tail">
+        <view class="order-card__row order-card__row--sum">
+          <text class="order-card__sum-label">实付款</text>
+          <view class="order-card__row-content">
+            <text class="order-card__sum-value">¥{{order.totalPaidDisplay}}</text>
+            <text wx:if="{{order.refunded}}" class="order-card__refund">已退款</text>
+            <text wx:elif="{{order.paid}}" class="order-card__paid">已支付</text>
+          </view>
+        </view>
+        <view wx:if="{{order.hasActions}}" class="order-card__actions">
+          <button
+            wx:for="{{order.buttons}}"
+            wx:key="action"
+            class="{{item.btnClass}}"
+            data-action="{{item.action}}"
+            data-id="{{order.id}}"
+            data-product-id="{{order.productId}}"
+            catchtap="onAction"
+          >{{item.label}}</button>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!-- 列表：进行中订单 -->
+  <block wx:else>
+    <view class="order-card__pad">
+      <view class="order-card__head">
+        <text class="order-card__status {{order.statusClass}}">{{order.statusText}}</text>
+        <text class="order-card__time">{{order.orderTime}}</text>
+      </view>
+
+      <view class="order-card__product" bindtap="onProductTap">
+        <template
+          is="orderThumb"
+          data="{{cover: order.product.cover, coverColor: order.product.coverColor, wrapClass: 'order-card__thumb-wrap--sm'}}"
+        />
+        <view class="order-card__product-main">
+          <text class="order-card__title">{{order.product.title}}</text>
+          <view class="order-card__product-meta">
+            <price-badge value="{{order.product.priceDisplay}}" size="xs" thin />
+            <text class="order-card__qty">×{{order.product.quantity}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="order-card__rows order-card__rows--dense">
+        <template is="orderSnRow" data="{{sn: order.id}}" />
+        <view
+          wx:for="{{order.listInfoRows}}"
+          wx:key="label"
+          class="order-card__row"
+        >
+          <text class="order-card__row-label">{{item.label}}</text>
+          <view class="order-card__row-content">
+            <text class="order-card__row-value">{{item.value}}</text>
+            <template
+              wx:if="{{item.copyable}}"
+              is="copyBtn"
+              data="{{text: item.copyText}}"
+            />
+          </view>
+        </view>
+      </view>
+
+      <view class="order-card__tail">
+        <view class="order-card__row order-card__row--sum">
+          <text class="order-card__sum-label">实付</text>
+          <view class="order-card__row-content">
+            <text class="order-card__sum-value">¥{{order.totalPaidDisplay}}</text>
+            <text wx:if="{{order.refunded}}" class="order-card__refund">已退款</text>
+          </view>
+        </view>
+        <text wx:if="{{order.autoSettleTime}}" class="order-card__settle">自动结单 {{order.autoSettleTime}}</text>
+        <view wx:if="{{order.hasActions}}" class="order-card__actions">
+          <button
+            wx:for="{{order.buttons}}"
+            wx:key="action"
+            class="{{item.btnClass}}"
+            data-action="{{item.action}}"
+            data-id="{{order.id}}"
+            data-product-id="{{order.productId}}"
+            catchtap="onAction"
+          >{{item.label}}</button>
+        </view>
+      </view>
+    </view>
+  </block>
+</view>

@@ -1,0 +1,263 @@
+@import '../../styles/level-icon-glow.wxss';
+
+/* 登录页布局与表单（不复用 phone-form，避免样式冲突） */
+.login-page {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+/* —— 品牌区 —— */
+.login-hero {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24rpx 0 16rpx;
+  box-sizing: border-box;
+}
+
+.login-hero__logo-wrap {
+  width: 200rpx;
+  height: 200rpx;
+}
+
+.login-hero__logo {
+  width: 168rpx;
+  height: 168rpx;
+}
+
+.login-hero__brand {
+  margin-top: 4rpx;
+  font-size: 40rpx;
+  font-weight: 700;
+  color: var(--color-banner-title);
+  letter-spacing: 2rpx;
+  line-height: 1.25;
+}
+
+.login-hero__tagline {
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+  color: var(--color-mint);
+  letter-spacing: 4rpx;
+  line-height: 1.35;
+}
+
+/* —— 表单 —— */
+.login-form {
+  --login-input-h: 88rpx;
+  --login-code-min: 72%;
+  flex: 1;
+  min-height: 0;
+  padding-top: 8rpx;
+  box-sizing: border-box;
+}
+
+.login-form__field {
+  margin-bottom: 28rpx;
+}
+
+.login-form__field--code {
+  margin-bottom: 0;
+}
+
+.login-form__label {
+  display: block;
+  margin-bottom: 12rpx;
+  font-size: 24rpx;
+  color: var(--color-text-muted);
+  line-height: 1.35;
+}
+
+.login-form__input {
+  width: 100%;
+  height: var(--login-input-h);
+  padding: 0 24rpx;
+  font-size: 30rpx;
+  color: var(--color-text);
+  background: var(--color-bg-elevated);
+  border: 1rpx solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-sizing: border-box;
+}
+
+.login-form__placeholder {
+  color: var(--color-text-muted);
+}
+
+.login-form__code-row {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 16rpx;
+}
+
+.login-form__input--code {
+  flex: 1 1 var(--login-code-min);
+  min-width: var(--login-code-min);
+  width: 0;
+}
+
+.login-form__code-btn {
+  flex: 0 0 auto;
+  align-self: stretch;
+  min-width: 0;
+  max-width: calc(100% - var(--login-code-min) - 16rpx);
+  height: var(--login-input-h);
+  padding: 0 20rpx;
+  margin: 0;
+  font-size: 24rpx;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--color-price);
+  background: transparent;
+  border: 1rpx solid var(--color-mint);
+  border-radius: var(--radius-md);
+  box-sizing: border-box;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-form__code-btn::after {
+  border: none;
+}
+
+.login-form__code-btn[disabled] {
+  opacity: 0.45;
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
+}
+
+.login-form__agree {
+  display: flex;
+  align-items: flex-start;
+  gap: 12rpx;
+  margin-top: 32rpx;
+  margin-bottom: 32rpx;
+}
+
+.login-form__check {
+  flex-shrink: 0;
+  width: 36rpx;
+  height: 36rpx;
+  margin-top: 2rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2rpx solid var(--color-border);
+  border-radius: 10rpx;
+  background: var(--color-bg-elevated);
+  box-sizing: border-box;
+}
+
+.login-form__check.is-checked {
+  border-color: var(--color-mint);
+  background: var(--color-mint-dim);
+}
+
+.login-form__check:active {
+  opacity: 0.85;
+}
+
+.login-form__check-icon {
+  font-size: 24rpx;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-mint-deep);
+}
+
+.login-form__agree-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 24rpx;
+  color: var(--color-text-secondary);
+  line-height: 1.55;
+}
+
+.login-form__link {
+  color: var(--color-price);
+  font-weight: 600;
+}
+
+.login-form__link:active {
+  opacity: 0.7;
+}
+
+.login-form__submit {
+  width: 100%;
+  height: 96rpx;
+  line-height: 96rpx;
+  margin: 0;
+  padding: 0;
+  font-size: 32rpx;
+  font-weight: 600;
+  box-shadow: 0 8rpx 24rpx rgba(209, 255, 189, 0.22);
+}
+
+.login-form__submit::after {
+  border: none;
+}
+
+.login-form__submit[disabled] {
+  opacity: 0.55;
+}
+
+/* —— 底部微信登录 —— */
+.login-page__footer {
+  flex-shrink: 0;
+  padding: 4rpx 0 calc(28rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+
+.login-page__divider {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  margin-bottom: 24rpx;
+}
+
+.login-page__divider-line {
+  flex: 1;
+  height: 1rpx;
+  background: var(--color-border);
+}
+
+.login-page__divider-text {
+  flex-shrink: 0;
+  font-size: 22rpx;
+  color: var(--color-text-muted);
+}
+
+.login-page__wechat-btn {
+  width: 100%;
+  height: 92rpx;
+  line-height: 92rpx;
+  margin: 0;
+  padding: 0;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--color-text);
+  background: var(--color-bg-elevated);
+  border: 1rpx solid var(--color-mint-strong-dim);
+  border-radius: var(--radius-pill);
+  box-sizing: border-box;
+}
+
+.login-page__wechat-btn::after {
+  border: none;
+}
+
+.login-page__wechat-btn:active {
+  opacity: 0.88;
+  background: var(--color-mint-dim);
+}
+
+.login-page__wechat-btn[disabled] {
+  opacity: 0.45;
+}

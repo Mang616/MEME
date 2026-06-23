@@ -1,0 +1,343 @@
+.order-create-scroll {
+  flex: 1;
+  min-height: 0;
+}
+
+.order-create {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  padding-top: 16rpx;
+  box-sizing: border-box;
+}
+
+/* —— 商品 —— */
+.order-create__product {
+  display: flex;
+  gap: 20rpx;
+  padding: 24rpx;
+  box-sizing: border-box;
+}
+
+.order-create__thumb-wrap {
+  width: 160rpx;
+  height: 160rpx;
+  flex-shrink: 0;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-bg-elevated);
+}
+
+.order-create__thumb {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.order-create__product-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.order-create__product-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--color-text);
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.order-create__product-desc {
+  font-size: 24rpx;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.order-create__product-meta {
+  margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.order-create__unit-price {
+  font-family: var(--font-display);
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--color-price);
+}
+
+.order-create__limit {
+  font-size: 22rpx;
+  color: var(--color-text-muted);
+}
+
+/* —— 表单 —— */
+.order-create__section {
+  padding: 24rpx;
+  box-sizing: border-box;
+}
+
+.order-create__section-title {
+  display: block;
+  margin-bottom: 8rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.order-create__field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid var(--color-border);
+  box-sizing: border-box;
+}
+
+.order-create__field:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.order-create__field--remark {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12rpx;
+}
+
+.order-create__field--qty {
+  align-items: center;
+}
+
+.order-create__field--switch {
+  align-items: center;
+}
+
+.order-create__switch {
+  transform: scale(0.88);
+  transform-origin: center right;
+}
+
+.order-create__label {
+  flex-shrink: 0;
+  font-size: 28rpx;
+  color: var(--color-text-muted);
+}
+
+.order-create__input {
+  flex: 1;
+  min-width: 0;
+  height: 72rpx;
+  padding: 0 20rpx;
+  font-size: 28rpx;
+  color: var(--color-text);
+  text-align: right;
+  background: var(--color-bg-elevated);
+  border: 1rpx solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-sizing: border-box;
+}
+
+.order-create__picker {
+  flex: 1;
+  min-width: 0;
+  height: 72rpx;
+  padding: 0 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8rpx;
+  background: var(--color-bg-elevated);
+  border: 1rpx solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-sizing: border-box;
+}
+
+.order-create__picker-value {
+  font-size: 28rpx;
+  color: var(--color-text);
+  text-align: right;
+}
+
+.order-create__picker-arrow {
+  font-size: 32rpx;
+  color: var(--color-text-muted);
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.order-create__field--handler {
+  align-items: center;
+}
+
+.order-create__picker--handler {
+  justify-content: space-between;
+}
+
+.order-create__picker-placeholder {
+  flex: 1;
+  font-size: 28rpx;
+  color: var(--color-text-muted);
+  text-align: right;
+}
+
+.order-create__handler-picked {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10rpx;
+}
+
+.order-create__handler-level-icon {
+  width: 32rpx;
+  height: 32rpx;
+  flex-shrink: 0;
+  display: block;
+}
+
+.order-create__handler-gender,
+.order-create__handler-level {
+  flex-shrink: 0;
+  padding: 4rpx 12rpx;
+  font-size: 22rpx;
+  font-weight: 600;
+  line-height: 1.2;
+  border-radius: var(--radius-pill);
+  box-sizing: border-box;
+}
+
+.order-create__handler-gender {
+  color: var(--color-text-secondary);
+  background: var(--color-bg-elevated);
+  border: 1rpx solid var(--color-border);
+}
+
+.order-create__handler-level {
+  color: var(--color-mint);
+  background: var(--color-mint-strong-dim);
+}
+
+.order-create__placeholder {
+  color: var(--color-text-muted);
+  font-size: 28rpx;
+}
+
+.order-create__stepper {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.order-create__stepper-btn {
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--color-text);
+  background: var(--color-bg-elevated);
+  border: 1rpx solid var(--color-border);
+  border-radius: var(--radius-sm);
+  box-sizing: border-box;
+}
+
+.order-create__stepper-btn.is-disabled {
+  opacity: 0.35;
+}
+
+.order-create__stepper-value {
+  min-width: 48rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--color-text);
+  text-align: center;
+}
+
+.order-create__textarea {
+  width: 100%;
+  min-height: 140rpx;
+  padding: 18rpx 20rpx;
+  font-size: 28rpx;
+  color: var(--color-text);
+  line-height: 1.55;
+  background: var(--color-bg-elevated);
+  border: 1rpx solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-sizing: border-box;
+}
+
+.order-create__tip {
+  padding: 4rpx 8rpx 8rpx;
+}
+
+.order-create__tip-text {
+  font-size: 24rpx;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+/* —— 底栏 —— */
+.order-create-footer__inner {
+  gap: 24rpx;
+}
+
+.order-create-footer__sum {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.order-create-footer__sum-label {
+  font-size: 22rpx;
+  color: var(--color-text-muted);
+}
+
+.order-create-footer__sum-value {
+  font-family: var(--font-display);
+  font-size: 36rpx;
+  font-weight: 700;
+  color: var(--color-price);
+  line-height: 1.1;
+}
+
+.order-create-footer__submit {
+  flex: 1;
+  min-width: 0;
+  height: 72rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 32rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  line-height: 1;
+  text-align: center;
+  border-radius: var(--radius-pill);
+  box-sizing: border-box;
+}
+
+.order-create-footer__submit.is-loading {
+  opacity: 0.75;
+}
+
+.order-create-footer__submit:active {
+  opacity: 0.88;
+}

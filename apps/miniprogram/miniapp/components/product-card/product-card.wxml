@@ -1,0 +1,23 @@
+<wxs src="../../wxs/product.wxs" module="p" />
+
+<view class="product-card product-card--embed" bindtap="onTap">
+  <view class="cover-wrap">
+    <cover-media
+      src="{{product.cover}}"
+      color="{{product.coverColor}}"
+      lazy-load="{{true}}"
+    />
+    <text
+      wx:if="{{product.tag}}"
+      class="cover-tag {{p.tagClass(product.tag)}}"
+    >{{product.tag}}</text>
+    <view class="cover-foot">
+      <price-badge value="{{product.priceDisplay}}" size="sm" thin />
+      <text class="cover-sold">已售{{product.sold}}</text>
+    </view>
+  </view>
+  <view class="info">
+    <text class="title">{{product.title}}</text>
+    <text class="desc">{{product.desc}}</text>
+  </view>
+</view>

@@ -1,0 +1,7 @@
+{
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "page-shell": "/components/page-shell/page-shell",
+    "cover-media": "/components/cover-media/cover-media"
+  }
+}

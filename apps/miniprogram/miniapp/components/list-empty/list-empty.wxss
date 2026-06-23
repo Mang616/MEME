@@ -1,0 +1,25 @@
+.list-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  padding: 120rpx 32rpx;
+  box-sizing: border-box;
+}
+
+.list-empty__icon {
+  font-size: 64rpx;
+  opacity: 0.45;
+  line-height: 1;
+}
+
+.list-empty__text {
+  font-size: 28rpx;
+  color: var(--color-text-secondary);
+}
+
+.list-empty__hint {
+  font-size: 24rpx;
+  color: var(--color-text-muted);
+}

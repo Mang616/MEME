@@ -1,0 +1,71 @@
+@import '../legal/index.wxss';
+
+.minor-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 16rpx;
+  padding: 22rpx 24rpx;
+  border-radius: var(--radius-md);
+  border: 1rpx solid var(--color-minor-notice-border);
+  background: var(--color-minor-notice-bg);
+  box-shadow: var(--color-minor-notice-shadow);
+  box-sizing: border-box;
+}
+
+.minor-alert__badge {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+  background: var(--color-minor-notice-badge-bg);
+  box-shadow: 0 4rpx 12rpx var(--color-minor-notice-badge-shadow);
+}
+
+.minor-alert__icon {
+  font-size: 26rpx;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-minor-notice-badge-fg);
+  line-height: 1;
+}
+
+.minor-alert__text {
+  flex: 1;
+  padding-top: 4rpx;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-minor-notice-fg);
+  line-height: 1.55;
+}
+
+.legal-page--minor .legal-hero__stripe {
+  background: var(--color-minor-notice-stripe);
+}
+
+.legal-page--minor .legal-hero__shine {
+  background: var(--color-minor-notice-shine);
+}
+
+.legal-page--minor .legal-hero__badge {
+  background: var(--color-accent-dim);
+  border-color: var(--color-minor-notice-border);
+}
+
+.legal-page--minor .legal-hero__badge-text {
+  color: var(--color-accent-soft);
+}
+
+.legal-section__num--minor {
+  background: var(--color-accent-dim);
+  border-color: var(--color-minor-notice-border);
+}
+
+.legal-section__num--minor .legal-section__num-text {
+  color: var(--color-accent-soft);
+}
+
+.legal-section__bullet--minor {
+  background: var(--color-accent-soft);
+}

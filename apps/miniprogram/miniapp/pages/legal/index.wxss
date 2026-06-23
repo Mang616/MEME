@@ -1,0 +1,220 @@
+.legal-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  box-sizing: border-box;
+}
+
+/* —— 文档头 —— */
+.legal-hero {
+  position: relative;
+  padding: 0;
+  overflow: hidden;
+}
+
+.legal-hero__stripe {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6rpx;
+  background: var(--color-cta-gradient);
+  border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+  z-index: 1;
+}
+
+.legal-hero__shine {
+  position: absolute;
+  right: -40rpx;
+  top: -60rpx;
+  width: 240rpx;
+  height: 240rpx;
+  background: radial-gradient(
+    circle,
+    var(--color-mint-dim) 0%,
+    transparent 72%
+  );
+  pointer-events: none;
+}
+
+.legal-page--privacy .legal-hero__shine {
+  background: radial-gradient(
+    circle,
+    rgba(255, 59, 48, 0.12) 0%,
+    transparent 72%
+  );
+}
+
+.legal-hero__inner {
+  position: relative;
+  z-index: 2;
+  padding: 28rpx 28rpx 28rpx 36rpx;
+  box-sizing: border-box;
+}
+
+.legal-hero__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6rpx 16rpx;
+  border-radius: var(--radius-pill);
+  background: var(--color-mint-dim);
+  border: 1rpx solid var(--color-border);
+  box-sizing: border-box;
+}
+
+.legal-hero__badge-text {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-price);
+  letter-spacing: 0.04em;
+}
+
+.legal-hero__summary {
+  display: block;
+  margin-top: 20rpx;
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.legal-hero__meta {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-top: 24rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx solid var(--color-border);
+}
+
+.legal-hero__meta-label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.legal-hero__meta-value {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+/* —— 阅读提示 —— */
+.legal-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 12rpx;
+  padding: 20rpx 22rpx;
+  border-radius: var(--radius-md);
+  background: var(--color-mint-dim);
+  border: 1rpx solid var(--color-border);
+  box-sizing: border-box;
+}
+
+.legal-tip__icon {
+  flex-shrink: 0;
+  font-size: 28rpx;
+  color: var(--color-price);
+  line-height: 1.45;
+}
+
+.legal-tip__text {
+  flex: 1;
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+  line-height: 1.55;
+}
+
+/* —— 条款分节 —— */
+.legal-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.legal-section {
+  padding: 0;
+  overflow: hidden;
+}
+
+.legal-section__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 16rpx;
+  padding: 24rpx 24rpx 16rpx;
+  box-sizing: border-box;
+}
+
+.legal-section__num {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52rpx;
+  height: 52rpx;
+  border-radius: var(--radius-sm);
+  background: var(--color-mint-dim);
+  border: 1rpx solid var(--color-border);
+  box-sizing: border-box;
+}
+
+.legal-section__num-text {
+  font-family: var(--font-display);
+  font-size: 22rpx;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-price);
+  line-height: 1;
+}
+
+.legal-section__title {
+  flex: 1;
+  padding-top: 6rpx;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+  line-height: 1.45;
+}
+
+.legal-section__body {
+  padding: 0 24rpx 24rpx 24rpx;
+  box-sizing: border-box;
+}
+
+.legal-section__para-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12rpx;
+  margin-top: 12rpx;
+}
+
+.legal-section__para-row:first-child {
+  margin-top: 0;
+}
+
+.legal-section__bullet {
+  flex-shrink: 0;
+  width: 8rpx;
+  height: 8rpx;
+  margin-top: 14rpx;
+  border-radius: 50%;
+  background: var(--color-mint-strong);
+}
+
+.legal-section__para {
+  flex: 1;
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+  text-align: justify;
+}
+
+/* —— 页脚 —— */
+.legal-footer {
+  padding: 8rpx 0 12rpx;
+  text-align: center;
+}
+
+.legal-footer__text {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  line-height: 1.5;
+  letter-spacing: 0.06em;
+}

@@ -1,0 +1,8 @@
+{
+  "component": true,
+  "styleIsolation": "apply-shared",
+  "usingComponents": {
+    "cover-media": "../cover-media/cover-media",
+    "price-badge": "../price-badge/price-badge"
+  }
+}

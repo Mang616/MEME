@@ -1,0 +1,59 @@
+/**
+ * 手机号 + 验证码表单（登录 / 绑定手机共用）
+ */
+.phone-field {
+  margin-bottom: 28rpx;
+}
+
+.phone-field__code-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.phone-field__label {
+  display: block;
+  font-size: 24rpx;
+  color: var(--color-text-muted);
+  margin-bottom: 12rpx;
+}
+
+.phone-field__input {
+  width: 100%;
+  height: 88rpx;
+  padding: 0 24rpx;
+  font-size: 30rpx;
+  color: var(--color-text);
+  background: transparent;
+  border-radius: var(--radius-md);
+  border: 1rpx solid var(--color-border);
+  box-sizing: border-box;
+}
+
+.phone-field__input--code {
+  flex: 1;
+  min-width: 0;
+}
+
+.phone-field__placeholder {
+  color: var(--color-text-muted);
+}
+
+.phone-code-btn {
+  flex-shrink: 0;
+  height: 88rpx;
+  line-height: 88rpx;
+  padding: 0 24rpx;
+  margin: 0;
+  font-size: 24rpx;
+  font-weight: 600;
+  color: var(--color-price);
+  background: transparent;
+  border: 1rpx solid var(--color-mint);
+  border-radius: var(--radius-md);
+}
+
+.phone-code-btn::after {
+  border: none;
+}

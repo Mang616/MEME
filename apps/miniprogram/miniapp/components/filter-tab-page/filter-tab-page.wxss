@@ -1,0 +1,8 @@
+/* 与 layout.wxss 中 .page-tab-main 配合；宿主占满 page-shell__body */
+:host {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}

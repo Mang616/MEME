@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "page-shell": "/components/page-shell/page-shell",
+    "product-list-scroll": "/components/product-list-scroll/product-list-scroll"
+  }
+}

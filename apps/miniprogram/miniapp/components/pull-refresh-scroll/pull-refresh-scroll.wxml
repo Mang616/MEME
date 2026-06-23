@@ -1,0 +1,34 @@
+<view class="pull-refresh-scroll" id="pullRefresh">
+  <view
+    wx:if="{{showIndicator}}"
+    class="pull-refresh-scroll__indicator"
+    style="opacity: {{indicatorOpacity}}; transform: scale({{indicatorScale}});"
+  >
+    <view class="pull-refresh-scroll__logo-wrap">
+      <image
+        class="pull-refresh-scroll__logo {{refreshing ? 'pull-refresh-scroll__logo--spin' : ''}}"
+        src="{{logoSrc}}"
+        mode="aspectFit"
+      />
+    </view>
+    <text wx:if="{{refreshing}}" class="pull-refresh-scroll__hint">刷新中</text>
+  </view>
+
+  <scroll-view
+    class="pull-refresh-scroll__main {{extClass}}"
+    scroll-y
+    type="list"
+    show-scrollbar="{{false}}"
+    refresher-enabled
+    refresher-default-style="none"
+    refresher-background="transparent"
+    refresher-threshold="{{threshold}}"
+    refresher-triggered="{{refreshing}}"
+    bindrefresherpulling="onRefresherPulling"
+    bindrefresherrefresh="onRefresherRefresh"
+    bindrefresherrestore="onRefresherRestore"
+    bindrefresherabort="onRefresherRestore"
+  >
+    <slot />
+  </scroll-view>
+</view>

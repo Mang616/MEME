@@ -1,0 +1,30 @@
+<page-shell
+  title="聊天"
+  theme="{{theme}}"
+  nav-color="{{navColor}}"
+  nav-bg="{{navBg}}"
+  nav-action="{{true}}"
+  nav-action-icon="{{clearReadIcon}}"
+  nav-action-label="一键已读"
+  bind:navaction="onMarkAllRead"
+>
+  <filter-tab-page
+    id="chatList"
+    tabs="{{filterTabs}}"
+    active-id="{{activeFilter}}"
+    mode="scroll"
+    show-empty="{{conversations.length === 0}}"
+    empty-icon="💬"
+    empty-text="暂无会话"
+    empty-hint="{{emptyHint}}"
+    bind:tabchange="onTabChange"
+    bind:refresh="onPullRefresh"
+  >
+    <chat-item
+      wx:for="{{conversations}}"
+      wx:key="id"
+      conversation="{{item}}"
+      bind:tap="onConversationTap"
+    />
+  </filter-tab-page>
+</page-shell>

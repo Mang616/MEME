@@ -1,0 +1,84 @@
+<page-shell
+  title="选择打手"
+  back="{{true}}"
+  subpage="{{true}}"
+  theme="{{theme}}"
+  nav-color="{{navColor}}"
+  nav-bg="{{navBg}}"
+>
+  <view class="handler-select">
+    <view class="handler-select__filters page-line-tabs-host">
+      <line-tabs
+        tabs="{{filterTabs}}"
+        active-id="{{activeFilter}}"
+        mode="scroll"
+        bind:tabchange="onTabChange"
+      />
+    </view>
+
+    <scroll-view class="page-scroll handler-select__scroll" scroll-y show-scrollbar="{{false}}">
+      <view class="handler-select__body page-pad-x">
+        <view wx:if="{{resultCount > 0}}" class="handler-select__meta">
+          <text class="handler-select__meta-text">共 {{resultCount}} 位打手</text>
+        </view>
+
+        <view wx:if="{{handlers.length > 0}}" class="handler-grid">
+          <view
+            wx:for="{{handlers}}"
+            wx:key="id"
+            class="handler-card {{item.selected ? 'handler-card--selected' : ''}}"
+            data-id="{{item.id}}"
+            bindtap="onSelect"
+          >
+            <view class="handler-card__photo-wrap">
+              <image
+                class="handler-card__photo"
+                src="{{item.avatar}}"
+                mode="aspectFill"
+                lazy-load
+              />
+              <view class="handler-card__shade" />
+              <view class="handler-card__info">
+                <view class="handler-card__name-row">
+                  <image
+                    wx:if="{{item.levelIcon}}"
+                    class="handler-card__level-icon"
+                    src="{{item.levelIcon}}"
+                    mode="aspectFit"
+                  />
+                  <text class="handler-card__name">{{item.name}}</text>
+                </view>
+                <view class="handler-card__meta">
+                  <view class="handler-card__gender {{item.genderClass}}">
+                    <text class="handler-card__gender-text">{{item.genderLabel}}</text>
+                  </view>
+                  <view class="handler-card__level {{item.levelClass}}">
+                    <text class="handler-card__level-text">{{item.levelLabel}}</text>
+                  </view>
+                </view>
+              </view>
+              <view
+                wx:if="{{item.online}}"
+                class="handler-card__online"
+              >
+                <text class="handler-card__online-text">{{item.onlineText}}</text>
+              </view>
+              <view wx:if="{{item.selected}}" class="handler-card__picked">
+                <text class="handler-card__picked-icon">✓</text>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <list-empty
+          wx:else
+          icon="🎮"
+          text="{{emptyText}}"
+          hint="{{emptyHint}}"
+        />
+
+        <view class="page-tab-bottom-gap" />
+      </view>
+    </scroll-view>
+  </view>
+</page-shell>

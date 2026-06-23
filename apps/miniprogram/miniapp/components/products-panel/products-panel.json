@@ -1,0 +1,10 @@
+{
+  "component": true,
+  "styleIsolation": "apply-shared",
+  "usingComponents": {
+    "line-tabs": "../line-tabs/line-tabs",
+    "product-row": "../product-row/product-row",
+    "list-empty": "../list-empty/list-empty",
+    "pull-refresh-scroll": "../pull-refresh-scroll/pull-refresh-scroll"
+  }
+}

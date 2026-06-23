@@ -1,0 +1,118 @@
+/** 分类页商品行：扁平列表，无卡片描边 */
+.product-row {
+  display: flex;
+  flex-direction: row;
+  gap: 20rpx;
+  padding: 24rpx 20rpx;
+  margin-bottom: 0;
+  border-radius: 0;
+  background: var(--color-bg);
+  border: none;
+  border-bottom: 1rpx solid var(--color-border);
+  box-sizing: border-box;
+}
+
+.product-row:active {
+  background: var(--color-bg-elevated);
+}
+
+.product-row:last-child {
+  border-bottom: none;
+}
+
+.product-row__thumb {
+  position: relative;
+  width: 200rpx;
+  height: 200rpx;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background-color: var(--color-cover-placeholder);
+}
+
+.product-row__tag {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 2;
+}
+
+.product-row__foot {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 6rpx;
+  padding: 22rpx 10rpx 10rpx;
+  background: var(--color-cover-foot-shade);
+  box-sizing: border-box;
+}
+
+.product-row__sold {
+  flex-shrink: 0;
+  font-size: 18rpx;
+  font-weight: 500;
+  color: var(--color-cover-foot-text);
+  line-height: 1.2;
+  text-shadow: var(--color-cover-foot-text-shadow);
+  padding-bottom: 2rpx;
+}
+
+.product-row__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 4rpx 0;
+}
+
+.product-row__title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--color-text);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.product-row__desc {
+  margin-top: 10rpx;
+  font-size: 24rpx;
+  color: var(--color-text-secondary);
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  flex: 1;
+}
+
+.product-row__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 12rpx;
+}
+
+.product-row__buy {
+  width: 56rpx;
+  height: 56rpx;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.product-row__buy-icon {
+  width: 44rpx;
+  height: 44rpx;
+  display: block;
+  flex-shrink: 0;
+}

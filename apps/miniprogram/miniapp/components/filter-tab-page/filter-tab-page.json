@@ -1,0 +1,9 @@
+{
+  "component": true,
+  "styleIsolation": "apply-shared",
+  "usingComponents": {
+    "line-tabs": "../line-tabs/line-tabs",
+    "list-empty": "../list-empty/list-empty",
+    "pull-refresh-scroll": "../pull-refresh-scroll/pull-refresh-scroll"
+  }
+}

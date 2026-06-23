@@ -1,0 +1,121 @@
+/**
+ * 商品 Tab 布局
+ * split 为横向 flex：侧栏定宽，主列表 flex:1 + height:100%（勿在横向子节点用 page-scroll）
+ */
+:host {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.products-panel .line-tabs {
+  border-bottom: none;
+}
+
+.products-panel__split {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  overflow: hidden;
+}
+
+.products-panel__side {
+  flex: 0 0 var(--products-side-w);
+  width: var(--products-side-w);
+  height: 100%;
+  background: var(--color-bg-elevated);
+}
+
+.products-panel__side-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6rpx;
+  min-height: 88rpx;
+  padding: 20rpx 12rpx 20rpx 20rpx;
+  box-sizing: border-box;
+}
+
+.products-panel__side-item.is-active {
+  background: var(--color-bg);
+}
+
+.products-panel__side-indicator {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 5rpx;
+  height: 28rpx;
+  border-radius: 0 4rpx 4rpx 0;
+  background: var(--color-mint);
+  transform: translateY(-50%);
+}
+
+.products-panel__side-label {
+  width: 100%;
+  font-size: 22rpx;
+  line-height: 1.45;
+  color: var(--color-text-secondary);
+  white-space: normal;
+  word-break: break-all;
+}
+
+.products-panel__side-item.is-active .products-panel__side-label {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.products-panel__side-count {
+  align-self: flex-end;
+  font-size: 18rpx;
+  color: var(--color-text-muted);
+  line-height: 1.2;
+}
+
+.products-panel__side-item.is-active .products-panel__side-count {
+  color: var(--color-price);
+}
+
+.products-panel__main {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 100%;
+  background: var(--color-bg);
+}
+
+.products-panel__main-inner {
+  padding-bottom: var(--page-content-bottom-gap);
+  box-sizing: border-box;
+}
+
+.products-panel__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12rpx;
+  padding: 16rpx 20rpx 12rpx;
+  border-bottom: 1rpx solid var(--color-border);
+  box-sizing: border-box;
+}
+
+.products-panel__head-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.products-panel__head-meta {
+  flex-shrink: 0;
+  font-size: 22rpx;
+  color: var(--color-text-muted);
+}

@@ -1,0 +1,131 @@
+<page-shell
+  title="{{conversation.name}}"
+  back
+  theme="{{theme}}"
+  nav-color="{{navColor}}"
+  nav-bg="{{navBg}}"
+>
+  <view class="chat-room">
+    <view wx:if="{{conversation}}" class="chat-room__bar">
+      <text class="chat-room__role">{{conversation.typeLabel}}</text>
+      <text class="chat-room__dot">·</text>
+      <text class="chat-room__online">{{conversation.onlineText}}</text>
+      <text
+        wx:if="{{conversation.linkedOrderId}}"
+        class="chat-room__order-hint"
+      >关联订单</text>
+    </view>
+
+    <scroll-view
+      class="chat-room__messages page-scroll"
+      scroll-y
+      type="list"
+      scroll-into-view="{{scrollIntoView}}"
+      scroll-with-animation
+      show-scrollbar="{{false}}"
+    >
+      <view class="chat-room__messages-inner">
+        <view
+          wx:for="{{messages}}"
+          wx:key="id"
+          id="msg-{{item.id}}"
+          class="chat-room__row {{item.isSelf ? 'chat-room__row--self' : ''}}"
+        >
+          <view wx:if="{{item.type === 'text'}}" class="chat-bubble {{item.bubbleClass}}">
+            <text class="chat-bubble__text">{{item.content}}</text>
+          </view>
+
+          <view wx:elif="{{item.showOrder}}" class="chat-bubble chat-bubble--order {{item.bubbleClass}}">
+            <text class="chat-order-card__label">订单信息</text>
+            <text class="chat-order-card__title">{{item.orderCard.title}}</text>
+            <text class="chat-order-card__meta">单号 {{item.orderCard.id}}</text>
+            <text class="chat-order-card__meta">状态 {{item.orderCard.statusText}} · 打手 {{item.orderCard.servicePlayer}}</text>
+            <view class="chat-order-card__pay">
+              <text class="chat-order-card__pay-label">实付</text>
+              <price-badge
+                value="{{item.orderCard.totalPaidDisplay}}"
+                size="xs"
+                thin
+              />
+            </view>
+          </view>
+
+          <text class="chat-room__time">{{item.time}}</text>
+        </view>
+      </view>
+    </scroll-view>
+
+    <view class="chat-room__composer">
+      <view
+        wx:if="{{canSendOrder}}"
+        class="chat-room__action"
+        hover-class="chat-room__action--active"
+        aria-role="button"
+        aria-label="发送订单"
+        bindtap="onOpenOrderPicker"
+      >
+        <image
+          class="chat-room__action-icon"
+          src="/assets/chat/order.png"
+          mode="aspectFit"
+        />
+      </view>
+      <view class="chat-room__input-wrap">
+        <input
+          class="chat-room__input"
+          value="{{draft}}"
+          placeholder="{{inputPlaceholder}}"
+          placeholder-class="chat-room__input-placeholder"
+          confirm-type="send"
+          bindinput="onInput"
+          bindconfirm="onSendText"
+        />
+      </view>
+      <view
+        class="chat-room__action"
+        hover-class="chat-room__action--active"
+        aria-role="button"
+        aria-label="发送"
+        bindtap="onSendText"
+      >
+        <image
+          class="chat-room__action-icon"
+          src="/assets/chat/send.png"
+          mode="aspectFit"
+        />
+      </view>
+    </view>
+
+    <view
+      wx:if="{{orderPickerVisible}}"
+      class="order-picker-mask"
+      bindtap="onCloseOrderPicker"
+    >
+      <view class="order-picker-sheet" catchtap="preventClose">
+        <view class="order-picker-sheet__head">
+          <text class="order-picker-sheet__title">选择要发送的订单</text>
+          <text class="order-picker-sheet__sub">客服将根据订单联系对应打手</text>
+          <text class="order-picker-sheet__close" bindtap="onCloseOrderPicker">✕</text>
+        </view>
+        <scroll-view class="order-picker-sheet__list" scroll-y show-scrollbar="{{false}}">
+          <view
+            wx:for="{{orderPickerItems}}"
+            wx:key="id"
+            class="order-picker-item"
+            data-id="{{item.id}}"
+            bindtap="onPickOrder"
+          >
+            <view class="order-picker-item__main">
+              <text class="order-picker-item__title">{{item.title}}</text>
+              <text class="order-picker-item__sn">{{item.id}}</text>
+            </view>
+            <view class="order-picker-item__side">
+              <text class="order-picker-item__status">{{item.statusText}}</text>
+              <text class="order-picker-item__player">打手 {{item.servicePlayer}}</text>
+            </view>
+          </view>
+        </scroll-view>
+      </view>
+    </view>
+  </view>
+</page-shell>

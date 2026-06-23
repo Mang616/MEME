@@ -1,0 +1,42 @@
+/**
+ * 非 Tab 页底部操作栏（固定贴底，高度与原生 TabBar 一致）
+ */
+
+.page-footer-bar {
+  flex-shrink: 0;
+  height: var(--page-footer-total-h);
+  min-height: var(--page-footer-total-h);
+  max-height: var(--page-footer-total-h);
+  padding: 0 24rpx;
+  padding-bottom: var(--page-footer-safe);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background: var(--color-bg);
+  border-top: 1rpx solid var(--color-border);
+  overflow: hidden;
+}
+
+.page-footer-bar--fixed {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+}
+
+.page-footer-bar__inner {
+  height: var(--page-footer-inner-h);
+  min-height: var(--page-footer-inner-h);
+  max-height: var(--page-footer-inner-h);
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+/* 滚动内容底部占位，高度与固定底栏一致 */
+.page-bottom-spacer {
+  height: var(--page-footer-total-h);
+  flex-shrink: 0;
+}

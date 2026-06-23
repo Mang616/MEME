@@ -1,0 +1,36 @@
+.settings-page {
+  flex: 1;
+  min-height: 0;
+  padding-top: var(--page-header-content-gap);
+  padding-bottom: var(--page-content-bottom-gap);
+  box-sizing: border-box;
+}
+
+.settings-group {
+  padding: 0;
+  overflow: hidden;
+}
+
+.settings-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32rpx 28rpx;
+  box-sizing: border-box;
+}
+
+.settings-cell:active {
+  background: var(--color-bg-elevated);
+}
+
+.settings-cell--danger .settings-cell__label {
+  color: var(--color-accent);
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.settings-cell--primary .settings-cell__label {
+  color: var(--color-price);
+  font-size: 30rpx;
+  font-weight: 600;
+}

@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "page-shell": "/components/page-shell/page-shell",
+    "guide-modal": "/components/guide-modal/guide-modal",
+    "invite-banner": "/components/invite-banner/invite-banner",
+    "pull-refresh-scroll": "/components/pull-refresh-scroll/pull-refresh-scroll"
+  }
+}

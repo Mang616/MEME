@@ -1,0 +1,17 @@
+<wxs src="../../wxs/product.wxs" module="p" />
+
+<view class="cover-media">
+  <view
+    class="cover-media__placeholder cover-placeholder {{placeholderClass}}"
+    style="{{p.coverStyle(color)}}"
+  />
+  <image
+    wx:if="{{src && !coverLoadFailed}}"
+    class="cover-media__image {{imageClass}} {{coverImageReady ? 'cover-media__image--visible' : ''}}"
+    src="{{src}}"
+    mode="{{mode}}"
+    lazy-load="{{lazyLoad}}"
+    bindload="onCoverLoad"
+    binderror="onCoverError"
+  />
+</view>

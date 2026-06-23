@@ -1,0 +1,37 @@
+<wxs src="../../wxs/line-tabs.wxs" module="lt" />
+
+<scroll-view
+  wx:if="{{mode === 'scroll'}}"
+  class="line-tabs line-tabs--scroll"
+  scroll-x
+  scroll-y="{{false}}"
+  show-scrollbar="{{false}}"
+>
+  <view class="line-tabs__track line-tabs__track--scroll">
+    <view
+      wx:for="{{tabs}}"
+      wx:key="id"
+      class="line-tabs__item {{activeId === item.id ? 'line-tabs__item--active' : ''}}"
+      data-id="{{item.id}}"
+      bindtap="onTabTap"
+    >
+      <text class="line-tabs__label">{{lt.tabLabel(item)}}</text>
+      <text wx:if="{{item.showCount}}" class="line-tabs__count">{{item.count}}</text>
+    </view>
+  </view>
+</scroll-view>
+
+<view wx:elif="{{mode === 'evenly'}}" class="line-tabs line-tabs--evenly">
+  <view class="line-tabs__track line-tabs__track--evenly">
+    <view
+      wx:for="{{tabs}}"
+      wx:key="id"
+      class="line-tabs__item {{activeId === item.id ? 'line-tabs__item--active' : ''}}"
+      data-id="{{item.id}}"
+      bindtap="onTabTap"
+    >
+      <text class="line-tabs__label">{{lt.tabLabel(item)}}</text>
+      <text wx:if="{{item.showCount}}" class="line-tabs__count">{{item.count}}</text>
+    </view>
+  </view>
+</view>

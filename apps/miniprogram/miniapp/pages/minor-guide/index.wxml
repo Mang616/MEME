@@ -1,0 +1,64 @@
+<page-shell
+  title="{{title}}"
+  back="{{true}}"
+  theme="{{theme}}"
+  nav-color="{{navColor}}"
+  nav-bg="{{navBg}}"
+>
+  <scroll-view class="page-scroll" scroll-y show-scrollbar="{{false}}">
+    <view class="legal-page page-tab-scroll-body legal-page--minor">
+      <view class="legal-hero card">
+        <view class="legal-hero__stripe" />
+        <view class="legal-hero__shine" />
+        <view class="legal-hero__inner">
+          <view class="legal-hero__badge">
+            <text class="legal-hero__badge-text">{{title}}</text>
+          </view>
+          <text class="legal-hero__summary">{{summary}}</text>
+          <view class="legal-hero__meta">
+            <text class="legal-hero__meta-label">更新日期</text>
+            <text class="legal-hero__meta-value">{{updatedAt}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="minor-alert">
+        <view class="minor-alert__badge">
+          <text class="minor-alert__icon">!</text>
+        </view>
+        <text class="minor-alert__text">{{notice}}</text>
+      </view>
+
+      <view class="legal-sections">
+        <view
+          wx:for="{{sections}}"
+          wx:key="title"
+          class="legal-section card"
+        >
+          <view class="legal-section__head">
+            <view class="legal-section__num legal-section__num--minor">
+              <text class="legal-section__num-text">{{item.num}}</text>
+            </view>
+            <text class="legal-section__title">{{item.title}}</text>
+          </view>
+          <view class="legal-section__body">
+            <view
+              wx:for="{{item.paragraphs}}"
+              wx:for-item="para"
+              wx:for-index="pIdx"
+              wx:key="pIdx"
+              class="legal-section__para-row"
+            >
+              <view class="legal-section__bullet legal-section__bullet--minor" />
+              <text class="legal-section__para">{{para}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="legal-footer">
+        <text class="legal-footer__text">— 请监护人共同监督未成年人健康上网 —</text>
+      </view>
+    </view>
+  </scroll-view>
+</page-shell>

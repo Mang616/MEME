@@ -1,0 +1,30 @@
+.order-detail-page {
+  box-sizing: border-box;
+}
+
+.order-detail-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 80rpx 40rpx;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.order-detail-empty__icon {
+  font-size: 64rpx;
+  line-height: 1;
+}
+
+.order-detail-empty__title {
+  margin-top: 24rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.order-detail-empty__hint {
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: var(--color-text-muted);
+}

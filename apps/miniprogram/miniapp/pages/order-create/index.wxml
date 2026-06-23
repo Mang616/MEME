@@ -1,0 +1,150 @@
+<page-shell
+  title="确认订单"
+  back="{{true}}"
+  subpage="{{true}}"
+  theme="{{theme}}"
+  nav-color="{{navColor}}"
+  nav-bg="{{navBg}}"
+>
+  <block wx:if="{{found}}">
+    <scroll-view class="page-scroll order-create-scroll" scroll-y show-scrollbar="{{false}}">
+      <view class="order-create page-pad-x page-tab-bottom-gap">
+        <view class="order-create__product card">
+          <view class="order-create__thumb-wrap">
+            <cover-media
+              src="{{product.cover}}"
+              color="{{product.coverColor}}"
+              placeholder-class="order-create__thumb cover-placeholder"
+              image-class="order-create__thumb"
+            />
+          </view>
+          <view class="order-create__product-main">
+            <text class="order-create__product-title">{{product.title}}</text>
+            <text wx:if="{{product.desc}}" class="order-create__product-desc">{{product.desc}}</text>
+            <view class="order-create__product-meta">
+              <text class="order-create__unit-price">¥{{unitPriceDisplay}}</text>
+              <text wx:if="{{product.limitText}}" class="order-create__limit">{{product.limitText}}</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="order-create__section card">
+          <text class="order-create__section-title">服务信息</text>
+
+          <view class="order-create__field">
+            <text class="order-create__label">游戏大区</text>
+            <picker
+              mode="selector"
+              range="{{regionOptions}}"
+              value="{{regionIndex}}"
+              bindchange="onRegionChange"
+            >
+              <view class="order-create__picker">
+                <text class="order-create__picker-value">{{regionLabel}}</text>
+                <text class="order-create__picker-arrow">›</text>
+              </view>
+            </picker>
+          </view>
+
+          <view class="order-create__field">
+            <text class="order-create__label">游戏 ID</text>
+            <input
+              class="order-create__input"
+              value="{{gameId}}"
+              placeholder="请输入游戏内 ID"
+              placeholder-class="order-create__placeholder"
+              bindinput="onGameIdInput"
+            />
+          </view>
+
+          <view class="order-create__field order-create__field--switch">
+            <text class="order-create__label">选手自动分配</text>
+            <switch
+              class="order-create__switch"
+              checked="{{autoAssignPlayer}}"
+              color="#9ed482"
+              bindchange="onAutoAssignChange"
+            />
+          </view>
+
+          <view
+            class="order-create__field order-create__field--handler"
+            wx:if="{{!autoAssignPlayer}}"
+            bindtap="onPickHandler"
+          >
+            <text class="order-create__label">选择打手</text>
+            <view class="order-create__picker order-create__picker--handler">
+              <block wx:if="{{handlerId}}">
+                <view class="order-create__handler-picked">
+                  <image
+                    wx:if="{{handlerLevelIcon}}"
+                    class="order-create__handler-level-icon"
+                    src="{{handlerLevelIcon}}"
+                    mode="aspectFit"
+                  />
+                  <text class="order-create__picker-value">{{handlerLabel}}</text>
+                  <text
+                    wx:if="{{handlerGenderLabel}}"
+                    class="order-create__handler-gender"
+                  >{{handlerGenderLabel}}</text>
+                  <text class="order-create__handler-level">{{handlerLevelLabel}}</text>
+                </view>
+              </block>
+              <text wx:else class="order-create__picker-placeholder">请选择打手</text>
+              <text class="order-create__picker-arrow">›</text>
+            </view>
+          </view>
+
+          <view class="order-create__field order-create__field--qty">
+            <text class="order-create__label">购买数量</text>
+            <view class="order-create__stepper">
+              <view
+                class="order-create__stepper-btn {{canDecrease ? '' : 'is-disabled'}}"
+                bindtap="onQtyMinus"
+              >−</view>
+              <text class="order-create__stepper-value">{{quantity}}</text>
+              <view
+                class="order-create__stepper-btn {{canIncrease ? '' : 'is-disabled'}}"
+                bindtap="onQtyPlus"
+              >+</view>
+            </view>
+          </view>
+
+          <view class="order-create__field order-create__field--remark">
+            <text class="order-create__label">备注（选填）</text>
+            <textarea
+              class="order-create__textarea"
+              value="{{remark}}"
+              maxlength="200"
+              placeholder="可填写预约时间、地图等"
+              placeholder-class="order-create__placeholder"
+              show-confirm-bar="{{false}}"
+              bindinput="onRemarkInput"
+            />
+          </view>
+        </view>
+
+        <view class="order-create__tip">
+          <text class="order-create__tip-text">ⓘ {{notice}} · 下单即表示同意平台服务规则</text>
+        </view>
+
+        <view class="page-bottom-spacer" />
+      </view>
+    </scroll-view>
+
+    <view class="page-footer-bar page-footer-bar--fixed order-create-footer">
+      <view class="page-footer-bar__inner order-create-footer__inner">
+        <view class="order-create-footer__sum">
+          <text class="order-create-footer__sum-label">实付</text>
+          <text class="order-create-footer__sum-value">¥{{totalPaidDisplay}}</text>
+        </view>
+        <view
+          class="order-create-footer__submit btn-primary {{submitting ? 'is-loading' : ''}}"
+          bindtap="onSubmit"
+        >
+          {{submitting ? '提交中…' : '提交订单'}}
+        </view>
+      </view>
+    </view>
+  </block>
+</page-shell>

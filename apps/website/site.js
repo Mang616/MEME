@@ -5,7 +5,7 @@ const navLinks = document.querySelector(".nav-links");
 if (installLink) {
   const isStandalone =
     window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
-  installLink.textContent = isStandalone ? "已在客户端" : "立即点单";
+  installLink.textContent = isStandalone ? "已在点单端" : "立即点单";
 }
 
 if (navToggle && navLinks) {

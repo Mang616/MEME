@@ -1,0 +1,21 @@
+<page-shell title="我的订单" theme="{{theme}}" nav-color="{{navColor}}" nav-bg="{{navBg}}">
+  <filter-tab-page
+    id="orderList"
+    tabs="{{statusTabs}}"
+    active-id="{{activeStatus}}"
+    mode="scroll"
+    show-empty="{{orders.length === 0}}"
+    empty-icon="📋"
+    empty-text="暂无订单"
+    empty-hint="{{emptyHint}}"
+    bind:tabchange="onTabChange"
+    bind:refresh="onPullRefresh"
+  >
+    <order-card
+      wx:for="{{orders}}"
+      wx:key="id"
+      order="{{item}}"
+      bind:event="onOrderCardEvent"
+    />
+  </filter-tab-page>
+</page-shell>

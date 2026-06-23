@@ -1,0 +1,40 @@
+<wxs src="../../wxs/service-panel.wxs" module="sp" />
+
+<view class="service-panel service-panel--{{activeType}}">
+  <view class="service-panel__head">
+    <view class="service-panel__tabs">
+      <view
+        wx:for="{{tabs}}"
+        wx:key="id"
+        class="{{sp.tabClass(activeType, item.id)}}"
+        data-id="{{item.id}}"
+        bindtap="onTabTap"
+      >
+        <view class="service-panel__tab-bg" />
+        <view class="service-panel__figure-wrap">
+          <image
+            class="service-panel__tab-figure"
+            src="{{item.tabImage}}"
+            mode="widthFix"
+          />
+        </view>
+        <text class="service-panel__tab-label">{{item.label}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="service-panel__body {{sp.bodyLayoutClass(products.length)}}">
+    <view class="service-panel__content">
+      <block wx:if="{{products.length}}">
+        <view
+          wx:for="{{products}}"
+          wx:key="id"
+          class="service-panel__cell"
+        >
+          <product-card product="{{item}}" bind:tap="onProductTap" />
+        </view>
+      </block>
+      <text wx:else class="service-panel__empty-text">暂无商品</text>
+    </view>
+  </view>
+</view>

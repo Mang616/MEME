@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://meme.example.com/sitemap.xml

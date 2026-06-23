@@ -1,0 +1,21 @@
+:root {
+  color-scheme: dark light;
+  --meme-black: #030503;
+  --meme-ink: #091008;
+  --meme-night: #0b100c;
+  --meme-panel: #111812;
+  --meme-panel-soft: #172319;
+  --meme-card: #34533d;
+  --meme-card-dark: #203326;
+  --meme-lime: #c9ffb8;
+  --meme-lime-2: #8bf26b;
+  --meme-mint: #dffff0;
+  --meme-green: #5cc356;
+  --meme-red: #ff423b;
+  --meme-pink: #ff1b72;
+  --meme-gold: #ffd166;
+  --meme-gray: #8d988f;
+  --meme-line: rgba(201, 255, 184, 0.18);
+  --meme-shadow: 0 22px 70px rgba(0, 0, 0, 0.34);
+  --meme-font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}

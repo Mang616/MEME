@@ -1,0 +1,11 @@
+{
+  "name": "meme-platform",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/serve.mjs",
+    "dev:host": "node scripts/serve.mjs --host 0.0.0.0",
+    "check": "node scripts/check.mjs"
+  }
+}

@@ -9,3 +9,6 @@ build/
 !.env.example
 *.log
 apps/miniprogram/miniapp/assets/home/Library/
+apps/website/.next/
+apps/website/.next-dev/
+apps/website/node_modules/

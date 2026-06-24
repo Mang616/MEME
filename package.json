@@ -4,8 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node scripts/serve.mjs",
-    "dev:host": "node scripts/serve.mjs --host 0.0.0.0",
-    "check": "node scripts/check.mjs"
+    "dev": "npm run website:dev",
+    "dev:host": "npm run website:dev -- --hostname 0.0.0.0",
+    "check": "node scripts/check.mjs",
+    "website:dev": "npm run dev --prefix apps/website",
+    "website:build": "npm run build --prefix apps/website",
+    "website:start": "npm run start --prefix apps/website"
   }
 }

@@ -19,15 +19,15 @@ scripts/        Local static server and checks
 ## Local Preview
 
 ```bash
-npm run dev
+npm run website:dev
 ```
 
 Open:
 
 - Website: http://localhost:4173/
-- Delta Force SEO page: http://localhost:4173/delta-force
-- PWA client: http://localhost:4173/client
-- Admin: http://localhost:4173/admin
+- Delta Force page: http://localhost:4173/delta-force
+- Download client: http://localhost:4173/download
+- Mini program entry: http://localhost:4173/mini-program
 
 ## Product Direction
 

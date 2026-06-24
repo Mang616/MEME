@@ -6,6 +6,20 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
   },
+  async redirects() {
+    return [
+      {
+        source: "/download",
+        destination: "/order#install",
+        permanent: false,
+      },
+      {
+        source: "/mini-program",
+        destination: "/order#wechat",
+        permanent: false,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

@@ -3,10 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "workspaces": [
+    "apps/website"
+  ],
   "scripts": {
     "dev": "npm run website:dev",
     "dev:host": "npm run website:dev -- --hostname 0.0.0.0",
     "check": "node scripts/check.mjs",
+    "miniprogram:verify": "node apps/miniprogram/scripts/verify-miniapp-pages.js",
     "website:dev": "npm run dev --prefix apps/website",
     "website:build": "npm run build --prefix apps/website",
     "website:start": "npm run start --prefix apps/website"

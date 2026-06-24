@@ -1,18 +1,20 @@
+import { spawnSync } from "node:child_process";
 import { readFile, readdir, stat } from "node:fs/promises";
 import path from "node:path";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 
-const REQUIRED_FILES = [
+const WEBSITE_REQUIRED_FILES = [
   "apps/website/app/layout.tsx",
   "apps/website/app/page.tsx",
-  "apps/website/app/globals.css",
-  "apps/website/app/download/page.tsx",
-  "apps/website/app/mini-program/page.tsx",
   "apps/website/app/order/page.tsx",
+  "apps/website/app/globals.css",
   "apps/website/app/robots.ts",
   "apps/website/app/sitemap.ts",
+  "apps/website/next.config.ts",
   "apps/website/lib/content.ts",
+  "apps/website/lib/site.ts",
+  "apps/website/lib/theme.ts",
   "apps/website/components/entry-link.tsx",
   "apps/website/public/assets/meme-logo-96.png",
   "apps/website/public/assets/home-huhang-320.png",
@@ -87,42 +89,67 @@ async function assertNoForbiddenCopy(files) {
   }
 }
 
-for (const file of REQUIRED_FILES) {
-  await assertFileExists(file);
+async function assertWebsite() {
+  for (const file of WEBSITE_REQUIRED_FILES) {
+    await assertFileExists(file);
+  }
+
+  for (const file of DEPRECATED_STATIC_FILES) {
+    await assertFileMissing(file);
+  }
+
+  const copyScanFiles = [
+    ...(await collectFiles(fromRoot("apps/website/app"), ".tsx")),
+    ...(await collectFiles(fromRoot("apps/website/components"), ".tsx")),
+    fromRoot("apps/website/lib/content.ts"),
+  ];
+
+  await assertNoForbiddenCopy(copyScanFiles);
+
+  const layout = await readFile(fromRoot("apps/website/app/layout.tsx"), "utf8");
+  const home = await readFile(fromRoot("apps/website/app/page.tsx"), "utf8");
+  const nextConfig = await readFile(fromRoot("apps/website/next.config.ts"), "utf8");
+
+  if (!layout.includes("export const metadata")) {
+    throw new Error("layout.tsx should export Next metadata");
+  }
+
+  if (!home.includes('"@type": "WebSite"') || !home.includes('"@type": "Organization"')) {
+    throw new Error("Home page should include WebSite and Organization JSON-LD");
+  }
+
+  if (!nextConfig.includes("/download") || !nextConfig.includes("/mini-program")) {
+    throw new Error("next.config.ts should redirect legacy download and mini-program routes");
+  }
+
+  const websiteText = [
+    layout,
+    home,
+    await readFile(fromRoot("apps/website/app/globals.css"), "utf8"),
+    await readFile(fromRoot("apps/website/lib/site.ts"), "utf8"),
+  ].join("\n");
+
+  if (websiteText.includes("meme-esports-hero.png")) {
+    throw new Error("Website should not reference source PNG meme-esports-hero.png");
+  }
+
+  console.log("Website checks passed.");
 }
 
-for (const file of DEPRECATED_STATIC_FILES) {
-  await assertFileMissing(file);
+function assertMiniprogram() {
+  const script = fromRoot("apps/miniprogram/scripts/verify-miniapp-pages.js");
+  const result = spawnSync(process.execPath, [script], {
+    cwd: ROOT,
+    stdio: "inherit",
+  });
+
+  if (result.status !== 0) {
+    throw new Error("Miniprogram page verification failed");
+  }
+
+  console.log("Miniprogram checks passed.");
 }
 
-const copyScanFiles = [
-  ...(await collectFiles(fromRoot("apps/website/app"), ".tsx")),
-  ...(await collectFiles(fromRoot("apps/website/components"), ".tsx")),
-  fromRoot("apps/website/lib/content.ts"),
-];
-
-await assertNoForbiddenCopy(copyScanFiles);
-
-const layout = await readFile(fromRoot("apps/website/app/layout.tsx"), "utf8");
-const home = await readFile(fromRoot("apps/website/app/page.tsx"), "utf8");
-
-if (!layout.includes("export const metadata")) {
-  throw new Error("layout.tsx should export Next metadata");
-}
-
-if (!home.includes('"@type": "WebSite"') || !home.includes('"@type": "Organization"')) {
-  throw new Error("Home page should include WebSite and Organization JSON-LD");
-}
-
-const websiteText = [
-  layout,
-  home,
-  await readFile(fromRoot("apps/website/app/globals.css"), "utf8"),
-  await readFile(fromRoot("apps/website/lib/site.ts"), "utf8"),
-].join("\n");
-
-if (websiteText.includes("meme-esports-hero.png")) {
-  throw new Error("Website should not reference source PNG meme-esports-hero.png");
-}
-
-console.log("Website checks passed.");
+await assertWebsite();
+assertMiniprogram();
+console.log("All checks passed.");

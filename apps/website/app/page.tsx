@@ -1,17 +1,18 @@
+import { AboutMemeSection } from "@/components/about-meme-section";
 import { CtaBanner } from "@/components/cta-banner";
-import { FaqList } from "@/components/faq-list";
 import { JsonLdGraph } from "@/components/json-ld";
-import { MemeHeroPoster } from "@/components/meme-hero-poster";
-import { PageHero } from "@/components/page-hero";
-import { PageSection } from "@/components/page-section";
+import { MemeLandingHero } from "@/components/meme-landing-hero";
+import { MemePage, MemeSection } from "@/components/meme-page";
+import { RoadmapSection } from "@/components/roadmap-section";
 import { SectionHeading } from "@/components/section-heading";
 import { ServiceCard } from "@/components/service-card";
 import { SiteFooter } from "@/components/site-footer";
 import {
   HOME_CTA_ACTIONS,
   HOME_FAQ,
-  HOME_FEATURES,
+  HOME_HERO,
   HOME_HERO_ACTIONS,
+  HOME_ROADMAP,
   HOME_SERVICES,
   SITE_COPY,
 } from "@/lib/content";
@@ -19,7 +20,7 @@ import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 export default function HomePage() {
   return (
-    <main>
+    <MemePage>
       <JsonLdGraph
         items={[
           {
@@ -37,54 +38,47 @@ export default function HomePage() {
         ]}
       />
 
-      <PageHero
-        variant="meme"
-        eyebrow="MEME PLAY"
-        title={SITE_COPY.tagline}
-        lead={SITE_COPY.heroLead}
-        actions={HOME_HERO_ACTIONS}
-        poster={<MemeHeroPoster />}
-      />
+      <MemeLandingHero {...HOME_HERO} actions={HOME_HERO_ACTIONS} />
 
-      <PageSection className="section section-tight">
-        <div className="feature-row">
-          {HOME_FEATURES.map((feature) => (
-            <div className="feature-pill" key={feature.title}>
-              <strong>{feature.title}</strong>
-              <span>{feature.description}</span>
-            </div>
-          ))}
-        </div>
-      </PageSection>
+      <MemeSection id="roadmap">
+        <RoadmapSection
+          kicker={SITE_COPY.roadmapKicker}
+          title={SITE_COPY.roadmapTitle}
+          phases={HOME_ROADMAP}
+        />
+      </MemeSection>
 
-      <PageSection>
-        <div className="card-grid card-grid-3">
+      <MemeSection>
+        <SectionHeading
+          kicker={SITE_COPY.servicesKicker}
+          title={SITE_COPY.servicesTitle}
+          tone="meme"
+        />
+        <div className="card-grid card-grid-3 meme-service-grid">
           {HOME_SERVICES.map((service) => (
             <ServiceCard key={service.title} {...service} />
           ))}
         </div>
-      </PageSection>
+      </MemeSection>
 
-      <PageSection id="about">
-        <SectionHeading title={SITE_COPY.aboutTitle} />
-        <div className="about-copy">
-          <p className="about-lead">{SITE_COPY.aboutLead}</p>
-          <p>{SITE_COPY.aboutBody}</p>
-        </div>
-        <div className="about-faq">
-          <FaqList items={HOME_FAQ} />
-        </div>
-      </PageSection>
+      <MemeSection id="about">
+        <AboutMemeSection
+          title={SITE_COPY.aboutTitle}
+          lead={SITE_COPY.aboutLead}
+          body={SITE_COPY.aboutBody}
+          faq={HOME_FAQ}
+        />
+      </MemeSection>
 
-      <PageSection>
+      <MemeSection>
         <CtaBanner
           title={SITE_COPY.ctaTitle}
           description={SITE_COPY.ctaDescription}
           actions={HOME_CTA_ACTIONS}
         />
-      </PageSection>
+      </MemeSection>
 
       <SiteFooter />
-    </main>
+    </MemePage>
   );
 }

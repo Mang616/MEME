@@ -1,33 +1,26 @@
 import { ORDER_WEB_URL, ROUTES, ASSETS } from "@/lib/site";
+import type {
+  EntryLinkItem,
+  FaqItem,
+  LinkAction,
+  MemeHeroCopy,
+  RoadmapPhase,
+  ServiceCardData,
+} from "@/lib/types";
 
-export type FaqItem = {
-  question: string;
-  answer: string;
-};
-
-export type LinkAction = {
-  href: string;
-  label: string;
-  variant?: "primary" | "secondary" | "ghost";
-};
-
-export type ServiceCard = {
-  title: string;
-  badge: string;
-  description: string;
-  image?: string;
-};
-
-export type EntryLinkItem = {
-  title: string;
-  label: string;
-  description: string;
-  href: string;
-};
+export type { EntryLinkItem, FaqItem, LinkAction, MemeHeroCopy, RoadmapPhase, ServiceCardData };
 
 export const SITE_COPY = {
   tagline: "陪你玩",
-  heroLead: "想玩就来。有人陪你开麦、组队、上车。",
+  heroEyebrow: "MEME PLAY",
+  heroTitleTop: "READY TO",
+  heroTitleAccent: "PLAY?",
+  heroTitleCn: "想玩就来",
+  heroLead: "别一个人闷着。有人陪你开麦、组队、上车。",
+  roadmapTitle: "ROADMAP",
+  roadmapKicker: "怎么玩",
+  servicesTitle: "三种玩法",
+  servicesKicker: "SERVICES",
   metaDescription:
     "迷因电竞 MEME：陪你玩、陪你聊、陪你组队。网站下单、下载客户端、微信小程序。",
   orgDescription: "陪你玩、陪你聊、陪你上车。",
@@ -40,6 +33,10 @@ export const SITE_COPY = {
   aboutBody: "开麦、组队、一起打。想玩就来，别一个人闷着。",
   orderTitle: "去下单",
   orderLead: "点「打开下单网站」进下单页。下载应用或走微信小程序，下次更快。",
+  orderHeroEyebrow: "ORDER",
+  orderHeroTitleTop: "GO",
+  orderHeroTitleAccent: "ORDER",
+  orderHeroTitleCn: "去下单",
   orderInstallTitle: "下载应用",
   orderInstallNote: "装到手机或电脑，下次打开就能下单。",
   orderWechatTitle: "微信小程序",
@@ -59,12 +56,42 @@ export const ORDER_PAGE_ACTIONS: LinkAction[] = [openOrderWebAction, homeAction]
 export const HOME_CTA_ACTIONS: LinkAction[] = [orderPageAction];
 export const ORDER_CTA_ACTIONS: LinkAction[] = [openOrderWebAction];
 
-export const HOME_FEATURES = [
-  { title: "叫人", description: "你说想玩" },
-  { title: "排队", description: "我们安排" },
-  { title: "开麦", description: "一起上车" },
-  { title: "开玩", description: "别一个人闷着" },
-] as const;
+export const HOME_HERO: MemeHeroCopy = {
+  eyebrow: SITE_COPY.heroEyebrow,
+  titleTop: SITE_COPY.heroTitleTop,
+  titleAccent: SITE_COPY.heroTitleAccent,
+  titleCn: SITE_COPY.heroTitleCn,
+  lead: SITE_COPY.heroLead,
+};
+
+export const ORDER_HERO: MemeHeroCopy = {
+  eyebrow: SITE_COPY.orderHeroEyebrow,
+  titleTop: SITE_COPY.orderHeroTitleTop,
+  titleAccent: SITE_COPY.orderHeroTitleAccent,
+  titleCn: SITE_COPY.orderHeroTitleCn,
+  lead: SITE_COPY.orderLead,
+};
+
+export const HOME_ROADMAP: RoadmapPhase[] = [
+  {
+    phase: "Phase 1",
+    title: "叫人",
+    description: "你说想玩什么，我们接单安排。",
+    icon: "01",
+  },
+  {
+    phase: "Phase 2",
+    title: "排队开麦",
+    description: "匹配队友，上麦组队，别自己排。",
+    icon: "02",
+  },
+  {
+    phase: "Phase 3",
+    title: "一起开玩",
+    description: "开黑、陪聊、陪你冲，玩完再来。",
+    icon: "03",
+  },
+];
 
 export const ORDER_FEATURES = [
   { title: "网站", description: "打开就下" },
@@ -73,7 +100,7 @@ export const ORDER_FEATURES = [
   { title: "开玩", description: "等人联系" },
 ] as const;
 
-export const HOME_SERVICES: ServiceCard[] = [
+export const HOME_SERVICES: ServiceCardData[] = [
   {
     title: "陪你玩",
     badge: "PLAY",
@@ -93,7 +120,6 @@ export const HOME_SERVICES: ServiceCard[] = [
   },
 ];
 
-/** 三种下单方式（下单页主入口） */
 export const ORDER_WAYS: EntryLinkItem[] = [
   {
     title: "网站下单",
@@ -115,7 +141,6 @@ export const ORDER_WAYS: EntryLinkItem[] = [
   },
 ];
 
-/** 各端安装入口（#install 区块） */
 export const DOWNLOAD_OPTIONS: EntryLinkItem[] = [
   {
     title: "安卓手机",

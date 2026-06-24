@@ -1,6 +1,5 @@
-import Link from "next/link";
-import type { LinkAction } from "@/lib/content";
-import { isExternalHref } from "@/lib/site";
+import { SmartLink } from "@/components/smart-link";
+import type { LinkAction } from "@/lib/types";
 
 type ActionLinksProps = {
   actions: LinkAction[];
@@ -10,21 +9,11 @@ type ActionLinksProps = {
 export function ActionLinks({ actions, className = "action-row" }: ActionLinksProps) {
   return (
     <div className={className}>
-      {actions.map(({ href, label, variant = "primary" }) => {
-        const className = `btn btn-${variant}`;
-        if (isExternalHref(href)) {
-          return (
-            <a key={`${href}-${label}`} className={className} href={href} target="_blank" rel="noopener noreferrer">
-              {label}
-            </a>
-          );
-        }
-        return (
-          <Link key={`${href}-${label}`} className={className} href={href}>
-            {label}
-          </Link>
-        );
-      })}
+      {actions.map(({ href, label, variant = "primary" }) => (
+        <SmartLink key={`${href}-${label}`} href={href} className={`btn btn-${variant}`}>
+          {label}
+        </SmartLink>
+      ))}
     </div>
   );
 }

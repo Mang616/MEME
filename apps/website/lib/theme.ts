@@ -1,4 +1,6 @@
-/** 主题偏好：auto 按本地时间切换，light/dark 为手动固定 */
+import { ASSETS } from "@/lib/site";
+
+/** 主题：auto 按时段切换；light/dark 手动固定。与 layout 内联脚本保持一致。 */
 export type ThemeMode = "auto" | "light" | "dark";
 export type ResolvedTheme = "light" | "dark";
 
@@ -59,16 +61,15 @@ export function cycleThemeMode(current: ThemeMode): ThemeMode {
   return "auto";
 }
 
-export function themeToggleLabel(mode: ThemeMode): string {
-  if (mode === "auto") return "当前自动主题，点击切换为浅色";
-  if (mode === "light") return "当前浅色，点击切换为深色";
-  return "当前深色，点击切换为自动";
+export function themeToggleLabel(mode: ThemeMode, resolved: ResolvedTheme = "dark"): string {
+  if (mode === "auto") return `当前自动主题（${resolved === "dark" ? "深色" : "浅色"}），点击切换为浅色`;
+  if (mode === "light") return "切换深色模式";
+  return "切换为自动主题";
 }
 
-export function themeToggleIcon(mode: ThemeMode): string {
-  if (mode === "auto") return "◐";
-  if (mode === "light") return "☀";
-  return "☾";
+/** 与小程序一致：当前深色显示 dark 图标，浅色显示 light 图标 */
+export function themeToggleIconSrc(resolved: ResolvedTheme): string {
+  return resolved === "dark" ? ASSETS.themeDark : ASSETS.themeLight;
 }
 
 /** 首屏防闪烁：layout 内联脚本（须与 read/apply 逻辑保持一致） */

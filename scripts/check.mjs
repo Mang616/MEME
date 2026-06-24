@@ -9,6 +9,7 @@ const WEBSITE_REQUIRED_FILES = [
   "apps/website/app/page.tsx",
   "apps/website/app/order/page.tsx",
   "apps/website/app/globals.css",
+  "apps/website/app/meme.css",
   "apps/website/app/robots.ts",
   "apps/website/app/sitemap.ts",
   "apps/website/next.config.ts",
@@ -19,6 +20,10 @@ const WEBSITE_REQUIRED_FILES = [
   "apps/website/public/assets/meme-logo-96.png",
   "apps/website/public/assets/home-huhang-320.png",
   "apps/website/public/assets/home-peiwan-320.png",
+  "apps/website/public/assets/theme-dark.png",
+  "apps/website/public/assets/theme-light.png",
+  "apps/website/public/assets/pepe-thinking.png",
+  "apps/website/public/assets/pepe-hero.png",
   "packages/theme/tokens.css",
 ];
 

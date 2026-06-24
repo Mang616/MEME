@@ -1,4 +1,4 @@
-import type { FaqItem } from "@/lib/content";
+import type { FaqItem } from "@/lib/types";
 
 export function FaqList({ items }: { items: FaqItem[] }) {
   return (

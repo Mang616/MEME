@@ -20,6 +20,12 @@ export const ASSETS = {
   logo: "/assets/meme-logo-96.png",
   huhang: "/assets/home-huhang-320.png",
   peiwan: "/assets/home-peiwan-320.png",
+  /** Pepe meme 风 Hero 插画（thepepecoin.org 同源素材，已本地化） */
+  pepeThinking: "/assets/pepe-thinking.png",
+  pepeHero: "/assets/pepe-hero.png",
+  /** 与小程序 navigation-bar 主题切换图标一致 */
+  themeDark: "/assets/theme-dark.png",
+  themeLight: "/assets/theme-light.png",
 } as const;
 
 export function isExternalHref(href: string): boolean {

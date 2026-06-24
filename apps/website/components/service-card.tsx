@@ -1,5 +1,5 @@
 import Image from "next/image";
-import type { ServiceCard as ServiceCardData } from "@/lib/content";
+import type { ServiceCardData } from "@/lib/types";
 
 export function ServiceCard({ title, badge, description, image }: ServiceCardData) {
   return (

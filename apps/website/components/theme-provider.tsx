@@ -14,11 +14,13 @@ import {
   cycleThemeMode,
   readThemeMode,
   writeThemeMode,
+  type ResolvedTheme,
   type ThemeMode,
 } from "@/lib/theme";
 
 type ThemeContextValue = {
   mode: ThemeMode;
+  resolved: ResolvedTheme;
   cycleMode: () => void;
 };
 
@@ -27,15 +29,16 @@ const AUTO_REFRESH_MS = 60_000;
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [mode, setMode] = useState<ThemeMode>("auto");
+  const [resolved, setResolved] = useState<ResolvedTheme>("dark");
 
   useEffect(() => {
     const initial = readThemeMode();
     setMode(initial);
-    applyTheme(initial);
+    setResolved(applyTheme(initial));
 
     const refreshAuto = () => {
       if (readThemeMode() !== "auto") return;
-      applyTheme("auto");
+      setResolved(applyTheme("auto"));
     };
 
     const timer = window.setInterval(refreshAuto, AUTO_REFRESH_MS);
@@ -53,10 +56,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const next = cycleThemeMode(readThemeMode());
     writeThemeMode(next);
     setMode(next);
-    applyTheme(next);
+    setResolved(applyTheme(next));
   }, []);
 
-  const value = useMemo(() => ({ mode, cycleMode }), [mode, cycleMode]);
+  const value = useMemo(() => ({ mode, resolved, cycleMode }), [mode, resolved, cycleMode]);
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }

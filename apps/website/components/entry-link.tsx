@@ -1,34 +1,20 @@
-import Link from "next/link";
-import type { EntryLinkItem } from "@/lib/content";
-import { isExternalHref } from "@/lib/site";
+import { SmartLink } from "@/components/smart-link";
+import type { EntryLinkItem } from "@/lib/types";
 
 type EntryLinkProps = EntryLinkItem & {
   variant: "ticket" | "tile";
 };
 
 export function EntryLink({ href, label, title, description, variant }: EntryLinkProps) {
-  const className = `entry-link entry-link-${variant}`;
-  const body = (
-    <>
+  const linkClass = `entry-link entry-link-${variant}`;
+
+  return (
+    <SmartLink href={href} className={linkClass}>
       <span>{label}</span>
       <div>
         <strong>{title}</strong>
         <p>{description}</p>
       </div>
-    </>
-  );
-
-  if (isExternalHref(href)) {
-    return (
-      <a className={className} href={href} target="_blank" rel="noopener noreferrer">
-        {body}
-      </a>
-    );
-  }
-
-  return (
-    <Link className={className} href={href}>
-      {body}
-    </Link>
+    </SmartLink>
   );
 }

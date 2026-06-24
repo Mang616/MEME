@@ -9,6 +9,7 @@ const REQUIRED_FILES = [
   "apps/website/app/globals.css",
   "apps/website/app/download/page.tsx",
   "apps/website/app/mini-program/page.tsx",
+  "apps/website/app/order/page.tsx",
   "apps/website/app/robots.ts",
   "apps/website/app/sitemap.ts",
   "apps/website/lib/content.ts",

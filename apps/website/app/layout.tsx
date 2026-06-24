@@ -1,16 +1,18 @@
 import type { Metadata, Viewport } from "next";
 import { SiteHeader } from "@/components/site-header";
+import { ThemeProvider } from "@/components/theme-provider";
+import { SITE_COPY } from "@/lib/content";
 import { ASSETS, SITE_NAME, SITE_URL } from "@/lib/site";
+import { themeInitScript } from "@/lib/theme";
 import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${SITE_NAME} | 陪你玩`,
+    default: `${SITE_NAME} | ${SITE_COPY.tagline}`,
     template: `%s | ${SITE_NAME}`,
   },
-  description:
-    "迷因电竞 MEME 官网：陪你玩、陪你聊、陪你组队。支持网站下单、下载安装到手机和电脑、微信小程序。",
+  description: SITE_COPY.metaDescription,
   keywords: [
     "迷因电竞",
     "MEME",
@@ -30,32 +32,25 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#d1ffbd",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
+  ],
 };
-
-const themeScript = `
-(function () {
-  try {
-    var t = localStorage.getItem('meme-theme');
-    if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
-    else document.documentElement.setAttribute('data-theme', 'dark');
-  } catch (e) {
-    document.documentElement.setAttribute('data-theme', 'dark');
-  }
-})();
-`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="zh-CN" data-theme="dark" suppressHydrationWarning>
+    <html lang="zh-CN" data-theme="dark" data-theme-mode="auto" suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body>
-        <div className="site-shell">
-          <SiteHeader />
-          {children}
-        </div>
+        <ThemeProvider>
+          <div className="site-shell">
+            <SiteHeader />
+            {children}
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );

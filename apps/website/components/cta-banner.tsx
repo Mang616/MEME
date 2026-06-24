@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { ActionLinks } from "@/components/action-links";
 import type { LinkAction } from "@/lib/content";
 
 type CtaBannerProps = {
@@ -14,13 +14,7 @@ export function CtaBanner({ title, description, actions }: CtaBannerProps) {
         <h3>{title}</h3>
         <p>{description}</p>
       </div>
-      <div className="action-row">
-        {actions.map(({ href, label, variant = "primary" }) => (
-          <Link key={`${href}-${label}`} className={`btn btn-${variant}`} href={href}>
-            {label}
-          </Link>
-        ))}
-      </div>
+      <ActionLinks actions={actions} />
     </div>
   );
 }

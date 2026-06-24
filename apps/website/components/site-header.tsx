@@ -1,36 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ASSETS, ORDER_SITE_URL, SITE_NAME_SHORT } from "@/lib/site";
+import { useTheme } from "@/components/theme-provider";
+import { themeToggleIcon, themeToggleLabel } from "@/lib/theme";
+import { ASSETS, ROUTES, SITE_NAME_SHORT } from "@/lib/site";
 
-const LINKS = [
-  { href: "/#services", label: "怎么玩" },
-  { href: "/download", label: "下载" },
-  { href: "/mini-program", label: "小程序" },
-];
+const NAV_LINKS = [
+  { href: ROUTES.home, label: "首页" },
+  { href: ROUTES.about, label: "关于我们" },
+] as const;
 
 export function SiteHeader() {
+  const { mode, cycleMode } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
-
-  useEffect(() => {
-    const stored = document.documentElement.getAttribute("data-theme");
-    if (stored === "light" || stored === "dark") setTheme(stored);
-  }, []);
-
-  const toggleTheme = () => {
-    const next = theme === "dark" ? "light" : "dark";
-    document.documentElement.setAttribute("data-theme", next);
-    localStorage.setItem("meme-theme", next);
-    setTheme(next);
-  };
 
   return (
     <header className="nav" aria-label="主导航">
       <div className="nav-inner">
-        <Link className="brand" href="/">
+        <Link className="brand" href={ROUTES.home}>
           <Image className="brand-logo" src={ASSETS.logo} alt="" width={36} height={36} priority />
           <span>{SITE_NAME_SHORT}</span>
         </Link>
@@ -41,7 +30,7 @@ export function SiteHeader() {
           aria-expanded={menuOpen}
           aria-controls="site-nav"
           aria-label="打开导航菜单"
-          onClick={() => setMenuOpen((v) => !v)}
+          onClick={() => setMenuOpen((open) => !open)}
         >
           <span />
         </button>
@@ -52,22 +41,27 @@ export function SiteHeader() {
           aria-label="官网导航"
           onClick={() => setMenuOpen(false)}
         >
-          {LINKS.map((l) => (
-            <Link key={l.href} href={l.href}>{l.label}</Link>
+          {NAV_LINKS.map(({ href, label }) => (
+            <Link key={href} href={href}>{label}</Link>
           ))}
-          <Link className="nav-cta-mobile btn btn-primary btn-sm" href={ORDER_SITE_URL}>网站下单</Link>
+          <Link className="nav-cta-mobile btn btn-primary btn-sm" href={ROUTES.order}>
+            去下单
+          </Link>
         </nav>
 
         <div className="nav-actions">
           <button
             className="theme-toggle"
             type="button"
-            aria-label={theme === "dark" ? "切换浅色模式" : "切换深色模式"}
-            onClick={toggleTheme}
+            aria-label={themeToggleLabel(mode)}
+            title={themeToggleLabel(mode)}
+            onClick={cycleMode}
           >
-            {theme === "dark" ? "☀" : "☾"}
+            {themeToggleIcon(mode)}
           </button>
-          <Link className="btn btn-primary btn-sm nav-cta-desktop" href={ORDER_SITE_URL}>网站下单</Link>
+          <Link className="btn btn-primary btn-sm nav-cta-desktop" href={ROUTES.order}>
+            去下单
+          </Link>
         </div>
       </div>
     </header>

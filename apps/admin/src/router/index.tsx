@@ -1,10 +1,8 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { AuthGuard } from "@/components/AuthGuard";
 import AdminLayout from "@/layouts/AdminLayout";
-import HandlersPage from "@/pages/handlers";
 import LoginPage from "@/pages/login";
-import OrdersPage from "@/pages/orders";
-import ProductsPage from "@/pages/products";
+import { NAV_ITEMS } from "@/config/navigation";
 
 export const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
@@ -17,9 +15,10 @@ export const router = createBrowserRouter([
     ),
     children: [
       { index: true, element: <Navigate to="/orders" replace /> },
-      { path: "orders", element: <OrdersPage /> },
-      { path: "products", element: <ProductsPage /> },
-      { path: "handlers", element: <HandlersPage /> },
+      ...NAV_ITEMS.map((item) => ({
+        path: item.path,
+        element: <item.element />,
+      })),
     ],
   },
   { path: "*", element: <Navigate to="/orders" replace /> },

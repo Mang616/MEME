@@ -11,7 +11,7 @@
   <pull-refresh-scroll id="pullRefresh" bind:refresh="onPullRefresh">
     <view class="page-tab-bottom-gap">
       <view wx:if="{{showMinorNotice}}" class="home-top-notice">
-        <minor-notice-bar bind:closetap="onMinorNoticeClose" />
+        <minor-notice-bar text="{{minorNoticeText}}" bind:closetap="onMinorNoticeClose" />
       </view>
 
       <swiper

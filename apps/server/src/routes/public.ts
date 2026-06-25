@@ -1,7 +1,8 @@
 import { Router } from "express";
 import { z } from "zod";
 import { ORDER_REGIONS } from "../constants.js";
-import { catalogService, handlerService, orderService, productService } from "../services.js";
+import { catalogService, handlerService, orderService, productService } from "../services/index.js";
+import { announcementService, bannerService } from "../services/index.js";
 
 export const publicCatalogRouter = Router();
 
@@ -91,4 +92,21 @@ publicOrdersRouter.post("/", async (req, res) => {
   });
 
   res.status(201).json(order);
+});
+
+export const publicBannersRouter = Router();
+
+publicBannersRouter.get("/", async (_req, res) => {
+  const items = await bannerService.listPublished();
+  res.json({ items, total: items.length });
+});
+
+export const publicAnnouncementsRouter = Router();
+
+publicAnnouncementsRouter.get("/", async (req, res) => {
+  const placement = typeof req.query.placement === "string" ? req.query.placement : undefined;
+  const items = await announcementService.listActive(
+    placement as "home_bar" | "popup" | undefined,
+  );
+  res.json({ items, total: items.length });
 });

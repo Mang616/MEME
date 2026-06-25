@@ -1,6 +1,4 @@
-import { clearToken, isAuthenticated, normalizeStoredToken, setToken, api } from "./api";
-
-normalizeStoredToken();
+import { clearToken, isAuthenticated, setToken, api } from "./api";
 
 export { isAuthenticated };
 

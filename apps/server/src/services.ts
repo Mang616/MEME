@@ -1,6 +1,23 @@
 import { ORDER_STATUS_TEXT } from "./constants.js";
-import { readDb, updateDb } from "./db.js";
+import {
+  createHandler,
+  createOrder,
+  createProduct,
+  getCategories,
+  getHandler,
+  getOrder,
+  getProduct,
+  listHandlers,
+  listOrders,
+  listProducts,
+  removeHandler,
+  removeProduct,
+  updateHandler,
+  updateOrder,
+  updateProduct,
+} from "./db/index.js";
 import { buildOrder, type CreateOrderInput } from "./lib/orders.js";
+import { createEntity } from "./lib/create-entity.js";
 import {
   toAdminHandlerRow,
   toAdminOrderRow,
@@ -14,103 +31,73 @@ function publishedProducts(products: Product[]) {
 
 export const catalogService = {
   async getCatalog() {
-    const db = await readDb();
-    return { subCategories: db.categories };
+    const subCategories = await getCategories();
+    return { subCategories };
   },
 };
 
 export const productService = {
   async listPublished() {
-    const db = await readDb();
-    return publishedProducts(db.products);
+    const products = await listProducts();
+    return publishedProducts(products);
   },
 
   async getById(id: string) {
-    const db = await readDb();
-    return db.products.find((product) => product.id === id) ?? null;
+    return getProduct(id);
   },
 
   async create(input: Omit<Product, "id"> & { id?: string }) {
-    let created: Product | null = null;
-    await updateDb((db) => {
-      const id = input.id ?? `p${Date.now()}`;
-      if (db.products.some((product) => product.id === id)) {
-        throw new Error("PRODUCT_EXISTS");
-      }
-      created = { ...input, id, published: input.published ?? true };
-      db.products.unshift(created);
+    return createEntity({
+      idPrefix: "p",
+      existsError: "PRODUCT_EXISTS",
+      getById: getProduct,
+      create: (entity) => createProduct({ ...entity, published: entity.published ?? true }),
+      input: { ...input, published: input.published ?? true },
     });
-    return created!;
   },
 
   async update(id: string, patch: Partial<Product>) {
-    let updated: Product | null = null;
-    await updateDb((db) => {
-      const index = db.products.findIndex((product) => product.id === id);
-      if (index < 0) return;
-      updated = { ...db.products[index], ...patch, id };
-      db.products[index] = updated;
-    });
-    return updated;
+    return updateProduct(id, patch);
   },
 
   async remove(id: string) {
-    let removed = false;
-    await updateDb((db) => {
-      const before = db.products.length;
-      db.products = db.products.filter((product) => product.id !== id);
-      removed = db.products.length < before;
-    });
-    return removed;
+    return removeProduct(id);
   },
 
   async listAdminRows() {
-    const db = await readDb();
-    return db.products.map((product) => toAdminProductRow(product, db.categories));
+    const [products, categories] = await Promise.all([listProducts(), getCategories()]);
+    return products.map((product) => toAdminProductRow(product, categories));
   },
 
   async toAdminRow(product: Product) {
-    const db = await readDb();
-    return toAdminProductRow(product, db.categories);
+    const categories = await getCategories();
+    return toAdminProductRow(product, categories);
   },
 };
 
 export const orderService = {
   async list(userId?: string) {
-    const db = await readDb();
-    if (!userId) return db.orders;
-    return db.orders.filter((order) => order.userId === userId);
+    return listOrders(userId);
   },
 
   async getById(id: string) {
-    const db = await readDb();
-    return db.orders.find((order) => order.id === id) ?? null;
+    return getOrder(id);
   },
 
   async create(input: CreateOrderInput) {
     const order = buildOrder(input);
-    await updateDb((db) => {
-      db.orders.unshift(order);
-    });
-    return order;
+    return createOrder(order);
   },
 
   async update(
     id: string,
     patch: Partial<Pick<Order, "status" | "servicePlayer" | "statusText">>,
   ) {
-    let updated: Order | null = null;
-    await updateDb((db) => {
-      const index = db.orders.findIndex((order) => order.id === id);
-      if (index < 0) return;
-      const next = { ...db.orders[index], ...patch };
-      if (patch.status) {
-        next.statusText = ORDER_STATUS_TEXT[patch.status];
-      }
-      db.orders[index] = next;
-      updated = next;
-    });
-    return updated;
+    const nextPatch = { ...patch };
+    if (patch.status) {
+      nextPatch.statusText = ORDER_STATUS_TEXT[patch.status];
+    }
+    return updateOrder(id, nextPatch);
   },
 
   listAdminRows(orders: Order[]) {
@@ -120,47 +107,29 @@ export const orderService = {
 
 export const handlerService = {
   async list() {
-    const db = await readDb();
-    return db.handlers;
+    return listHandlers();
   },
 
   async getById(id: string) {
-    const db = await readDb();
-    return db.handlers.find((handler) => handler.id === id) ?? null;
+    return getHandler(id);
   },
 
   async create(input: Omit<Handler, "id"> & { id?: string }) {
-    let created: Handler | null = null;
-    await updateDb((db) => {
-      const id = input.id ?? `h${Date.now()}`;
-      if (db.handlers.some((handler) => handler.id === id)) {
-        throw new Error("HANDLER_EXISTS");
-      }
-      created = { ...input, id };
-      db.handlers.unshift(created);
+    return createEntity({
+      idPrefix: "h",
+      existsError: "HANDLER_EXISTS",
+      getById: getHandler,
+      create: createHandler,
+      input,
     });
-    return created!;
   },
 
   async update(id: string, patch: Partial<Handler>) {
-    let updated: Handler | null = null;
-    await updateDb((db) => {
-      const index = db.handlers.findIndex((handler) => handler.id === id);
-      if (index < 0) return;
-      updated = { ...db.handlers[index], ...patch, id };
-      db.handlers[index] = updated;
-    });
-    return updated;
+    return updateHandler(id, patch);
   },
 
   async remove(id: string) {
-    let removed = false;
-    await updateDb((db) => {
-      const before = db.handlers.length;
-      db.handlers = db.handlers.filter((handler) => handler.id !== id);
-      removed = db.handlers.length < before;
-    });
-    return removed;
+    return removeHandler(id);
   },
 
   listAdminRows(handlers: Handler[]) {

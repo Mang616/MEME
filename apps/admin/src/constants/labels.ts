@@ -16,9 +16,6 @@ export const SERVICE_TYPE_LABELS = {
   companion: "陪玩",
 } as const;
 
-export const SERVICE_TYPE_MAP = SERVICE_TYPE_LABELS;
-export const HANDLER_SERVICE_MAP = SERVICE_TYPE_LABELS;
-
 export const ESCORT_LEVEL_MAP = {
   demon: "魔王",
   ace: "王牌",
@@ -28,4 +25,20 @@ export const ESCORT_LEVEL_MAP = {
 export const REGION_MAP = {
   pc: "端游",
   mobile: "手游",
+} as const;
+
+export const USER_STATUS_MAP = {
+  active: { label: "正常", color: "green" },
+  disabled: { label: "已禁用", color: "red" },
+} as const;
+
+export const BANNER_LINK_TYPE_MAP = {
+  products: "商品分类",
+  tab: "小程序页面",
+  none: "无跳转",
+} as const;
+
+export const ANNOUNCEMENT_PLACEMENT_MAP = {
+  home_bar: "首页提示条",
+  popup: "弹窗",
 } as const;

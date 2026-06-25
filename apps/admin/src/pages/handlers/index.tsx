@@ -18,7 +18,7 @@ import type { ColumnProps } from "@arco-design/web-react/es/Table";
 import { useCallback, useEffect, useState } from "react";
 import {
   ESCORT_LEVEL_MAP,
-  HANDLER_SERVICE_MAP,
+  SERVICE_TYPE_LABELS,
   REGION_MAP,
 } from "@/constants/labels";
 import { api, type HandlerRow } from "@/lib/api";
@@ -138,7 +138,7 @@ export default function HandlersPage() {
       title: "服务",
       dataIndex: "serviceType",
       width: 90,
-      render: (type: HandlerRow["serviceType"]) => HANDLER_SERVICE_MAP[type],
+      render: (type: HandlerRow["serviceType"]) => SERVICE_TYPE_LABELS[type],
     },
     {
       title: "性别",
@@ -232,7 +232,7 @@ export default function HandlersPage() {
           </Form.Item>
           <Form.Item label="服务类型" field="serviceType" rules={[{ required: true }]}>
             <Select>
-              {Object.entries(HANDLER_SERVICE_MAP).map(([value, label]) => (
+              {Object.entries(SERVICE_TYPE_LABELS).map(([value, label]) => (
                 <Select.Option key={value} value={value}>
                   {label}
                 </Select.Option>

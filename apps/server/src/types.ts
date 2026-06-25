@@ -74,4 +74,48 @@ export type Database = {
   products: Product[];
   handlers: Handler[];
   categories: Record<ServiceType, SubCategory[]>;
+  users: AppUser[];
+  banners: Banner[];
+  announcements: Announcement[];
+};
+
+export type UserStatus = "active" | "disabled";
+
+export type AppUser = {
+  id: string;
+  nickname: string;
+  phone: string;
+  avatar: string;
+  vipLevel: number;
+  balance: number;
+  status: UserStatus;
+  registeredAt: string;
+  lastLoginAt: string;
+};
+
+export type BannerLinkType = "products" | "tab" | "none";
+
+export type Banner = {
+  id: string;
+  title: string;
+  subtitle: string;
+  image: string;
+  bgColor: string;
+  linkType: BannerLinkType;
+  linkValue: string;
+  sortOrder: number;
+  published: boolean;
+};
+
+export type AnnouncementPlacement = "home_bar" | "popup";
+
+export type Announcement = {
+  id: string;
+  title: string;
+  content: string;
+  placement: AnnouncementPlacement;
+  enabled: boolean;
+  sortOrder: number;
+  startAt: string;
+  endAt: string;
 };

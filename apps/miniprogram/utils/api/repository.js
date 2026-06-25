@@ -1,23 +1,63 @@
 /**
- * 服务端业务数据缓存：商品 / 分类 / 订单 / 打手
+ * 服务端业务数据内存缓存（单飞 ensure + refresh）
  */
 const { request } = require('./request')
 
+function createResourceCache(fetcher, initial) {
+  let data = initial
+  let task = null
+
+  return {
+    get: () => data,
+    set: (next) => {
+      data = next
+    },
+    refresh: async (...args) => {
+      data = await fetcher(...args)
+      return data
+    },
+    ensure: (...args) => {
+      if (!task) {
+        task = fetcher(...args)
+          .then((result) => {
+            data = result
+            return data
+          })
+          .catch((err) => {
+            task = null
+            throw err
+          })
+      }
+      return task
+    },
+    resetTask: () => {
+      task = null
+    },
+  }
+}
+
 let products = []
 let subCategories = {}
-let orders = []
-let handlers = []
-
 let catalogTask = null
-let ordersTask = null
-let handlersTask = null
+
+const ordersCache = createResourceCache(async (userId) => {
+  const query = userId ? `?userId=${encodeURIComponent(userId)}` : ''
+  const res = await request(`/orders${query}`)
+  return res.items || []
+}, [])
+
+const handlersCache = createResourceCache(async () => {
+  const res = await request('/handlers')
+  return res.items || []
+}, [])
+
+const bannersCache = createResourceCache(async () => {
+  const res = await request('/banners')
+  return res.items || []
+}, [])
 
 function resetCatalogTask() {
   catalogTask = null
-}
-
-function resetOrdersTask() {
-  ordersTask = null
 }
 
 async function refreshCatalog() {
@@ -38,37 +78,6 @@ function ensureCatalog() {
     })
   }
   return catalogTask
-}
-
-async function refreshOrders(userId) {
-  const query = userId ? `?userId=${encodeURIComponent(userId)}` : ''
-  const res = await request(`/orders${query}`)
-  orders = res.items || []
-  return orders
-}
-
-function ensureOrders(userId) {
-  ordersTask = refreshOrders(userId).catch((err) => {
-    ordersTask = null
-    throw err
-  })
-  return ordersTask
-}
-
-async function refreshHandlers() {
-  const res = await request('/handlers')
-  handlers = res.items || []
-  return handlers
-}
-
-function ensureHandlers() {
-  if (!handlersTask) {
-    handlersTask = refreshHandlers().catch((err) => {
-      handlersTask = null
-      throw err
-    })
-  }
-  return handlersTask
 }
 
 function getProducts() {
@@ -110,44 +119,34 @@ function searchProducts(keyword) {
   })
 }
 
-function listOrders() {
-  return orders
-}
-
-function getOrderById(id) {
-  return orders.find((item) => item.id === id) || null
-}
-
 async function createOrder(payload) {
   const order = await request('/orders', {
     method: 'POST',
     body: payload,
   })
-  orders.unshift(order)
+  ordersCache.set([order, ...ordersCache.get()])
   return order
 }
 
-function listHandlers() {
-  return handlers
-}
-
-function getHandlerById(id) {
-  return handlers.find((item) => item.id === id) || null
-}
-
-function getHandlerByName(name) {
-  return handlers.find((item) => item.name === name) || null
+async function refreshAnnouncements(placement) {
+  const query = placement ? `?placement=${encodeURIComponent(placement)}` : ''
+  const res = await request(`/announcements${query}`)
+  return res.items || []
 }
 
 module.exports = {
   ensureCatalog,
-  ensureOrders,
-  ensureHandlers,
+  ensureOrders: (userId) => ordersCache.ensure(userId),
+  ensureHandlers: () => handlersCache.ensure(),
+  ensureBanners: () => bannersCache.ensure(),
   refreshCatalog,
-  refreshOrders,
-  refreshHandlers,
+  refreshOrders: (userId) => ordersCache.refresh(userId),
+  refreshHandlers: () => handlersCache.refresh(),
+  refreshBanners: () => bannersCache.refresh(),
+  refreshAnnouncements,
   resetCatalogTask,
-  resetOrdersTask,
+  resetOrdersTask: () => ordersCache.resetTask(),
+  resetBannersTask: () => bannersCache.resetTask(),
   getProducts,
   getSubCategories,
   getProductById,
@@ -155,10 +154,11 @@ module.exports = {
   getProductsByServiceType,
   getProductsByCategory,
   searchProducts,
-  listOrders,
-  getOrderById,
+  listOrders: () => ordersCache.get(),
+  getOrderById: (id) => ordersCache.get().find((item) => item.id === id) || null,
   createOrder,
-  listHandlers,
-  getHandlerById,
-  getHandlerByName,
+  listHandlers: () => handlersCache.get(),
+  getHandlerById: (id) => handlersCache.get().find((item) => item.id === id) || null,
+  getHandlerByName: (name) => handlersCache.get().find((item) => item.name === name) || null,
+  getBanners: () => bannersCache.get(),
 }

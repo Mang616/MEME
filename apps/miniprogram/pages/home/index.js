@@ -1,20 +1,24 @@
 const themedPage = require('../../behaviors/themed-page')
 const { storeName, brandLogo } = require('../../utils/config')
-const { buildHomeState } = require('../../utils/catalog')
 const { SERVICE_TYPE } = require('../../utils/constants')
 const { getTabChangeId } = require('../../utils/line-tabs')
 const {
-  enrichBanners,
-  buildHomeBannerMeta,
   markBannerImageReady,
   markBannerImageFailed,
 } = require('../../utils/home-banner')
+const {
+  buildHomeBannerState,
+  buildCatalogState,
+  loadHomeBanners,
+  loadHomeAnnouncement,
+  refreshHomePage,
+  minorOrderNotice,
+} = require('../../utils/home-page')
 const {
   followBannerLink,
   openProductFromEvent,
 } = require('../../utils/nav')
 const {
-  isMinorNoticeDismissed,
   confirmMinorAge,
 } = require('../../utils/minor-notice')
 const { showMockFeature, showTip } = require('../../utils/ui')
@@ -22,28 +26,31 @@ const { runPullRefresh, getPullRefresh } = require('../../utils/pull-refresh')
 const { withCatalog } = require('../../utils/page-data')
 const api = require('../../utils/api/index')
 
-const initialBanners = enrichBanners()
-
 Page({
   behaviors: themedPage,
 
   data: {
     storeName,
     brandLogo,
-    ...buildHomeBannerMeta(initialBanners),
-    banners: initialBanners,
+    ...buildHomeBannerState(),
     serviceTypes: [],
     activeType: SERVICE_TYPE.ESCORT,
     products: [],
     showMinorNotice: true,
+    minorNoticeText: minorOrderNotice,
   },
 
   onLoad() {
+    void loadHomeBanners(api).then((list) => {
+      this.setData(buildHomeBannerState(list))
+    })
+
     withCatalog(() => {
-      this.setData({
-        ...buildHomeState(SERVICE_TYPE.ESCORT),
-        showMinorNotice: !isMinorNoticeDismissed(),
-      })
+      this.setData(buildCatalogState(SERVICE_TYPE.ESCORT))
+    })
+
+    void loadHomeAnnouncement(api).then((patch) => {
+      if (Object.keys(patch).length) this.setData(patch)
     })
   },
 
@@ -85,7 +92,7 @@ Page({
   onTabChange(e) {
     const id = getTabChangeId(e, this.data.activeType)
     if (!id) return
-    this.setData(buildHomeState(id))
+    this.setData(buildCatalogState(id))
   },
 
   onProductTap(e) {
@@ -99,14 +106,7 @@ Page({
   onPullRefresh() {
     const pr = getPullRefresh(this, '#pullRefresh')
     runPullRefresh(pr, () =>
-      api.refreshCatalog().then(() => {
-        const banners = enrichBanners()
-        this.setData({
-          ...buildHomeState(this.data.activeType),
-          ...buildHomeBannerMeta(banners),
-          banners,
-        })
-      }),
+      refreshHomePage(api, this.data.activeType).then((state) => this.setData(state)),
     )
   },
 })

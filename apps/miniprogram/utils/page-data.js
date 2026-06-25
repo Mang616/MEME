@@ -4,26 +4,17 @@
 const api = require('./api/index')
 const { showTip } = require('./ui')
 
-function withCatalog(task) {
-  return api.ensureCatalog().then(task).catch((err) => {
-    showTip(err.message || '商品加载失败')
-    throw err
-  })
+function createWithGuard(ensureFn, fallbackMessage) {
+  return (task) =>
+    ensureFn().then(task).catch((err) => {
+      showTip(err.message || fallbackMessage)
+      throw err
+    })
 }
 
-function withOrders(task) {
-  return api.ensureOrders().then(task).catch((err) => {
-    showTip(err.message || '订单加载失败')
-    throw err
-  })
-}
-
-function withHandlers(task) {
-  return api.ensureHandlers().then(task).catch((err) => {
-    showTip(err.message || '打手加载失败')
-    throw err
-  })
-}
+const withCatalog = createWithGuard(() => api.ensureCatalog(), '商品加载失败')
+const withOrders = createWithGuard(() => api.ensureOrders(), '订单加载失败')
+const withHandlers = createWithGuard(() => api.ensureHandlers(), '打手加载失败')
 
 module.exports = {
   withCatalog,

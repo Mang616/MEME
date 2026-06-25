@@ -1,4 +1,4 @@
-/** Arco 主题：对齐小程序薄荷绿 token */
+/** Arco 主题：薄荷绿主色（侧栏品牌色见 global.css） */
 export const memeArcoTheme = {
   primaryColor: "#6db85a",
   successColor: "#6db85a",
@@ -8,8 +8,6 @@ export const memeArcoTheme = {
 
 export const memeColors = {
   mint: "#d1ffbd",
-  mintDeep: "#6db85a",
-  accent: "#ff3b30",
   siderBg: "#141414",
   siderText: "rgba(255, 255, 255, 0.72)",
 } as const;

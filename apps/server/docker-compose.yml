@@ -1,0 +1,18 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: meme-mysql
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: meme_root
+      MYSQL_DATABASE: meme
+      MYSQL_USER: meme
+      MYSQL_PASSWORD: meme
+    volumes:
+      - meme_mysql_data:/var/lib/mysql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+volumes:
+  meme_mysql_data:

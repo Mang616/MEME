@@ -6,14 +6,15 @@
 |------|------|------|------|
 | 官网 | `apps/website` | Next.js 15 | 4173 |
 | 小程序 | `apps/miniprogram` | 微信原生 | — |
-| API | `apps/server` | Express + JSON | 3000 |
+| API | `apps/server` | Express + MySQL / JSON | 3000 |
 | 运营端 | `apps/admin` | Vite + React + Arco | 4180 |
 | 客户端 | `apps/client` | 占位，未启动 | — |
 
 ## 数据流
 
 ```text
-                    apps/server/data/db.json
+                    apps/server → MySQL（DATABASE_URL）
+                    或 data/db.json（无 DATABASE_URL 时）
                               ↑
          ┌────────────────────┼────────────────────┐
          │                    │                    │

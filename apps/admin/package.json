@@ -9,7 +9,7 @@
     "preview": "vite preview --port 4180"
   },
   "dependencies": {
-    "@arco-design/web-react": "^2.66.1",
+    "@arco-design/web-react": "^2.66.15",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.6.2"

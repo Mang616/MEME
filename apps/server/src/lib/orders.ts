@@ -1,18 +1,11 @@
+import { formatDateTime } from "./format-time.js";
 import { AUTO_ASSIGN_LABEL, ORDER_STATUS_TEXT } from "../constants.js";
 import type { Order, OrderProductSnapshot } from "../types.js";
 
+export { formatDateTime as formatOrderTime };
+
 function pad2(value: number) {
   return String(value).padStart(2, "0");
-}
-
-export function formatOrderTime(date = new Date()) {
-  const y = date.getFullYear();
-  const m = pad2(date.getMonth() + 1);
-  const d = pad2(date.getDate());
-  const h = pad2(date.getHours());
-  const min = pad2(date.getMinutes());
-  const s = pad2(date.getSeconds());
-  return `${y}-${m}-${d} ${h}:${min}:${s}`;
 }
 
 export function buildOrderId(date = new Date()) {
@@ -40,7 +33,7 @@ export function buildOrder(input: CreateOrderInput): Order {
     productId: input.productId,
     status: "pending_accept",
     statusText: ORDER_STATUS_TEXT.pending_accept,
-    orderTime: formatOrderTime(),
+    orderTime: formatDateTime(),
     region: input.region,
     userId: input.userId,
     assignedPlayer: input.assignedPlayer || AUTO_ASSIGN_LABEL,

@@ -1,6 +1,5 @@
 /**
- * Arco Message/Modal 依赖内部 copyRender；React 19 的 react-dom 不再导出 createRoot。
- * 须在任意 @arco-design 组件加载前注入 createRoot（勿用 react-dom.render 补丁，无效）。
+ * Arco Message/Modal 等弹层用 copyRender；优先走 react-dom/client 的 createRoot。
  * @see https://arco.design/react/docs/start#react-19
  */
 import { createRoot } from "react-dom/client";

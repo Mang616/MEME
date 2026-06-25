@@ -9,8 +9,61 @@ body {
   background: var(--color-fill-2, #f2f3f5);
 }
 
+:root {
+  --meme-sider-bg: #141414;
+  --meme-mint: #d1ffbd;
+  --meme-mint-soft: rgba(209, 255, 189, 0.12);
+  --meme-mint-hover: rgba(209, 255, 189, 0.08);
+  --meme-sider-border: rgba(255, 255, 255, 0.08);
+  --meme-sider-text: rgba(255, 255, 255, 0.65);
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+}
+
 .admin-layout {
+  height: 100vh;
   min-height: 100vh;
+}
+
+.admin-layout.arco-layout-has-sider {
+  flex-direction: row;
+}
+
+.admin-layout > .arco-layout-sider.admin-sider {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.admin-sider .arco-layout-sider-children {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.admin-sider .arco-menu {
+  flex: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
+  border-right: none;
+}
+
+.admin-sider .arco-layout-sider-trigger {
+  flex-shrink: 0;
+  background: var(--meme-sider-bg) !important;
+  border-top: 1px solid var(--meme-sider-border);
+  color: var(--meme-sider-text);
+}
+
+.admin-sider .arco-layout-sider-trigger:hover {
+  background: var(--meme-mint-hover) !important;
+  color: var(--meme-mint);
 }
 
 .admin-sider {
@@ -18,12 +71,21 @@ body {
 }
 
 .admin-sider .arco-menu-dark .arco-menu-item.arco-menu-selected {
-  background: rgba(209, 255, 189, 0.12);
+  background: var(--meme-mint-soft);
 }
 
 .admin-brand {
   padding: 20px 16px 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--meme-sider-border);
+}
+
+.admin-layout > .arco-layout.admin-main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: 100vh;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .admin-header {
@@ -38,7 +100,9 @@ body {
 
 .admin-content {
   padding: 20px;
-  min-height: calc(100vh - 56px);
+  flex: 1;
+  overflow: auto;
+  min-height: 0;
 }
 
 .login-page {
@@ -46,7 +110,7 @@ body {
   min-height: 100vh;
   place-items: center;
   padding: 24px;
-  background: linear-gradient(160deg, #141414 0%, #1a2a1f 45%, #2d4a35 100%);
+  background: linear-gradient(160deg, var(--meme-sider-bg) 0%, #1a2a1f 45%, #2d4a35 100%);
 }
 
 .login-card {

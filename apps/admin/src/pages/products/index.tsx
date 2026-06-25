@@ -17,7 +17,7 @@ import {
 } from "@arco-design/web-react";
 import type { ColumnProps } from "@arco-design/web-react/es/Table";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { SERVICE_TYPE_MAP } from "@/constants/labels";
+import { SERVICE_TYPE_LABELS } from "@/constants/labels";
 import { api, type CategoriesMap, type ProductRow } from "@/lib/api";
 
 type ProductFormValues = {
@@ -131,7 +131,7 @@ export default function ProductsPage() {
       title: "类型",
       dataIndex: "serviceType",
       width: 100,
-      render: (type: ProductRow["serviceType"]) => SERVICE_TYPE_MAP[type],
+      render: (type: ProductRow["serviceType"]) => SERVICE_TYPE_LABELS[type],
     },
     { title: "分类", dataIndex: "categoryName", width: 120 },
     {

@@ -54,7 +54,7 @@ const SERVER_REQUIRED_FILES = [
   "apps/server/README.md",
   "apps/server/src/index.ts",
   "apps/server/src/services.ts",
-  "apps/server/src/db.ts",
+  "apps/server/src/db/index.ts",
   "apps/server/src/routes/admin/orders.ts",
   "apps/server/src/routes/admin/products.ts",
   "apps/server/src/routes/admin/handlers.ts",

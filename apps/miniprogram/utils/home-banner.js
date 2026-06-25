@@ -54,9 +54,30 @@ function markBannerImageFailed(banners, id) {
   return patchBannerById(banners, id, { showImage: false, showPhoto: false })
 }
 
+/** 合并 swiper 配置与 enrich 后的 banners，供 setData 使用 */
+function buildHomeBannerState(list) {
+  const banners = enrichBanners(list)
+  return { ...buildHomeBannerMeta(banners), banners }
+}
+
+/** API 优先，失败回退 mock；force 时跳过 ensure 缓存（下拉刷新） */
+async function loadHomeBanners(api, { force = false } = {}) {
+  try {
+    if (force) await api.refreshBanners()
+    else await api.ensureBanners()
+    const items = api.getBanners()
+    if (items && items.length) return items
+  } catch (err) {
+    console.warn('[home] banners fallback to mock', err.message)
+  }
+  return BANNERS
+}
+
 module.exports = {
   enrichBanners,
   buildHomeBannerMeta,
+  buildHomeBannerState,
+  loadHomeBanners,
   markBannerImageReady,
   markBannerImageFailed,
 }

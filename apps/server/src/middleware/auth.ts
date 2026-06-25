@@ -51,6 +51,5 @@ export function requireAdmin(req: Request, res: Response, next: NextFunction) {
     return;
   }
 
-  res.locals.adminUser = username;
   next();
 }

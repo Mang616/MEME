@@ -151,6 +151,41 @@ export type HandlerRow = {
   online: boolean;
 };
 
+export type UserRow = {
+  id: string;
+  nickname: string;
+  phone: string;
+  avatar: string;
+  vipLevel: number;
+  balance: number;
+  status: "active" | "disabled";
+  registeredAt: string;
+  lastLoginAt: string;
+};
+
+export type BannerRow = {
+  id: string;
+  title: string;
+  subtitle: string;
+  image: string;
+  bgColor: string;
+  linkType: "products" | "tab" | "none";
+  linkValue: string;
+  sortOrder: number;
+  published: boolean;
+};
+
+export type AnnouncementRow = {
+  id: string;
+  title: string;
+  content: string;
+  placement: "home_bar" | "popup";
+  enabled: boolean;
+  sortOrder: number;
+  startAt: string;
+  endAt: string;
+};
+
 export type CategoriesMap = Record<
   "escort" | "companion",
   { id: string; name: string }[]
@@ -232,5 +267,60 @@ export const api = {
 
   deleteHandler(id: string) {
     return request<void>(`/admin/handlers/${id}`, { method: "DELETE" });
+  },
+
+  listUsers() {
+    return request<ListResponse<UserRow>>("/admin/users");
+  },
+
+  updateUser(id: string, body: Partial<Omit<UserRow, "id" | "registeredAt" | "lastLoginAt">>) {
+    return request<UserRow>(`/admin/users/${id}`, {
+      method: "PUT",
+      body,
+    });
+  },
+
+  listBanners() {
+    return request<ListResponse<BannerRow>>("/admin/banners");
+  },
+
+  createBanner(body: Omit<BannerRow, "id">) {
+    return request<BannerRow>("/admin/banners", {
+      method: "POST",
+      body,
+    });
+  },
+
+  updateBanner(id: string, body: Partial<Omit<BannerRow, "id">>) {
+    return request<BannerRow>(`/admin/banners/${id}`, {
+      method: "PUT",
+      body,
+    });
+  },
+
+  deleteBanner(id: string) {
+    return request<void>(`/admin/banners/${id}`, { method: "DELETE" });
+  },
+
+  listAnnouncements() {
+    return request<ListResponse<AnnouncementRow>>("/admin/announcements");
+  },
+
+  createAnnouncement(body: Omit<AnnouncementRow, "id">) {
+    return request<AnnouncementRow>("/admin/announcements", {
+      method: "POST",
+      body,
+    });
+  },
+
+  updateAnnouncement(id: string, body: Partial<Omit<AnnouncementRow, "id">>) {
+    return request<AnnouncementRow>(`/admin/announcements/${id}`, {
+      method: "PUT",
+      body,
+    });
+  },
+
+  deleteAnnouncement(id: string) {
+    return request<void>(`/admin/announcements/${id}`, { method: "DELETE" });
   },
 };

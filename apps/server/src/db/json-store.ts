@@ -1,11 +1,12 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { loadSeedDatabase } from "./seed.js";
-import type { Database } from "./types.js";
+import { loadSeedDatabase } from "../seed.js";
+import { normalizeDatabase } from "./normalize-database.js";
+import type { Database } from "../types.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const DATA_DIR = path.resolve(__dirname, "../data");
+const DATA_DIR = path.resolve(__dirname, "../../data");
 const DB_FILE = path.join(DATA_DIR, "db.json");
 
 let cache: Database | null = null;
@@ -20,7 +21,7 @@ export async function readDb(): Promise<Database> {
 
   try {
     const raw = await readFile(DB_FILE, "utf8");
-    cache = JSON.parse(raw) as Database;
+    cache = normalizeDatabase(JSON.parse(raw) as Partial<Database>);
     return cache;
   } catch {
     cache = await loadSeedDatabase();
@@ -40,4 +41,8 @@ export async function updateDb(mutator: (db: Database) => void) {
   mutator(db);
   await writeDb(db);
   return db;
+}
+
+export function storageLabel() {
+  return "json";
 }

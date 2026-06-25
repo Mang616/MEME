@@ -111,11 +111,11 @@ export const removeProduct = pickStore(
 );
 
 export const listOrders = pickStore(
-  (userId?: string) => mysqlStore.listOrders(userId),
-  async (userId?: string) => {
+  (ownerUserId?: string) => mysqlStore.listOrders(ownerUserId),
+  async (ownerUserId?: string) => {
     const orders = await json.jsonList("orders");
-    if (!userId) return orders;
-    return orders.filter((order) => order.userId === userId);
+    if (!ownerUserId) return orders;
+    return orders.filter((order) => order.ownerUserId === ownerUserId);
   },
 );
 

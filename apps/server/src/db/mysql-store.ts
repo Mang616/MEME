@@ -221,12 +221,12 @@ export async function deleteProduct(id: string) {
   return (result[0]?.affectedRows ?? 0) > 0;
 }
 
-export async function listOrders(userId?: string): Promise<Order[]> {
+export async function listOrders(ownerUserId?: string): Promise<Order[]> {
   const db = getMysqlDb();
   const rows = await db.select().from(orders);
   const mapped = rows.map(orderFromRow);
-  if (!userId) return mapped;
-  return mapped.filter((order) => order.userId === userId);
+  if (!ownerUserId) return mapped;
+  return mapped.filter((order) => order.ownerUserId === ownerUserId);
 }
 
 export async function getOrder(id: string): Promise<Order | null> {

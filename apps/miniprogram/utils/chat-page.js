@@ -2,7 +2,8 @@
  * 聊天列表 / 聊天室状态组装
  */
 const { CHAT_TYPE, getChatTypeLabel } = require('./constants')
-const { listOrders } = require('./api/repository')
+const { listOrders, refreshOrders } = require('./api/repository')
+const auth = require('./auth')
 const {
   ensureLoaded,
   ensureMessages,
@@ -114,6 +115,10 @@ async function refreshChatFromApi(filterId = FILTER_ALL) {
 async function loadChatRoomState(conversationId) {
   await ensureLoaded()
   await ensureMessages(conversationId)
+  const raw = getConversationById(conversationId)
+  if (raw?.type === CHAT_TYPE.SERVICE && auth.isLoggedIn()) {
+    await refreshOrders()
+  }
   return buildChatRoomState(conversationId)
 }
 
@@ -130,11 +135,15 @@ function buildChatRoomState(conversationId) {
   }
 
   const isService = raw.type === CHAT_TYPE.SERVICE
+  const ownerUserId = auth.getUser()?.userId
+  const ownOrders = isService && ownerUserId
+    ? listOrders().filter((order) => order.ownerUserId === ownerUserId)
+    : []
   return {
     conversation: enrichChatRoomConversation(raw),
     messages: getMessages(conversationId).map(enrichMessage),
     canSendOrder: isService,
-    orderPickerItems: isService ? buildOrderPickerList(listOrders()) : [],
+    orderPickerItems: isService ? buildOrderPickerList(ownOrders) : [],
     orderPickerVisible: false,
     inputPlaceholder: isService ? '输入消息，或发送订单给客服' : '输入消息',
     draft: '',

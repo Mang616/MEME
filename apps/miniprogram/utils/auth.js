@@ -71,6 +71,12 @@ function getUser() {
 }
 
 function establishSession({ token, user, loginMethod }) {
+  try {
+    const repository = require('./api/repository')
+    repository.clearOrdersCache()
+  } catch (err) {
+    /* repository 未就绪 */
+  }
   const session = {
     token,
     user: normalizeSessionUser(user),
@@ -129,6 +135,18 @@ function logout() {
     wx.removeStorageSync(SESSION_KEY)
   } catch (err) {
     console.warn('[auth] remove session failed', err)
+  }
+  try {
+    const repository = require('./api/repository')
+    repository.clearOrdersCache()
+  } catch (err) {
+    /* repository 未就绪 */
+  }
+  try {
+    const { resetChatStore } = require('./chat-store')
+    resetChatStore()
+  } catch (err) {
+    /* chat-store 未就绪 */
   }
   syncGlobalLoggedIn(false)
 }

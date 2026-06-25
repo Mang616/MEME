@@ -55,9 +55,10 @@ let catalogTask = null
 
 const { setProductTags } = require('../tag-class')
 
-const ordersCache = createResourceCache(async (userId) => {
-  const query = userId ? `?userId=${encodeURIComponent(userId)}` : ''
-  const res = await request(`/orders${query}`)
+const ordersCache = createResourceCache(async () => {
+  const auth = require('../auth')
+  if (!auth.isLoggedIn()) return []
+  const res = await request('/orders')
   return res.items || []
 }, [])
 
@@ -168,6 +169,10 @@ module.exports = {
   fetchProductReviews,
   resetCatalogTask,
   resetOrdersTask: () => ordersCache.resetTask(),
+  clearOrdersCache: () => {
+    ordersCache.set([])
+    ordersCache.resetTask()
+  },
   resetBannersTask: () => bannersCache.resetTask(),
   getProducts,
   getSubCategories,

@@ -78,8 +78,8 @@ const createOrderSchema = z.object({
   }),
 });
 
-publicOrdersRouter.get("/", async (req, res) => {
-  const userId = typeof req.query.userId === "string" ? req.query.userId : undefined;
+publicOrdersRouter.get("/", requireUser, async (req, res) => {
+  const userId = (req as typeof req & { userId: string }).userId;
   const items = await withResolvedOrders(await orderService.list(userId));
   res.json({ items, total: items.length });
 });

@@ -35,7 +35,7 @@ npm run miniprogram:icons   # 从 logo.webp 生成多端 App 图标与 logo.png
 
 | 配置 | 位置 |
 |------|------|
-| API 地址 | `utils/config.js` → `apiBase` |
+| API 地址 | `config/domains.json` → `npm run config:sync` → `utils/platform-domains.js` |
 | 登录 mock 验证码 | `123456`（`utils/auth-api.js`） |
 
 ### 数据流

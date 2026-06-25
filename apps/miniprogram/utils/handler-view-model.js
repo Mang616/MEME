@@ -4,6 +4,7 @@
 const { AVATAR_GENDER } = require('./profile-avatar')
 const { withEscortLevelDisplay } = require('./escort-level')
 const { formatOnlineStatus } = require('./format')
+const { resolveLocalImage } = require('./local-image')
 
 const HANDLER_GENDER_LABEL = {
   [AVATAR_GENDER.MALE]: '男',
@@ -26,6 +27,7 @@ function buildHandlerCardViewModel(raw, selectedId = '') {
     ...raw,
     ...withEscortLevelDisplay(raw),
     ...buildGenderMeta(raw.gender),
+    avatar: resolveLocalImage(raw.avatar || ''),
     selected: raw.id === selectedId,
     onlineText: formatOnlineStatus(raw.online),
   }

@@ -1,5 +1,7 @@
 const AUTH_KEY = "meme_admin_token";
 
+import { clearAdminSession, setAdminSession, type AdminSession } from "./session";
+
 const API_BASE = import.meta.env.VITE_API_BASE ?? "/api";
 
 export class ApiError extends Error {
@@ -23,6 +25,7 @@ export function setToken(token: string) {
 
 export function clearToken() {
   sessionStorage.removeItem(AUTH_KEY);
+  clearAdminSession();
 }
 
 /** 清除旧版 mock 登录留下的无效 token */
@@ -43,6 +46,7 @@ type RequestOptions = {
   method?: string;
   body?: unknown;
   auth?: boolean;
+  formData?: FormData;
 };
 
 function redirectToLogin() {
@@ -52,9 +56,11 @@ function redirectToLogin() {
 }
 
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
+  const headers: Record<string, string> = {};
+
+  if (!options.formData) {
+    headers["Content-Type"] = "application/json";
+  }
 
   if (options.auth !== false) {
     const token = getToken();
@@ -66,7 +72,11 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
     response = await fetch(`${API_BASE}${path}`, {
       method: options.method ?? "GET",
       headers,
-      body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
+      body: options.formData
+        ? options.formData
+        : options.body !== undefined
+          ? JSON.stringify(options.body)
+          : undefined,
     });
   } catch {
     throw new ApiError(
@@ -107,7 +117,14 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   return payload as T;
 }
 
-export type LoginResponse = { token: string; username: string };
+export type LoginResponse = {
+  token: string;
+  username: string;
+  displayName: string;
+  adminId: string;
+  roles: AdminSession["roles"];
+  permissions: AdminSession["permissions"];
+};
 
 export type ListResponse<T> = { items: T[]; total: number };
 
@@ -121,11 +138,27 @@ export type OrderRow = {
   id: string;
   status: OrderStatus;
   productTitle: string;
+  productCover: string;
+  productCoverColor: string;
   totalPaid: number;
   region: string;
   gameId: string;
+  assignedPlayer: string;
   servicePlayer: string;
+  remark: string;
   orderTime: string;
+};
+
+/** 接单大厅专用：仅商品信息，不含用户/订单敏感字段 */
+export type HallOrderRow = {
+  id: string;
+  productTitle: string;
+  productCover: string;
+  productCoverColor: string;
+  totalPaid: number;
+  quantity: number;
+  /** 游戏端口原始值，展示请用 formatGamePortLabel */
+  gamePort: string;
 };
 
 export type ProductRow = {
@@ -137,8 +170,26 @@ export type ProductRow = {
   price: number;
   sold: number;
   tag: string;
+  cover: string;
+  coverColor: string;
   limitPerUser: number;
   published: boolean;
+};
+
+export type CategoryRow = {
+  serviceType: "escort" | "companion";
+  id: string;
+  name: string;
+  productCount: number;
+};
+
+export type ProductTagRow = {
+  id: string;
+  name: string;
+  style: "recommend" | "new";
+  sortOrder: number;
+  enabled: boolean;
+  productCount: number;
 };
 
 export type HandlerRow = {
@@ -149,6 +200,25 @@ export type HandlerRow = {
   serviceType: "escort" | "companion";
   gender: "male" | "female";
   online: boolean;
+  clubId: string;
+  clubName: string;
+  clubKind: "platform" | "partner";
+  isOwnClub: boolean;
+  clubEnabled: boolean;
+};
+
+export type ClubRow = {
+  id: string;
+  name: string;
+  kind: "platform" | "partner";
+  kindLabel: string;
+  isPlatform: boolean;
+  contactName: string;
+  contactPhone: string;
+  description: string;
+  enabled: boolean;
+  joinedAt: string;
+  handlerCount: number;
 };
 
 export type UserRow = {
@@ -158,9 +228,44 @@ export type UserRow = {
   avatar: string;
   vipLevel: number;
   balance: number;
+  totalConsume: number;
   status: "active" | "disabled";
   registeredAt: string;
   lastLoginAt: string;
+  inviteCode: string;
+  inviterId: string;
+  inviterNickname?: string;
+};
+
+export type UserLedgerType =
+  | "recharge"
+  | "order_pay"
+  | "admin_increment"
+  | "admin_decrement"
+  | "admin_set";
+
+export type UserLedgerEntry = {
+  id: string;
+  userId: string;
+  type: UserLedgerType;
+  consumeAmount: number;
+  balanceDelta: number;
+  balanceAfter: number;
+  totalConsumeAfter: number;
+  remark: string;
+  refId: string;
+  createdAt: string;
+};
+
+export type UserDetailPayload = {
+  user: UserRow;
+  ledger: UserLedgerEntry[];
+  orders: OrderRow[];
+  inviter: {
+    id: string;
+    nickname: string;
+    inviteCode: string;
+  } | null;
 };
 
 export type BannerRow = {
@@ -186,10 +291,197 @@ export type AnnouncementRow = {
   endAt: string;
 };
 
+export type ContentPageRow = {
+  id: string;
+  slug: string;
+  title: string;
+  payload: unknown;
+};
+
+export type VipLevelConfigItem = {
+  level: number;
+  label: string;
+  title: string;
+  icon: string;
+  bg: string;
+  color: string;
+};
+
+export type VipConfigPayload = {
+  vipMin: number;
+  vipMax: number;
+  levelList: VipLevelConfigItem[];
+};
+
+export type VipPrivilegeRow = {
+  id: string;
+  name: string;
+  value: string;
+  unlocked: boolean;
+};
+
+export type VipLevelActivityItem = {
+  level: number;
+  /** 达到该等级所需的累计消费（元） */
+  cumulativeThreshold: number;
+  /** 本级升至下一级所需增量（由累计门槛自动推算，只读展示） */
+  upgradeTarget: number;
+  privilegeRows: VipPrivilegeRow[];
+};
+
+export type VipActivityPayload = {
+  consumeLabel: string;
+  promotionRewardText: string;
+  maxLevelHint: string;
+  upgradeHintTemplate: string;
+  sectionTitle: string;
+  sectionSubtitleTemplate: string;
+  levelList: VipLevelActivityItem[];
+};
+
+export type CouponType = "fixed" | "percent";
+export type CouponScope = "all" | "escort" | "companion";
+
+export type CouponItem = {
+  id: string;
+  name: string;
+  description: string;
+  type: CouponType;
+  value: number;
+  minSpend: number;
+  maxDiscount: number;
+  validDays: number;
+  scope: CouponScope;
+  enabled: boolean;
+  sortOrder: number;
+};
+
+export type CouponsPayload = {
+  items: CouponItem[];
+};
+
+export type { InviteActivityPayload } from "@/lib/invite-activity";
+
 export type CategoriesMap = Record<
   "escort" | "companion",
   { id: string; name: string }[]
 >;
+
+export type StaffUserRow = {
+  id: string;
+  username: string;
+  displayName: string;
+  roles: AdminSession["roles"];
+  roleLabels: string[];
+  enabled: boolean;
+  createdAt: string;
+};
+
+export type AdminRoleRow = {
+  id: AdminSession["roles"][number];
+  label: string;
+  description: string;
+  locked: boolean;
+  permissionCount: number;
+};
+
+export type RolePermissionMatrix = {
+  roles: { id: AdminSession["roles"][number]; label: string; locked: boolean }[];
+  permissions: { id: string; label: string }[];
+  groups: { label: string; permissions: AdminSession["permissions"] }[];
+  matrix: Record<AdminSession["roles"][number], AdminSession["permissions"]>;
+  defaults: Record<AdminSession["roles"][number], AdminSession["permissions"]>;
+};
+
+export type UploadStatus = {
+  enabled: boolean;
+  private: boolean;
+  signExpiresSec: number;
+  origin: string;
+  bucket: string;
+  region: string;
+  folders: string[];
+};
+
+export type UploadResult = {
+  key: string;
+  storage: string;
+  url: string;
+};
+
+export type AnalyticsOverview = {
+  orders: {
+    total: number;
+    revenue: number;
+    byStatus: Record<OrderStatus, number>;
+  };
+  products: { total: number; published: number; sold: number };
+  users: { total: number; active: number };
+  handlers: { total: number; online: number };
+  service: { conversations: number; unread: number; feedbacks: number };
+};
+
+export type AnalyticsReport = {
+  range: { from: string; to: string };
+  summary: {
+    userTotal: number;
+    newUsers: number;
+    orderCount: number;
+    revenue: number;
+  };
+  daily: {
+    labels: string[];
+    newUsers: number[];
+    orders: number[];
+    revenue: number[];
+  };
+  products: {
+    byQuantity: { name: string; value: number }[];
+    byAmount: { name: string; value: number }[];
+  };
+};
+
+export type ChatRow = {
+  id: string;
+  type: string;
+  typeLabel: string;
+  /** 后台视角：会话对象（用户） */
+  name: string;
+  ownerUserId?: string;
+  ownerNickname?: string;
+  ownerPhone?: string;
+  /** 打手会话关联的服务打手 */
+  handlerName?: string;
+  lastMessage: string;
+  lastTime: string;
+  /** 员工侧未读（staffUnread） */
+  unread: number;
+  online: boolean;
+  linkedOrderId: string;
+};
+
+export type ChatMessageRow = {
+  id: string;
+  from: "self" | "other";
+  fromLabel: string;
+  content: string;
+  time: string;
+};
+
+export type FeedbackRow = {
+  id: string;
+  userId: string;
+  typeId: string;
+  typeLabel: string;
+  content: string;
+  contact: string;
+  createdAt: string;
+};
+
+export type SignMediaResult = {
+  url: string;
+  storage: string;
+};
 
 export const api = {
   login(username: string, password: string) {
@@ -197,11 +489,71 @@ export const api = {
       method: "POST",
       body: { username, password },
       auth: false,
+    }).then((result) => {
+      setToken(result.token);
+      setAdminSession({
+        username: result.username,
+        displayName: result.displayName,
+        adminId: result.adminId ?? "",
+        roles: result.roles,
+        permissions: result.permissions,
+      });
+      return result;
+    });
+  },
+
+  fetchMe() {
+    return request<LoginResponse & { ok: boolean; adminId: string }>("/admin/auth/me");
+  },
+
+  updateProfile(body: {
+    displayName?: string;
+    currentPassword?: string;
+    password?: string;
+  }) {
+    return request<LoginResponse & { ok: boolean }>("/admin/auth/me", {
+      method: "PATCH",
+      body,
+    }).then((result) => {
+      if (result.token) {
+        setToken(result.token);
+      }
+      setAdminSession({
+        username: result.username,
+        displayName: result.displayName,
+        adminId: result.adminId,
+        roles: result.roles,
+        permissions: result.permissions,
+      });
+      return result;
     });
   },
 
   listOrders() {
     return request<ListResponse<OrderRow>>("/admin/orders");
+  },
+
+  listOrderHall() {
+    return request<ListResponse<HallOrderRow>>("/admin/orders/hall");
+  },
+
+  listOrderDispatch() {
+    return request<ListResponse<OrderRow>>("/admin/orders/dispatch");
+  },
+
+  watchPendingOrders() {
+    return request<ListResponse<OrderRow>>("/admin/orders/watch");
+  },
+
+  acceptOrder(id: string) {
+    return request<HallOrderRow>(`/admin/orders/${id}/accept`, { method: "POST" });
+  },
+
+  assignOrder(id: string, body: { handlerId?: string; servicePlayer?: string }) {
+    return request<OrderRow>(`/admin/orders/${id}/assign`, {
+      method: "POST",
+      body,
+    });
   },
 
   updateOrder(
@@ -222,7 +574,62 @@ export const api = {
     return request<CategoriesMap>("/admin/products/categories");
   },
 
-  createProduct(body: Omit<ProductRow, "id" | "categoryName" | "sold"> & { sold?: number }) {
+  listCategoryRows() {
+    return request<ListResponse<CategoryRow>>("/admin/categories");
+  },
+
+  createCategory(body: Pick<CategoryRow, "serviceType" | "id" | "name">) {
+    return request<CategoryRow>("/admin/categories", {
+      method: "POST",
+      body,
+    });
+  },
+
+  updateCategory(
+    serviceType: CategoryRow["serviceType"],
+    id: string,
+    body: Pick<CategoryRow, "name">,
+  ) {
+    return request<CategoryRow>(`/admin/categories/${serviceType}/${id}`, {
+      method: "PUT",
+      body,
+    });
+  },
+
+  deleteCategory(serviceType: CategoryRow["serviceType"], id: string) {
+    return request<void>(`/admin/categories/${serviceType}/${id}`, { method: "DELETE" });
+  },
+
+  listProductTagRows() {
+    return request<ListResponse<ProductTagRow>>("/admin/product-tags");
+  },
+
+  createProductTag(
+    body: Pick<ProductTagRow, "id" | "name" | "style" | "sortOrder" | "enabled">,
+  ) {
+    return request<ProductTagRow>("/admin/product-tags", {
+      method: "POST",
+      body,
+    });
+  },
+
+  updateProductTag(
+    id: string,
+    body: Partial<Pick<ProductTagRow, "name" | "style" | "sortOrder" | "enabled">>,
+  ) {
+    return request<ProductTagRow>(`/admin/product-tags/${id}`, {
+      method: "PUT",
+      body,
+    });
+  },
+
+  deleteProductTag(id: string) {
+    return request<void>(`/admin/product-tags/${id}`, { method: "DELETE" });
+  },
+
+  createProduct(
+    body: Omit<ProductRow, "id" | "categoryName" | "sold"> & { sold?: number },
+  ) {
     return request<ProductRow>("/admin/products", {
       method: "POST",
       body,
@@ -244,7 +651,57 @@ export const api = {
     return request<ListResponse<HandlerRow>>("/admin/handlers");
   },
 
-  createHandler(body: Omit<HandlerRow, "id">) {
+  listDispatchableHandlers() {
+    return request<ListResponse<HandlerRow>>("/admin/handlers/dispatchable");
+  },
+
+  listClubs() {
+    return request<ListResponse<ClubRow>>("/admin/clubs");
+  },
+
+  createClub(body: {
+    name: string;
+    kind: ClubRow["kind"];
+    contactName: string;
+    contactPhone: string;
+    description: string;
+    enabled: boolean;
+  }) {
+    return request<ClubRow>("/admin/clubs", {
+      method: "POST",
+      body: {
+        name: body.name,
+        kind: body.kind,
+        contactName: body.contactName,
+        contactPhone: body.contactPhone,
+        description: body.description,
+        enabled: body.enabled,
+      },
+    });
+  },
+
+  updateClub(
+    id: string,
+    body: Partial<Omit<ClubRow, "id" | "kind" | "kindLabel" | "isPlatform" | "handlerCount">>,
+  ) {
+    return request<ClubRow>(`/admin/clubs/${id}`, {
+      method: "PUT",
+      body,
+    });
+  },
+
+  setClubEnabled(id: string, enabled: boolean) {
+    return request<ClubRow>(`/admin/clubs/${id}/enabled`, {
+      method: "PATCH",
+      body: { enabled },
+    });
+  },
+
+  deleteClub(id: string) {
+    return request<void>(`/admin/clubs/${id}`, { method: "DELETE" });
+  },
+
+  createHandler(body: Omit<HandlerRow, "id" | "clubName" | "clubKind" | "isOwnClub" | "clubEnabled">) {
     return request<HandlerRow>("/admin/handlers", {
       method: "POST",
       body,
@@ -273,9 +730,28 @@ export const api = {
     return request<ListResponse<UserRow>>("/admin/users");
   },
 
-  updateUser(id: string, body: Partial<Omit<UserRow, "id" | "registeredAt" | "lastLoginAt">>) {
+  getUserDetail(id: string) {
+    return request<UserDetailPayload>(`/admin/users/${id}/detail`);
+  },
+
+  updateUser(id: string, body: Partial<Omit<UserRow, "id" | "registeredAt" | "lastLoginAt" | "balance" | "vipLevel" | "totalConsume" | "inviteCode" | "inviterNickname">>) {
     return request<UserRow>(`/admin/users/${id}`, {
       method: "PUT",
+      body,
+    });
+  },
+
+  adjustUserBalance(
+    id: string,
+    body: {
+      mode: "increment" | "decrement" | "set";
+      amount: number;
+      adminPassword: string;
+      remark?: string;
+    },
+  ) {
+    return request<UserRow & { previousBalance: number }>(`/admin/users/${id}/balance`, {
+      method: "POST",
       body,
     });
   },
@@ -322,5 +798,175 @@ export const api = {
 
   deleteAnnouncement(id: string) {
     return request<void>(`/admin/announcements/${id}`, { method: "DELETE" });
+  },
+
+  listContentPages() {
+    return request<ListResponse<ContentPageRow>>("/admin/content-pages");
+  },
+
+  getContentPage(slug: string) {
+    return request<ContentPageRow>(`/admin/content-pages/${encodeURIComponent(slug)}`);
+  },
+
+  updateContentPage(slug: string, body: Partial<Pick<ContentPageRow, "title" | "payload">>) {
+    return request<ContentPageRow>(`/admin/content-pages/${encodeURIComponent(slug)}`, {
+      method: "PUT",
+      body,
+    });
+  },
+
+  getVipConfig() {
+    return request<ContentPageRow & { payload: VipConfigPayload }>("/admin/content-pages/vip-config");
+  },
+
+  updateVipConfig(payload: VipConfigPayload) {
+    return request<ContentPageRow & { payload: VipConfigPayload }>("/admin/content-pages/vip-config", {
+      method: "PUT",
+      body: { payload },
+    });
+  },
+
+  getVipActivity() {
+    return request<ContentPageRow & { payload: VipActivityPayload }>(
+      "/admin/content-pages/vip-activity",
+    );
+  },
+
+  updateVipActivity(payload: VipActivityPayload) {
+    return request<ContentPageRow & { payload: VipActivityPayload }>(
+      "/admin/content-pages/vip-activity",
+      {
+        method: "PUT",
+        body: { payload },
+      },
+    );
+  },
+
+  getCoupons() {
+    return request<ContentPageRow & { payload: CouponsPayload }>("/admin/content-pages/coupons");
+  },
+
+  updateCoupons(payload: CouponsPayload) {
+    return request<ContentPageRow & { payload: CouponsPayload }>("/admin/content-pages/coupons", {
+      method: "PUT",
+      body: { payload },
+    });
+  },
+
+  getInviteActivity() {
+    return request<ContentPageRow & { payload: InviteActivityPayload }>(
+      "/admin/content-pages/invite-activity",
+    );
+  },
+
+  updateInviteActivity(payload: InviteActivityPayload) {
+    return request<ContentPageRow & { payload: InviteActivityPayload }>(
+      "/admin/content-pages/invite-activity",
+      {
+        method: "PUT",
+        body: { payload },
+      },
+    );
+  },
+
+  getUploadStatus() {
+    return request<UploadStatus>("/admin/upload/status");
+  },
+
+  signMediaUrl(storage: string) {
+    const query = new URLSearchParams({ storage });
+    return request<SignMediaResult>(`/admin/upload/sign?${query.toString()}`);
+  },
+
+  uploadImage(
+    file: File,
+    folder: UploadStatus["folders"][number] = "common",
+    entityId?: string,
+  ) {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("folder", folder);
+    if (entityId) formData.append("entityId", entityId);
+    return request<UploadResult>("/admin/upload", {
+      method: "POST",
+      formData,
+    });
+  },
+
+  getAnalyticsOverview() {
+    return request<AnalyticsOverview>("/admin/analytics/overview");
+  },
+
+  getAnalyticsReport(from: string, to: string) {
+    const query = new URLSearchParams({ from, to });
+    return request<AnalyticsReport>(`/admin/analytics/report?${query.toString()}`);
+  },
+
+  listChats() {
+    return request<ListResponse<ChatRow>>("/admin/chats");
+  },
+
+  getChatMessages(id: string) {
+    return request<{
+      conversation: ChatRow;
+      messages: ChatMessageRow[];
+    }>(`/admin/chats/${id}/messages`);
+  },
+
+  replyChat(id: string, content: string) {
+    return request<ChatMessageRow>(`/admin/chats/${id}/messages`, {
+      method: "POST",
+      body: { content },
+    });
+  },
+
+  listFeedbacks() {
+    return request<ListResponse<FeedbackRow>>("/admin/feedbacks");
+  },
+
+  listStaffUsers() {
+    return request<ListResponse<StaffUserRow>>("/admin/staff");
+  },
+
+  listStaffRoles() {
+    return request<{ items: { id: string; label: string }[] }>("/admin/staff/roles");
+  },
+
+  createStaffUser(
+    body: Pick<StaffUserRow, "username" | "displayName" | "roles" | "enabled"> & { password: string },
+  ) {
+    return request<StaffUserRow>("/admin/staff", { method: "POST", body });
+  },
+
+  updateStaffUser(
+    id: string,
+    body: Partial<Pick<StaffUserRow, "displayName" | "roles" | "enabled">> & { password?: string },
+  ) {
+    return request<StaffUserRow>(`/admin/staff/${id}`, { method: "PUT", body });
+  },
+
+  deleteStaffUser(id: string) {
+    return request<void>(`/admin/staff/${id}`, { method: "DELETE" });
+  },
+
+  getRolePermissions() {
+    return request<RolePermissionMatrix>("/admin/permissions");
+  },
+
+  listAdminRoles() {
+    return request<ListResponse<AdminRoleRow>>("/admin/roles");
+  },
+
+  updateRolePermissions(role: AdminSession["roles"][number], permissions: string[]) {
+    return request<RolePermissionMatrix>(`/admin/permissions/${role}`, {
+      method: "PUT",
+      body: { permissions },
+    });
+  },
+
+  resetRolePermissions(role: AdminSession["roles"][number]) {
+    return request<RolePermissionMatrix>(`/admin/permissions/${role}/reset`, {
+      method: "POST",
+    });
   },
 };

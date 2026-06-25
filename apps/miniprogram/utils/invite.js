@@ -1,12 +1,13 @@
 /**
- * 邀请有礼入口（需登录，当前为 mock 提示）
+ * 邀请有礼入口
  */
 const auth = require('./auth')
-const { showMockFeature } = require('./ui')
+const { PAGE_ROUTES } = require('./constants')
+const { openInvite } = require('./nav')
 
 function handleInviteTap(redirect) {
-  if (!auth.requireLogin({ redirect })) return
-  showMockFeature('邀请有礼')
+  if (!auth.requireLogin({ redirect: redirect || PAGE_ROUTES.INVITE })) return
+  openInvite()
 }
 
 module.exports = {

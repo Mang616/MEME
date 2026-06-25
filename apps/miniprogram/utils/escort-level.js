@@ -2,6 +2,7 @@
  * 护航等级：魔王 / 王牌 / 新锐（图标与展示字段）
  */
 const { getHandlerByName } = require('./api/repository')
+const { resolveLocalImage } = require('./local-image')
 
 const ESCORT_LEVEL = {
   DEMON: 'demon',
@@ -13,19 +14,19 @@ const ESCORT_LEVEL_DEFS = {
   [ESCORT_LEVEL.DEMON]: {
     id: ESCORT_LEVEL.DEMON,
     label: '魔王',
-    icon: '/assets/escort/demon.webp',
+    icon: resolveLocalImage('/assets/escort/demon.webp'),
     badgeClass: 'handler-card__level--demon',
   },
   [ESCORT_LEVEL.ACE]: {
     id: ESCORT_LEVEL.ACE,
     label: '王牌',
-    icon: '/assets/escort/ace.webp',
+    icon: resolveLocalImage('/assets/escort/ace.webp'),
     badgeClass: 'handler-card__level--ace',
   },
   [ESCORT_LEVEL.ROOKIE]: {
     id: ESCORT_LEVEL.ROOKIE,
     label: '新锐',
-    icon: '/assets/escort/rookie.webp',
+    icon: resolveLocalImage('/assets/escort/rookie.webp'),
     badgeClass: 'handler-card__level--rookie',
   },
 }

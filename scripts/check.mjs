@@ -215,6 +215,12 @@ async function assertMiniprogramDocs() {
 }
 
 await assertWebsite();
+
+spawnSync(process.execPath, [fromRoot("scripts/sync-domains.mjs")], {
+  cwd: ROOT,
+  stdio: "inherit",
+});
+
 assertMiniprogram();
 await assertAdmin();
 await assertServer();

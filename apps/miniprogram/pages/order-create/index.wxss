@@ -151,49 +151,6 @@
   box-sizing: border-box;
 }
 
-.order-create__picker {
-  flex: 1;
-  min-width: 0;
-  height: 72rpx;
-  padding: 0 20rpx;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8rpx;
-  background: var(--color-bg-elevated);
-  border: 1rpx solid var(--color-border);
-  border-radius: var(--radius-md);
-  box-sizing: border-box;
-}
-
-.order-create__picker-value {
-  font-size: 28rpx;
-  color: var(--color-text);
-  text-align: right;
-}
-
-.order-create__picker-arrow {
-  font-size: 32rpx;
-  color: var(--color-text-muted);
-  line-height: 1;
-  flex-shrink: 0;
-}
-
-.order-create__field--handler {
-  align-items: center;
-}
-
-.order-create__picker--handler {
-  justify-content: space-between;
-}
-
-.order-create__picker-placeholder {
-  flex: 1;
-  font-size: 28rpx;
-  color: var(--color-text-muted);
-  text-align: right;
-}
-
 .order-create__handler-picked {
   flex: 1;
   min-width: 0;
@@ -201,6 +158,12 @@
   align-items: center;
   justify-content: flex-end;
   gap: 10rpx;
+}
+
+.order-create__handler-name {
+  font-size: 28rpx;
+  color: var(--color-text);
+  line-height: 1.2;
 }
 
 .order-create__handler-level-icon {
@@ -332,6 +295,27 @@
   text-align: center;
   border-radius: var(--radius-pill);
   box-sizing: border-box;
+}
+
+.order-create__field--readonly {
+  align-items: center;
+}
+
+.order-create__discount-value {
+  flex: 1;
+  min-width: 0;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--color-mint);
+  text-align: right;
+  line-height: 1.2;
+}
+
+.order-create-footer__sum-origin {
+  font-size: 22rpx;
+  color: var(--color-text-muted);
+  text-decoration: line-through;
+  line-height: 1.2;
 }
 
 .order-create-footer__submit.is-loading {

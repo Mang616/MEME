@@ -3,6 +3,7 @@
   flex: 1;
   min-height: 0;
   width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -13,6 +14,7 @@
   flex: 1;
   min-height: 0;
   width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -81,10 +83,9 @@
   letter-spacing: 0.08em;
 }
 
-/* 与 layout.wxss 中 .page-scroll 同构，勿再叠加 page-scroll 类 */
+/* Skyline：scroll-view 需要明确高度（勿用 height:0 或无效的 enableScrollViewAutoSize） */
 .pull-refresh-scroll__main {
-  flex: 1;
-  min-height: 0;
-  height: 0;
   width: 100%;
+  height: 100%;
+  box-sizing: border-box;
 }

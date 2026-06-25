@@ -1,45 +1,73 @@
 /**
- * VIP 等级解析与详情页数据
+ * VIP 等级解析与详情页状态
  */
 const auth = require('./auth')
-const { VIP_MIN, VIP_MAX, VIP_LEVEL_LIST, getVipLevelDef } = require('./mock/vip-levels')
-const { buildVipProgressMock } = require('./mock/vip-progress')
-const { buildPrivilegeSection, levelTag } = require('./mock/vip-privileges')
+const {
+  ensureVipConfig,
+  getVipConfigSync,
+  clampVipLevel,
+  getVipLevelDef,
+} = require('./vip-config')
+const {
+  ensureVipActivity,
+  buildPrivilegeSection,
+  levelTag,
+} = require('./vip-activity')
+const { buildVipProgress } = require('./vip-progress')
+const { resolveLocalImage } = require('./local-image')
 
 const VIP_ASSETS = {
-  bg: '/assets/level/bg.webp',
-  decoLeft: '/assets/level/left.webp',
-  decoRight: '/assets/level/right.webp',
-  gift: '/assets/level/gift.webp',
+  bg: resolveLocalImage('/assets/level/bg.webp'),
+  decoLeft: resolveLocalImage('/assets/level/left.webp'),
+  decoRight: resolveLocalImage('/assets/level/right.webp'),
+  gift: resolveLocalImage('/assets/level/gift.webp'),
 }
 
 const TIMELINE_WINDOW = 5
 
-/** 时间轴：previewLevel 为选中预览档，userLevel 为用户真实等级 */
+function parseVipLevelInput(vipLevel) {
+  if (typeof vipLevel === 'number') return vipLevel
+  if (vipLevel === undefined || vipLevel === null || vipLevel === '') return null
+  const digits = String(vipLevel).replace(/\D/g, '')
+  return digits ? parseInt(digits, 10) : null
+}
+
+function timelineNodeStyles(isSelected) {
+  if (!isSelected) {
+    return {
+      labelStyle: 'font-size:24rpx;color:rgba(255,255,255,0.38);',
+      dotStyle: '',
+    }
+  }
+  return {
+    labelStyle: 'font-size:32rpx;font-weight:700;color:#ff3b30;',
+    dotStyle:
+      'width:20rpx;height:20rpx;background:#ff3b30;box-shadow:0 0 12rpx rgba(255,59,48,0.85);',
+  }
+}
+
 function buildTimeline(previewLevel, userLevel) {
-  const preview = clampLevel(previewLevel)
-  const user = clampLevel(userLevel)
-  const startMin = VIP_MIN === 0 ? 0 : 1
+  const { vipMin, vipMax } = getVipConfigSync()
+  const preview = clampVipLevel(previewLevel, 1)
+  const user = clampVipLevel(userLevel, 1)
+  const startMin = vipMin === 0 ? 0 : 1
   let start = Math.max(startMin, preview - 2)
   let end = start + TIMELINE_WINDOW - 1
-  if (end > VIP_MAX) {
-    end = VIP_MAX
+  if (end > vipMax) {
+    end = vipMax
     start = Math.max(startMin, end - TIMELINE_WINDOW + 1)
   }
 
   const items = []
   for (let level = start; level <= end; level += 1) {
     const isSelected = level === preview
+    const styles = timelineNodeStyles(isSelected)
     items.push({
       level,
+      // 时间轴用 V0/Vn，与详情区 levelTag（VIP0/Vn）区分
       label: level === 0 ? 'V0' : `V${level}`,
       isSelected,
-      labelStyle: isSelected
-        ? 'font-size:32rpx;font-weight:700;color:#ff3b30;'
-        : 'font-size:24rpx;color:rgba(255,255,255,0.38);',
-      dotStyle: isSelected
-        ? 'width:20rpx;height:20rpx;background:#ff3b30;box-shadow:0 0 12rpx rgba(255,59,48,0.85);'
-        : '',
+      ...styles,
       isUserLevel: level === user,
       isPast: level < user,
     })
@@ -47,27 +75,12 @@ function buildTimeline(previewLevel, userLevel) {
   return items
 }
 
-function clampLevel(level) {
-  const n = parseInt(level, 10)
-  if (Number.isNaN(n)) return 1
-  return Math.max(VIP_MIN, Math.min(VIP_MAX, n))
-}
-
-/**
- * @param {number|string|undefined} vipLevel
- * @param {{ guest?: boolean }} [options]
- */
 function resolveVipLevel(vipLevel, options = {}) {
-  let level = 1
-  if (typeof vipLevel === 'number') {
-    level = vipLevel
-  } else if (vipLevel !== undefined && vipLevel !== null && vipLevel !== '') {
-    const digits = String(vipLevel).replace(/\D/g, '')
-    level = digits ? parseInt(digits, 10) : 1
-  }
-  level = clampLevel(level)
+  const parsed = parseVipLevelInput(vipLevel)
+  const level = clampVipLevel(parsed === null ? 1 : parsed, 1)
   const def = getVipLevelDef(level)
   const label = options.guest ? '登录查看' : def.label
+
   return {
     level: def.level,
     label,
@@ -84,12 +97,15 @@ function buildVipLevelPageState(previewLevel) {
   const raw = loggedIn ? auth.getUser() : null
   const current = resolveVipLevel(loggedIn ? raw.vipLevel : 0)
   const userLevel = current.level
-  const preview = clampLevel(
-    previewLevel !== undefined && previewLevel !== null ? previewLevel : userLevel,
-  )
-  const progress = buildVipProgressMock(userLevel)
+  const preview =
+    previewLevel !== undefined && previewLevel !== null
+      ? clampVipLevel(previewLevel, userLevel)
+      : userLevel
+  const { vipMax } = getVipConfigSync()
+  const progress = loggedIn ? buildVipProgress(raw) : buildVipProgress({ vipLevel: 0, totalConsume: 0 })
   const timeline = buildTimeline(preview, userLevel)
   const privilege = buildPrivilegeSection(preview)
+
   return {
     loggedIn,
     current,
@@ -103,13 +119,24 @@ function buildVipLevelPageState(previewLevel) {
     privilegeSectionTitle: privilege.sectionTitle,
     privilegeSectionSubtitle: privilege.sectionSubtitle,
     privilegeRows: privilege.privilegeRows,
-    maxLevel: VIP_MAX,
+    maxLevel: vipMax,
   }
+}
+
+async function loadVipLevelPageState(previewLevel) {
+  await Promise.all([ensureVipConfig(), ensureVipActivity()])
+  if (auth.isLoggedIn()) {
+    try {
+      await auth.syncProfile()
+    } catch (err) {
+      console.warn('[vip-level] sync profile failed', err.message)
+    }
+  }
+  return buildVipLevelPageState(previewLevel)
 }
 
 module.exports = {
   resolveVipLevel,
   buildVipLevelPageState,
-  buildTimeline,
-  clampLevel,
+  loadVipLevelPageState,
 }

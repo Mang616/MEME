@@ -1,158 +1,108 @@
 /**
- * 登录 / 绑定手机 API（mock；后端就绪后对接 wx.request）
+ * 登录 / 绑定手机 / 用户资料 API
  */
-const { apiBase, ENV } = require('./config')
+const { request } = require('./api/request')
+const { normalizePhone } = require('./user-profile')
+const { getPendingInviter, clearPendingInviter } = require('./invite-storage')
 
-/** 开发环境固定验证码，便于联调 */
-const MOCK_SMS_CODE = '123456'
-const SMS_STORAGE_PREFIX = 'dev_sms_'
-
-function normalizePhone(phone) {
-  const digits = String(phone || '').replace(/\D/g, '')
-  if (!/^1\d{10}$/.test(digits)) return null
-  return digits
-}
-
-function delay(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms))
-}
-
-function verifySmsCode(normalized, smsCode) {
-  const code = String(smsCode || '').trim()
-  if (!/^\d{6}$/.test(code)) {
-    throw new Error('请输入 6 位验证码')
-  }
-
-  let expected = MOCK_SMS_CODE
-  try {
-    const cached = wx.getStorageSync(`${SMS_STORAGE_PREFIX}${normalized}`)
-    if (cached && cached.code) expected = cached.code
-  } catch (err) {
-    /* ignore */
-  }
-
-  if (code !== expected) {
-    throw new Error('验证码错误')
-  }
-}
-
-function buildSmsUser(phone) {
-  const tail = phone.slice(-4)
-  return {
-    nickname: `用户${tail}`,
-    avatar: '/assets/profile/boys.webp',
-    avatarGender: 'male',
-    phone,
-    vipLevel: 1,
-    balance: 0,
-    couponCount: 0,
-    userId: String(100000 + parseInt(phone.slice(-6), 10) % 900000),
-  }
-}
-
-function buildWechatUser(code) {
-  const seed = (code || '').slice(-6) || String(Date.now()).slice(-6)
-  return {
-    nickname: `微信用户${seed}`,
-    avatar: '/assets/profile/boys.webp',
-    avatarGender: 'male',
-    phone: '',
-    vipLevel: 1,
-    balance: 0,
-    couponCount: 0,
-    userId: String(200000 + parseInt(seed.replace(/\D/g, '') || '0', 10) % 800000),
-  }
-}
-
-async function sendSmsCode(phone, scene = 'login') {
+function assertPhone(phone, message = '请输入正确的 11 位手机号') {
   const normalized = normalizePhone(phone)
-  if (!normalized) {
-    throw new Error('请输入正确的 11 位手机号')
-  }
-
-  // TODO: POST ${apiBase}/auth/sms/send { phone, scene }
-  await delay(ENV === 'dev' ? 400 : 600)
-
-  try {
-    wx.setStorageSync(`${SMS_STORAGE_PREFIX}${normalized}`, {
-      code: MOCK_SMS_CODE,
-      sentAt: Date.now(),
-      scene,
-    })
-  } catch (err) {
-    console.warn('[auth-api] cache sms code failed', err)
-  }
-
-  const result = { phone: normalized }
-  if (ENV === 'dev') {
-    result.devHint = `开发环境验证码：${MOCK_SMS_CODE}`
-  }
-  return result
+  if (!normalized) throw new Error(message)
+  return normalized
 }
 
-async function loginWithSms(phone, code) {
-  const normalized = normalizePhone(phone)
-  if (!normalized) {
-    throw new Error('请输入正确的手机号')
-  }
-  verifySmsCode(normalized, code)
-
-  // TODO: POST ${apiBase}/auth/sms/login { phone, code }
-  await delay(500)
-
-  return {
-    token: `mock_sms_${normalized}_${Date.now()}`,
-    user: buildSmsUser(normalized),
-  }
-}
-
-/**
- * 已登录用户绑定手机号（不换 token、不覆盖昵称等资料）
- */
-async function bindPhone(phone, code) {
-  const normalized = normalizePhone(phone)
-  if (!normalized) {
-    throw new Error('请输入正确的手机号')
-  }
-  verifySmsCode(normalized, code)
-
-  // TODO: POST ${apiBase}/user/bind-phone { phone, code }
-  await delay(500)
-
-  return { phone: normalized }
-}
-
-function loginWithWechat() {
+function wxLoginCode() {
   return new Promise((resolve, reject) => {
     wx.login({
       timeout: 10000,
-      success: async (res) => {
+      success: (res) => {
         if (!res.code) {
           reject(new Error('微信登录失败，请重试'))
           return
         }
-        try {
-          // TODO: POST ${apiBase}/auth/wechat { code }
-          await delay(500)
-          resolve({
-            token: `mock_wx_${Date.now()}`,
-            user: buildWechatUser(res.code),
-          })
-        } catch (err) {
-          reject(err instanceof Error ? err : new Error('微信登录失败'))
-        }
+        resolve(res.code)
       },
       fail: () => reject(new Error('微信登录失败，请检查网络')),
     })
   })
 }
 
+async function postAuth(path, body) {
+  const inviterCode = getPendingInviter() || undefined
+  const result = await request(path, {
+    method: 'POST',
+    body: inviterCode ? { ...body, inviterCode } : body,
+    auth: false,
+  })
+  // 仅在服务端已写入上级或本次未携带邀请码时清除，避免无效码被误删
+  if (inviterCode && result.user && result.user.inviterId) {
+    clearPendingInviter()
+  }
+  return result
+}
+
+async function sendSmsCode(phone, scene = 'login') {
+  const normalized = assertPhone(phone)
+  return request('/auth/sms/send', {
+    method: 'POST',
+    body: { phone: normalized, scene },
+    auth: false,
+  })
+}
+
+async function loginWithSms(phone, code) {
+  const normalized = assertPhone(phone, '请输入正确的手机号')
+  return postAuth('/auth/sms/login', {
+    phone: normalized,
+    code: String(code || '').trim(),
+  })
+}
+
+async function fetchMe() {
+  const result = await request('/user/me')
+  return result.user
+}
+
+async function updateProfile(body) {
+  const result = await request('/user/me', {
+    method: 'PATCH',
+    body,
+  })
+  return result.user
+}
+
+async function bindPhone(phone, code) {
+  const normalized = assertPhone(phone)
+  return request('/user/bind-phone', {
+    method: 'POST',
+    body: { phone: normalized, code: String(code || '').trim() },
+  })
+}
+
+async function recharge(amount) {
+  return request('/user/recharge', {
+    method: 'POST',
+    body: { amount: Number(amount) },
+  })
+}
+
+async function fetchLedger() {
+  return request('/user/ledger')
+}
+
+async function loginWithWechat() {
+  const code = await wxLoginCode()
+  return postAuth('/auth/wechat', { code })
+}
+
 module.exports = {
-  apiBase,
-  MOCK_SMS_CODE,
   normalizePhone,
   sendSmsCode,
   loginWithSms,
+  fetchMe,
+  updateProfile,
   bindPhone,
+  recharge,
+  fetchLedger,
   loginWithWechat,
 }

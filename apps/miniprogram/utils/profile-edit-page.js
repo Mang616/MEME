@@ -5,21 +5,22 @@ const auth = require('./auth')
 const profileAvatar = require('./profile-avatar')
 const { PROFILE_GENDER_OPTIONS } = profileAvatar
 const { maskPhone } = require('./format')
+const { NICKNAME_MAX_LENGTH } = require('./user-profile')
 
-const NICKNAME_MAX = 20
+const NICKNAME_MAX = NICKNAME_MAX_LENGTH
 
 function resolveGenderLabel(genderId) {
   const match = PROFILE_GENDER_OPTIONS.find((item) => item.id === genderId)
   return match ? match.label : '请选择'
 }
 
-function initProfileEditPage() {
+function buildProfileEditState(overrides = {}) {
   const user = auth.getUser() || {}
   const avatarGender = profileAvatar.resolveGender(user)
   return {
     nickname: user.nickname || '',
     avatarGender,
-    avatarSrc: profileAvatar.getAvatarSrc(avatarGender),
+    avatarSrc: profileAvatar.resolveUserAvatarSrc(user),
     genderLabel: resolveGenderLabel(avatarGender),
     genderOptions: PROFILE_GENDER_OPTIONS,
     phoneMasked: maskPhone(user.phone),
@@ -27,6 +28,7 @@ function initProfileEditPage() {
     nicknameMax: NICKNAME_MAX,
     saving: false,
     genderSheetVisible: false,
+    ...overrides,
   }
 }
 
@@ -39,6 +41,6 @@ function validateNickname(value) {
 
 module.exports = {
   NICKNAME_MAX,
-  initProfileEditPage,
+  buildProfileEditState,
   validateNickname,
 }

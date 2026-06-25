@@ -12,7 +12,8 @@
         <view class="order-create__product card">
           <view class="order-create__thumb-wrap">
             <cover-media
-              src="{{product.cover}}"
+              src="{{product.coverDisplay || product.cover}}"
+              media-key="{{product.coverKey}}"
               color="{{product.coverColor}}"
               placeholder-class="order-create__thumb cover-placeholder"
               image-class="order-create__thumb"
@@ -31,20 +32,11 @@
         <view class="order-create__section card">
           <text class="order-create__section-title">服务信息</text>
 
-          <view class="order-create__field">
-            <text class="order-create__label">游戏大区</text>
-            <picker
-              mode="selector"
-              range="{{regionOptions}}"
-              value="{{regionIndex}}"
-              bindchange="onRegionChange"
-            >
-              <view class="order-create__picker">
-                <text class="order-create__picker-value">{{regionLabel}}</text>
-                <text class="order-create__picker-arrow">›</text>
-              </view>
-            </picker>
-          </view>
+          <form-select
+            label="游戏大区"
+            value="{{regionLabel}}"
+            bind:tap="onOpenRegionPicker"
+          />
 
           <view class="order-create__field">
             <text class="order-create__label">游戏 ID</text>
@@ -67,33 +59,28 @@
             />
           </view>
 
-          <view
-            class="order-create__field order-create__field--handler"
+          <form-select
             wx:if="{{!autoAssignPlayer}}"
-            bindtap="onPickHandler"
+            label="选择打手"
+            placeholder="请选择打手"
+            value="{{handlerId ? handlerLabel : ''}}"
+            bind:tap="onPickHandler"
           >
-            <text class="order-create__label">选择打手</text>
-            <view class="order-create__picker order-create__picker--handler">
-              <block wx:if="{{handlerId}}">
-                <view class="order-create__handler-picked">
-                  <image
-                    wx:if="{{handlerLevelIcon}}"
-                    class="order-create__handler-level-icon"
-                    src="{{handlerLevelIcon}}"
-                    mode="aspectFit"
-                  />
-                  <text class="order-create__picker-value">{{handlerLabel}}</text>
-                  <text
-                    wx:if="{{handlerGenderLabel}}"
-                    class="order-create__handler-gender"
-                  >{{handlerGenderLabel}}</text>
-                  <text class="order-create__handler-level">{{handlerLevelLabel}}</text>
-                </view>
-              </block>
-              <text wx:else class="order-create__picker-placeholder">请选择打手</text>
-              <text class="order-create__picker-arrow">›</text>
+            <view slot="value" wx:if="{{handlerId}}" class="order-create__handler-picked">
+              <image
+                wx:if="{{handlerLevelIcon}}"
+                class="order-create__handler-level-icon"
+                src="{{handlerLevelIcon}}"
+                mode="aspectFit"
+              />
+              <text class="order-create__handler-name">{{handlerLabel}}</text>
+              <text
+                wx:if="{{handlerGenderLabel}}"
+                class="order-create__handler-gender"
+              >{{handlerGenderLabel}}</text>
+              <text class="order-create__handler-level">{{handlerLevelLabel}}</text>
             </view>
-          </view>
+          </form-select>
 
           <view class="order-create__field order-create__field--qty">
             <text class="order-create__label">购买数量</text>
@@ -124,6 +111,24 @@
           </view>
         </view>
 
+        <view class="order-create__section card">
+          <text class="order-create__section-title">优惠信息</text>
+
+          <form-select
+            label="优惠券"
+            placeholder="请选择优惠券"
+            value="{{selectedCouponId ? selectedCouponLabel : ''}}"
+            active="{{!!selectedCouponId}}"
+            loading="{{couponLoading}}"
+            bind:tap="onOpenCouponPicker"
+          />
+
+          <view wx:if="{{hasCouponDiscount}}" class="order-create__field order-create__field--readonly">
+            <text class="order-create__label">优惠减免</text>
+            <text class="order-create__discount-value">-¥{{couponDiscountDisplay}}</text>
+          </view>
+        </view>
+
         <view class="order-create__tip">
           <text class="order-create__tip-text">ⓘ {{notice}} · 下单即表示同意平台服务规则</text>
         </view>
@@ -136,6 +141,7 @@
       <view class="page-footer-bar__inner order-create-footer__inner">
         <view class="order-create-footer__sum">
           <text class="order-create-footer__sum-label">实付</text>
+          <text wx:if="{{hasCouponDiscount}}" class="order-create-footer__sum-origin">¥{{subtotalDisplay}}</text>
           <text class="order-create-footer__sum-value">¥{{totalPaidDisplay}}</text>
         </view>
         <view
@@ -146,5 +152,26 @@
         </view>
       </view>
     </view>
+
+    <select-sheet
+      show="{{showRegionPicker}}"
+      title="选择游戏大区"
+      options="{{regionSheetOptions}}"
+      selected-id="{{regionSelectedId}}"
+      bind:close="onCloseRegionPicker"
+      bind:select="onSelectRegion"
+    />
+
+    <select-sheet
+      show="{{showCouponPicker}}"
+      title="选择优惠券"
+      options="{{couponSheetOptions}}"
+      selected-id="{{selectedCouponId}}"
+      loading="{{couponLoading}}"
+      empty-text="暂无可用优惠券"
+      bind:close="onCloseCouponPicker"
+      bind:select="onSelectCoupon"
+      bind:reject="onRejectCoupon"
+    />
   </block>
 </page-shell>

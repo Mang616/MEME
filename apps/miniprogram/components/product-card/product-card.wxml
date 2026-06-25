@@ -1,15 +1,16 @@
-<wxs src="../../wxs/product.wxs" module="p" />
-
 <view class="product-card product-card--embed" bindtap="onTap">
   <view class="cover-wrap">
-    <cover-media
-      src="{{product.cover}}"
-      color="{{product.coverColor}}"
-      lazy-load="{{true}}"
-    />
+    <view class="cover-wrap__slot">
+      <cover-media
+        src="{{product.coverDisplay || product.cover}}"
+        media-key="{{product.coverKey}}"
+        color="{{product.coverColor}}"
+        lazy-load="{{false}}"
+      />
+    </view>
     <text
       wx:if="{{product.tag}}"
-      class="cover-tag {{p.tagClass(product.tag)}}"
+      class="cover-tag {{product.tagClass}}"
     >{{product.tag}}</text>
     <view class="cover-foot">
       <price-badge value="{{product.priceDisplay}}" size="sm" thin />

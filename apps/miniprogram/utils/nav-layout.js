@@ -6,14 +6,21 @@
  * --nav-total-h   二者之和，组件总高度
  */
 function buildNavBarMetrics() {
-  const sys = wx.getWindowInfo() || wx.getSystemInfoSync()
-  const platform = (wx.getDeviceInfo() || wx.getSystemInfoSync()).platform
-  const safeTop = sys.safeArea?.top ?? 0
-  const barHeight = platform === 'android' ? 48 : 44
+  const { getWindowMetrics } = require('./page-layout')
+  const m = getWindowMetrics()
+  const platform = readDevicePlatform()
 
   return {
     isIos: platform !== 'android',
-    metricsStyle: `--nav-safe-top:${safeTop}px;--nav-bar-h:${barHeight}px`,
+    metricsStyle: `--nav-safe-top:${m.safeTop}px;--nav-bar-h:${m.barH}px`,
+  }
+}
+
+function readDevicePlatform() {
+  try {
+    return wx.getDeviceInfo().platform
+  } catch {
+    return 'devtools'
   }
 }
 

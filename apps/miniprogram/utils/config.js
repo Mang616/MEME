@@ -1,25 +1,49 @@
 /**
- * 全局配置
+ * 全局配置（域名见 config/domains.json → npm run config:sync）
  */
-const ENV = 'dev'
+const platform = require('./platform-domains')
 
-const API_BASE = {
-  dev: 'http://localhost:3000/api',
-  prod: 'https://your-api.example.com/api',
+const { development, miniprogram, prodApiBase } = platform
+const ENV = miniprogram.env === 'prod' ? 'prod' : 'dev'
+
+function getDevApiBase() {
+  try {
+    const override = wx.getStorageSync('DEV_API_BASE')
+    if (override && typeof override === 'string') {
+      return override.replace(/\/$/, '')
+    }
+  } catch (err) {
+    /* storage 未就绪 */
+  }
+
+  try {
+    const device = wx.getDeviceInfo()
+    if (device.platform === 'devtools') {
+      return `http://${development.apiHost}:${development.apiPort}/api`
+    }
+  } catch (err) {
+    /* wx 未就绪 */
+  }
+
+  return `http://${development.lanHost}:${development.apiPort}/api`
+}
+
+function getApiBase() {
+  if (ENV === 'dev') return getDevApiBase()
+  return prodApiBase
 }
 
 module.exports = {
   ENV,
-  apiBase: API_BASE[ENV] || API_BASE.dev,
-  /** 界面展示用品牌名（不含副标题） */
-  storeName: '迷因电竞',
-  /** 文档/README 等完整称谓 */
-  storeNameDoc: '迷因电竞（meme电竞）',
-  /** 品牌 Logo（页面内展示，非微信后台小程序图标） */
+  platform,
+  getApiBase,
+  get apiBase() {
+    return getApiBase()
+  },
+  storeName: platform.brand.name,
+  storeNameDoc: platform.brand.nameDoc,
   brandLogo: '/assets/brand/logo.png',
-  /** 首页未成年人下单提示 */
   minorOrderNotice: '未成年人禁止下单',
-  /** 商品详情页合规声明 */
   platformNotice:
     '平台所有商品不涉及游戏代练、游戏装备及其他虚拟商品交易',
 }

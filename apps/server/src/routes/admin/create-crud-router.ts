@@ -1,5 +1,8 @@
-import { Router } from "express";
+import { Router, type RequestHandler } from "express";
 import type { z } from "zod";
+import type { AdminPermission } from "../../constants/admin-rbac.js";
+import { paramString } from "../../lib/request-params.js";
+import { requireRead, requireWrite } from "../../middleware/admin-api-policy.js";
 
 type CrudService<T, CreateInput, UpdateInput = Partial<CreateInput>> = {
   list: () => Promise<T[]>;
@@ -15,9 +18,19 @@ type CrudRouterOptions<T, CreateInput, UpdateInput = Partial<CreateInput>> = {
   partialBodySchema: z.ZodTypeAny;
   entityLabel: string;
   existsError: string;
+  readPermissions?: readonly AdminPermission[];
+  writePermissions?: readonly AdminPermission[];
   mapResponse?: (item: T) => unknown;
   beforeCreate?: (input: CreateInput) => CreateInput;
 };
+
+function readGuard(permissions?: readonly AdminPermission[]): RequestHandler[] {
+  return permissions?.length ? [requireRead(...permissions)] : [];
+}
+
+function writeGuard(permissions?: readonly AdminPermission[]): RequestHandler[] {
+  return permissions?.length ? [requireWrite(...permissions)] : [];
+}
 
 export function createAdminCrudRouter<T, CreateInput, UpdateInput = Partial<CreateInput>>(
   options: CrudRouterOptions<T, CreateInput, UpdateInput>,
@@ -25,13 +38,13 @@ export function createAdminCrudRouter<T, CreateInput, UpdateInput = Partial<Crea
   const router = Router();
   const toResponse = options.mapResponse ?? ((item: T) => item);
 
-  router.get("/", async (_req, res) => {
+  router.get("/", ...readGuard(options.readPermissions), async (_req, res) => {
     const items = await options.service.list();
     res.json({ items, total: items.length });
   });
 
-  router.get("/:id", async (req, res) => {
-    const item = await options.service.getById(req.params.id);
+  router.get("/:id", ...readGuard(options.readPermissions), async (req, res) => {
+    const item = await options.service.getById(paramString(req.params.id));
     if (!item) {
       res.status(404).json({ error: "NOT_FOUND", message: `${options.entityLabel}不存在` });
       return;
@@ -39,7 +52,7 @@ export function createAdminCrudRouter<T, CreateInput, UpdateInput = Partial<Crea
     res.json(toResponse(item));
   });
 
-  router.post("/", async (req, res) => {
+  router.post("/", ...writeGuard(options.writePermissions), async (req, res) => {
     const parsed = options.bodySchema.safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({
@@ -64,7 +77,7 @@ export function createAdminCrudRouter<T, CreateInput, UpdateInput = Partial<Crea
     }
   });
 
-  router.put("/:id", async (req, res) => {
+  router.put("/:id", ...writeGuard(options.writePermissions), async (req, res) => {
     const parsed = options.partialBodySchema.safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({
@@ -74,7 +87,7 @@ export function createAdminCrudRouter<T, CreateInput, UpdateInput = Partial<Crea
       return;
     }
 
-    const updated = await options.service.update(req.params.id, parsed.data as UpdateInput);
+    const updated = await options.service.update(paramString(req.params.id), parsed.data as UpdateInput);
     if (!updated) {
       res.status(404).json({ error: "NOT_FOUND", message: `${options.entityLabel}不存在` });
       return;
@@ -83,8 +96,8 @@ export function createAdminCrudRouter<T, CreateInput, UpdateInput = Partial<Crea
     res.json(toResponse(updated));
   });
 
-  router.delete("/:id", async (req, res) => {
-    const ok = await options.service.remove(req.params.id);
+  router.delete("/:id", ...writeGuard(options.writePermissions), async (req, res) => {
+    const ok = await options.service.remove(paramString(req.params.id));
     if (!ok) {
       res.status(404).json({ error: "NOT_FOUND", message: `${options.entityLabel}不存在` });
       return;

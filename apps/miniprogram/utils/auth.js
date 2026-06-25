@@ -1,18 +1,15 @@
 /**
- * 登录态：本地 session + 订阅通知（验证码 / 微信）
+ * 登录态：本地 session 缓存 + 服务端用户资料同步
  */
 const { LOGIN_METHOD } = require('./constants')
 const authApi = require('./auth-api')
 const profileAvatar = require('./profile-avatar')
 
-const STORAGE_KEY = 'auth_session'
-
-/** @type {Set<(session: object|null) => void>} */
-const subscribers = new Set()
+const SESSION_KEY = 'auth_session'
 
 function readSession() {
   try {
-    const raw = wx.getStorageSync(STORAGE_KEY)
+    const raw = wx.getStorageSync(SESSION_KEY)
     if (!raw || typeof raw !== 'object' || !raw.token || !raw.user) return null
     return raw
   } catch (err) {
@@ -22,17 +19,7 @@ function readSession() {
 }
 
 function writeSession(session) {
-  wx.setStorageSync(STORAGE_KEY, session)
-}
-
-function notify(session) {
-  subscribers.forEach((fn) => {
-    try {
-      fn(session)
-    } catch (err) {
-      console.error('[auth] subscriber error', err)
-    }
-  })
+  wx.setStorageSync(SESSION_KEY, session)
 }
 
 function syncGlobalLoggedIn(loggedIn) {
@@ -45,6 +32,29 @@ function syncGlobalLoggedIn(loggedIn) {
   } catch (err) {
     /* App 未就绪 */
   }
+}
+
+/** 合并服务端用户字段并计算展示用 avatarSrc */
+function normalizeSessionUser(user) {
+  const avatarGender = profileAvatar.normalizeGender(user?.avatarGender)
+  const normalized = { ...user, avatarGender }
+  return {
+    ...normalized,
+    avatarSrc: profileAvatar.resolveUserAvatarSrc(normalized),
+  }
+}
+
+function applyServerUser(user) {
+  const session = readSession()
+  if (!session || !user) return null
+  session.user = normalizeSessionUser(user)
+  writeSession(session)
+  syncGlobalLoggedIn(true)
+  return session.user
+}
+
+function assertLoggedIn() {
+  if (!readSession()) throw new Error('请先登录')
 }
 
 function isLoggedIn() {
@@ -60,82 +70,67 @@ function getUser() {
   return session ? { ...session.user } : null
 }
 
-function getLoginMethod() {
-  const session = readSession()
-  return session ? session.loginMethod || '' : ''
-}
-
 function establishSession({ token, user, loginMethod }) {
-  const avatarGender = profileAvatar.resolveGender(user)
   const session = {
     token,
-    user: {
-      ...user,
-      avatarGender,
-      avatar: profileAvatar.getAvatarSrc(avatarGender),
-    },
+    user: normalizeSessionUser(user),
     loginMethod,
     loginAt: Date.now(),
   }
   writeSession(session)
   syncGlobalLoggedIn(true)
-  notify(session)
   return session
 }
 
-async function loginBySms(phone, code) {
-  const result = await authApi.loginWithSms(phone, code)
+async function loginVia(apiCall, loginMethod) {
+  const result = await apiCall()
   return establishSession({
     token: result.token,
     user: result.user,
-    loginMethod: LOGIN_METHOD.SMS,
+    loginMethod,
   })
+}
+
+async function loginBySms(phone, code) {
+  return loginVia(() => authApi.loginWithSms(phone, code), LOGIN_METHOD.SMS)
 }
 
 async function loginByWechat() {
-  const result = await authApi.loginWithWechat()
-  return establishSession({
-    token: result.token,
-    user: result.user,
-    loginMethod: LOGIN_METHOD.WECHAT,
-  })
+  return loginVia(() => authApi.loginWithWechat(), LOGIN_METHOD.WECHAT)
 }
 
-/** 已登录：绑定手机号（保留当前 session，仅更新 phone） */
+async function syncProfile() {
+  assertLoggedIn()
+  const user = await authApi.fetchMe()
+  return applyServerUser(user)
+}
+
+async function updateProfile(patch) {
+  assertLoggedIn()
+  const user = await authApi.updateProfile(patch)
+  return applyServerUser(user)
+}
+
 async function bindPhone(phone, code) {
-  if (!isLoggedIn()) {
-    throw new Error('请先登录')
-  }
-  const { phone: normalized } = await authApi.bindPhone(phone, code)
-  updateUser({ phone: normalized })
-  return getUser()
+  assertLoggedIn()
+  const result = await authApi.bindPhone(phone, code)
+  return applyServerUser(result.user)
 }
 
-/** 更新当前用户字段并持久化 session */
-function updateUser(patch) {
-  const session = readSession()
-  if (!session || !patch) return false
-
-  session.user = { ...session.user, ...patch }
-  if (patch.avatarGender) {
-    const gender = profileAvatar.setStoredGender(patch.avatarGender)
-    session.user.avatarGender = gender
-    session.user.avatar = profileAvatar.getAvatarSrc(gender)
-  }
-  writeSession(session)
-  syncGlobalLoggedIn(true)
-  notify(session)
-  return true
+async function recharge(amount) {
+  assertLoggedIn()
+  const result = await authApi.recharge(amount)
+  applyServerUser(result.user)
+  return result
 }
 
 function logout() {
   try {
-    wx.removeStorageSync(STORAGE_KEY)
+    wx.removeStorageSync(SESSION_KEY)
   } catch (err) {
     console.warn('[auth] remove session failed', err)
   }
   syncGlobalLoggedIn(false)
-  notify(null)
 }
 
 function confirmAndLogout() {
@@ -159,18 +154,9 @@ function confirmAndLogout() {
   })
 }
 
-function subscribe(fn) {
-  if (typeof fn === 'function') subscribers.add(fn)
-}
-
-function unsubscribe(fn) {
-  subscribers.delete(fn)
-}
-
 function initAuth() {
-  const loggedIn = isLoggedIn()
-  syncGlobalLoggedIn(loggedIn)
-  return loggedIn
+  syncGlobalLoggedIn(isLoggedIn())
+  return isLoggedIn()
 }
 
 function requireLogin(options = {}) {
@@ -181,21 +167,17 @@ function requireLogin(options = {}) {
 }
 
 module.exports = {
-  STORAGE_KEY,
-  LOGIN_METHOD,
   isLoggedIn,
   getSession,
   getUser,
-  getLoginMethod,
-  establishSession,
-  updateUser,
+  syncProfile,
+  updateProfile,
   loginBySms,
   loginByWechat,
   bindPhone,
+  recharge,
   logout,
   confirmAndLogout,
-  subscribe,
-  unsubscribe,
   initAuth,
   requireLogin,
   sendSmsCode: (phone) => authApi.sendSmsCode(phone, 'login'),

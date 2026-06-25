@@ -1,0 +1,16 @@
+<view class="form-select">
+  <text wx:if="{{label}}" class="form-select__label">{{label}}</text>
+  <view class="form-select__control">
+    <view
+      class="form-select__trigger {{isEmpty ? 'is-placeholder' : ''}} {{active ? 'is-active' : ''}} {{loading ? 'is-loading' : ''}} {{disabled ? 'is-disabled' : ''}}"
+      bindtap="onTap"
+    >
+      <view class="form-select__value">
+        <slot name="value">
+          <text class="form-select__text">{{displayText}}</text>
+        </slot>
+      </view>
+      <text class="form-select__arrow">›</text>
+    </view>
+  </view>
+</view>

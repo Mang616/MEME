@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { adminApiPolicy } from "../../middleware/admin-api-policy.js";
 import { createAdminCrudRouter } from "./create-crud-router.js";
 import { bannerService } from "../../services/cms.js";
 import type { Banner } from "../../types.js";
@@ -22,4 +23,6 @@ export const adminBannersRouter = createAdminCrudRouter<Banner, BannerInput>({
   partialBodySchema: bannerBodySchema.partial(),
   entityLabel: "Banner",
   existsError: "BANNER_EXISTS",
+  readPermissions: adminApiPolicy.content.read,
+  writePermissions: adminApiPolicy.content.write,
 });

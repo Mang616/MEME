@@ -6,25 +6,38 @@ const { request } = require('./request')
 function createResourceCache(fetcher, initial) {
   let data = initial
   let task = null
+  let generation = 0
 
   return {
     get: () => data,
     set: (next) => {
       data = next
+      task = Promise.resolve(next)
     },
     refresh: async (...args) => {
-      data = await fetcher(...args)
-      return data
+      const gen = ++generation
+      task = null
+      const result = await fetcher(...args)
+      if (gen === generation) {
+        data = result
+        task = Promise.resolve(result)
+      }
+      return gen === generation ? result : data
     },
     ensure: (...args) => {
       if (!task) {
+        const gen = generation
         task = fetcher(...args)
           .then((result) => {
-            data = result
-            return data
+            if (gen === generation) {
+              data = result
+            }
+            return gen === generation ? result : data
           })
           .catch((err) => {
-            task = null
+            if (gen === generation) {
+              task = null
+            }
             throw err
           })
       }
@@ -39,6 +52,8 @@ function createResourceCache(fetcher, initial) {
 let products = []
 let subCategories = {}
 let catalogTask = null
+
+const { setProductTags } = require('../tag-class')
 
 const ordersCache = createResourceCache(async (userId) => {
   const query = userId ? `?userId=${encodeURIComponent(userId)}` : ''
@@ -61,11 +76,13 @@ function resetCatalogTask() {
 }
 
 async function refreshCatalog() {
+  catalogTask = null
   const [catalog, productList] = await Promise.all([
     request('/catalog'),
     request('/products'),
   ])
   subCategories = catalog.subCategories || {}
+  setProductTags(catalog.productTags || [])
   products = productList.items || []
   return { products, subCategories }
 }
@@ -134,6 +151,10 @@ async function refreshAnnouncements(placement) {
   return res.items || []
 }
 
+async function fetchProductReviews(productId) {
+  return request(`/products/${encodeURIComponent(productId)}/reviews`)
+}
+
 module.exports = {
   ensureCatalog,
   ensureOrders: (userId) => ordersCache.ensure(userId),
@@ -144,6 +165,7 @@ module.exports = {
   refreshHandlers: () => handlersCache.refresh(),
   refreshBanners: () => bannersCache.refresh(),
   refreshAnnouncements,
+  fetchProductReviews,
   resetCatalogTask,
   resetOrdersTask: () => ordersCache.resetTask(),
   resetBannersTask: () => bannersCache.resetTask(),

@@ -264,6 +264,11 @@
   line-height: 1.2;
 }
 
+.order-card__discount {
+  color: var(--color-mint);
+  font-weight: 600;
+}
+
 .order-card__refund {
   font-size: 22rpx;
   color: var(--color-accent);

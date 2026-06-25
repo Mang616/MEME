@@ -27,11 +27,13 @@ Page({
       openLogin({ redirect: PAGE_ROUTES.BIND_PHONE })
       return
     }
-    const user = auth.getUser()
-    this.setData({
-      ...initBindPhonePage(),
-      showBound: !!(user && user.phone),
-      maskedPhone: maskPhone(user && user.phone),
+    void auth.syncProfile().then(() => {
+      const user = auth.getUser()
+      this.setData({
+        ...initBindPhonePage(),
+        showBound: !!(user && user.phone),
+        maskedPhone: maskPhone(user && user.phone),
+      })
     })
   },
 

@@ -9,12 +9,14 @@ import {
   Table,
 } from "@arco-design/web-react";
 import type { ColumnProps } from "@arco-design/web-react/es/Table";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { BoolTag } from "@/components/BoolTag";
+import { ListFilterBar } from "@/components/ListFilterBar";
 import { EditDeleteActions } from "@/components/EditDeleteActions";
 import { DEFAULT_TABLE_PAGINATION, PageShell } from "@/components/PageShell";
 import { ANNOUNCEMENT_PLACEMENT_MAP } from "@/constants/labels";
 import { useCrudResource } from "@/hooks/useCrudResource";
+import { matchBoolFilter, matchKeyword, matchSelect } from "@/lib/list-filter";
 import { api, type AnnouncementRow } from "@/lib/api";
 
 type AnnouncementFormValues = Omit<AnnouncementRow, "id">;
@@ -31,6 +33,9 @@ const emptyForm: AnnouncementFormValues = {
 
 export default function AnnouncementsPage() {
   const [form] = Form.useForm<AnnouncementFormValues>();
+  const [keyword, setKeyword] = useState("");
+  const [placementFilter, setPlacementFilter] = useState<AnnouncementRow["placement"] | "all">("all");
+  const [enabledFilter, setEnabledFilter] = useState<"all" | "yes" | "no">("all");
 
   const crud = useCrudResource<AnnouncementRow, AnnouncementFormValues>({
     list: api.listAnnouncements,
@@ -43,6 +48,23 @@ export default function AnnouncementsPage() {
       updateOk: "公告已更新",
     },
   });
+
+  const filteredRows = useMemo(() => {
+    return crud.rows.filter((row) => {
+      if (!matchSelect(row.placement, placementFilter)) return false;
+      if (!matchBoolFilter(row.enabled, enabledFilter)) return false;
+      return matchKeyword(
+        [row.title, row.content, ANNOUNCEMENT_PLACEMENT_MAP[row.placement]],
+        keyword,
+      );
+    });
+  }, [crud.rows, keyword, placementFilter, enabledFilter]);
+
+  function resetFilters() {
+    setKeyword("");
+    setPlacementFilter("all");
+    setEnabledFilter("all");
+  }
 
   const columns: ColumnProps<AnnouncementRow>[] = useMemo(
     () => [
@@ -86,10 +108,41 @@ export default function AnnouncementsPage() {
           </Button>
         }
       >
+        <ListFilterBar
+          keyword={keyword}
+          onKeywordChange={setKeyword}
+          keywordPlaceholder="搜索标题 / 内容"
+          selects={[
+            {
+              value: placementFilter,
+              onChange: (value) => setPlacementFilter(value as AnnouncementRow["placement"] | "all"),
+              placeholder: "展示位置",
+              width: 130,
+              options: [
+                { value: "all", label: "全部位置" },
+                ...Object.entries(ANNOUNCEMENT_PLACEMENT_MAP).map(([value, label]) => ({ value, label })),
+              ],
+            },
+            {
+              value: enabledFilter,
+              onChange: (value) => setEnabledFilter(value as "all" | "yes" | "no"),
+              placeholder: "启用状态",
+              width: 120,
+              options: [
+                { value: "all", label: "全部状态" },
+                { value: "yes", label: "已启用" },
+                { value: "no", label: "已禁用" },
+              ],
+            },
+          ]}
+          total={crud.rows.length}
+          filtered={filteredRows.length}
+          onReset={resetFilters}
+        />
         <Table
           rowKey="id"
           columns={columns}
-          data={crud.rows}
+          data={filteredRows}
           pagination={DEFAULT_TABLE_PAGINATION}
         />
       </PageShell>

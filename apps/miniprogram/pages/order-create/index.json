@@ -2,6 +2,8 @@
   "navigationStyle": "custom",
   "usingComponents": {
     "page-shell": "/components/page-shell/page-shell",
-    "cover-media": "/components/cover-media/cover-media"
+    "cover-media": "/components/cover-media/cover-media",
+    "form-select": "/components/form-select/form-select",
+    "select-sheet": "/components/select-sheet/select-sheet"
   }
 }

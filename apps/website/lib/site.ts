@@ -1,9 +1,13 @@
 export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://meme.example.com";
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://memepw.top";
 
-/** 外部下单站地址（「打开下单网站」按钮跳转目标） */
+/** 下单页（官网内路径，与 config/domains.json production.order 一致） */
 export const ORDER_WEB_URL =
-  process.env.NEXT_PUBLIC_ORDER_SITE_URL ?? "https://order.meme.example.com";
+  process.env.NEXT_PUBLIC_ORDER_SITE_URL ?? "https://memepw.top/order";
+
+/** 公开 API 根路径（无 /api 后缀） */
+export const API_ORIGIN =
+  process.env.NEXT_PUBLIC_API_ORIGIN ?? "https://api.memepw.top";
 
 export const SITE_NAME = "迷因电竞 MEME";
 export const SITE_NAME_SHORT = "迷因电竞";

@@ -4,7 +4,9 @@ const { PAGE_ROUTES } = require('../../utils/constants')
 const { buildOrderCreateUrl, openHandlerSelect } = require('../../utils/nav')
 const {
   buildOrderCreateState,
+  loadOrderCoupons,
   patchQuantity,
+  applyCouponSelection,
   applyHandlerSelection,
   submitOrderCreate,
 } = require('../../utils/order-create-page')
@@ -25,6 +27,9 @@ Page({
     regionOptions: [],
     regionIndex: 0,
     regionLabel: '',
+    regionSheetOptions: [],
+    regionSelectedId: '0',
+    showRegionPicker: false,
     autoAssignPlayer: true,
     handlerId: '',
     handlerLabel: '',
@@ -34,7 +39,16 @@ Page({
     gameId: '',
     remark: '',
     unitPriceDisplay: '',
+    subtotalDisplay: '',
+    couponDiscountDisplay: '',
     totalPaidDisplay: '',
+    selectedCouponId: '',
+    selectedCouponLabel: '请选择优惠券',
+    hasCouponDiscount: false,
+    couponOptions: [],
+    couponSheetOptions: [],
+    couponLoading: false,
+    showCouponPicker: false,
     notice: '',
     submitting: false,
   },
@@ -49,7 +63,8 @@ Page({
         showNotFoundAndExit('商品不存在')
         return
       }
-      this.setData(state)
+      this.setData({ ...state, couponLoading: true })
+      void this.refreshCoupons(state)
     })
   },
 
@@ -60,10 +75,34 @@ Page({
     }
   },
 
-  onRegionChange(e) {
-    const index = Number(e.detail.value) || 0
+  async refreshCoupons(baseState) {
+    const state = baseState || this.data
+    try {
+      const next = await loadOrderCoupons(state)
+      this.setData(next)
+    } catch {
+      this.setData({ couponLoading: false })
+    }
+  },
+
+  onOpenRegionPicker() {
+    if (this.data.submitting) return
+    this.setData({ showRegionPicker: true })
+  },
+
+  onCloseRegionPicker() {
+    this.setData({ showRegionPicker: false })
+  },
+
+  onSelectRegion(e) {
+    const index = Number(e.detail.id) || 0
     const label = this.data.regionOptions[index] || ''
-    this.setData({ regionIndex: index, regionLabel: label })
+    this.setData({
+      regionIndex: index,
+      regionLabel: label,
+      regionSelectedId: String(index),
+      showRegionPicker: false,
+    })
   },
 
   onAutoAssignChange(e) {
@@ -92,6 +131,24 @@ Page({
   onQtyPlus() {
     if (!this.data.canIncrease || this.data.submitting) return
     this.setData(patchQuantity(this.data, 1))
+  },
+
+  onOpenCouponPicker() {
+    if (this.data.submitting || this.data.couponLoading) return
+    this.setData({ showCouponPicker: true })
+  },
+
+  onCloseCouponPicker() {
+    this.setData({ showCouponPicker: false })
+  },
+
+  onSelectCoupon(e) {
+    const couponId = e.detail.id || ''
+    this.setData(applyCouponSelection(this.data, couponId))
+  },
+
+  onRejectCoupon() {
+    showTip('当前订单不满足该优惠券使用条件')
   },
 
   async onSubmit() {

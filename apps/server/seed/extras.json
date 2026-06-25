@@ -1,0 +1,1631 @@
+{
+  "users": [
+    {
+      "id": "u1",
+      "nickname": "麦当劳到了",
+      "phone": "13800138001",
+      "avatar": "/assets/profile/boys.webp",
+      "vipLevel": 3,
+      "balance": 128.5,
+      "totalConsume": 2500,
+      "status": "active",
+      "registeredAt": "2026-01-10 12:00:00",
+      "lastLoginAt": "2026-05-24 15:30:00"
+    },
+    {
+      "id": "u2",
+      "nickname": "玩家A",
+      "phone": "13800138002",
+      "avatar": "/assets/profile/boys.webp",
+      "vipLevel": 1,
+      "balance": 0,
+      "totalConsume": 500,
+      "status": "active",
+      "registeredAt": "2026-02-15 09:00:00",
+      "lastLoginAt": "2026-05-23 09:00:00"
+    },
+    {
+      "id": "u3",
+      "nickname": "老玩家88",
+      "phone": "13800138003",
+      "avatar": "/assets/profile/girls.webp",
+      "vipLevel": 5,
+      "balance": 520,
+      "totalConsume": 10000,
+      "status": "active",
+      "registeredAt": "2025-12-01 18:00:00",
+      "lastLoginAt": "2026-05-20 18:00:00"
+    },
+    {
+      "id": "u4",
+      "nickname": "萌新001",
+      "phone": "13800138004",
+      "avatar": "/assets/profile/boys.webp",
+      "vipLevel": 0,
+      "balance": 0,
+      "totalConsume": 0,
+      "status": "disabled",
+      "registeredAt": "2026-05-01 10:00:00",
+      "lastLoginAt": "2026-05-18 10:30:00"
+    }
+  ],
+  "banners": [
+    {
+      "id": "b1",
+      "title": "迷因电竞",
+      "subtitle": "三角洲护航 · 专业车队",
+      "image": "",
+      "bgColor": "#2d4a35",
+      "linkType": "products",
+      "linkValue": "escort",
+      "sortOrder": 1,
+      "published": true
+    },
+    {
+      "id": "b2",
+      "title": "五一活动",
+      "subtitle": "限时特惠 · 点击查看",
+      "image": "",
+      "bgColor": "#3d5240",
+      "linkType": "tab",
+      "linkValue": "/pages/products/index",
+      "sortOrder": 2,
+      "published": true
+    },
+    {
+      "id": "b3",
+      "title": "陪玩上车",
+      "subtitle": "高分选手 · 语音开黑",
+      "image": "",
+      "bgColor": "#354840",
+      "linkType": "products",
+      "linkValue": "companion",
+      "sortOrder": 3,
+      "published": true
+    }
+  ],
+  "announcements": [
+    {
+      "id": "a1",
+      "title": "合规提示",
+      "content": "未成年人禁止下单",
+      "placement": "home_bar",
+      "enabled": true,
+      "sortOrder": 1,
+      "startAt": "",
+      "endAt": ""
+    }
+  ],
+  "contentPages": [
+    {
+      "id": "cp-guides",
+      "slug": "guides",
+      "title": "帮助说明",
+      "payload": {
+        "guide": {
+          "id": "guide",
+          "title": "购买说明",
+          "icon": "🎧",
+          "blocks": [
+            {
+              "type": "paragraph",
+              "text": "✨ 老板您好！感谢您选择本店服务，您可直接在小程序下单！免出去比价还不会被骗，本店价格优惠、新店活动多，纯绿手工无科技，您直接下单即可 ✨"
+            },
+            {
+              "type": "paragraph",
+              "text": "📌 本店具体操作：店内 24 小时客服；打手一般 5–10 分钟内加您好友；白天基本秒接单，晚上可能需要点时间，客服也会帮您积极处理，还请老板们多点耐心。"
+            },
+            {
+              "type": "tip",
+              "text": "💕 温馨提示：请打开公众号下发的订单通知，以便您及时了解订单进展状态！"
+            },
+            {
+              "type": "warning",
+              "text": "⚠️ 安全第一：近期发现有打手私下联系客户。如有打手要私下加您联系，请您及时举报，会有打手全部押金奖励给您。"
+            }
+          ]
+        },
+        "cs": {
+          "id": "cs",
+          "title": "客服",
+          "icon": "💬",
+          "blocks": [
+            {
+              "type": "qrcode",
+              "headline": "迷因电竞 · 在线客服",
+              "footer": "添加客服微信 · 24 小时营业（二维码待配置）",
+              "items": [
+                {
+                  "name": "客服 1"
+                },
+                {
+                  "name": "客服 2"
+                }
+              ]
+            }
+          ]
+        },
+        "notice": {
+          "id": "notice",
+          "title": "下单须知",
+          "icon": "📖",
+          "blocks": [
+            {
+              "type": "rich",
+              "parts": [
+                {
+                  "text": "服务保障：",
+                  "tone": "default"
+                },
+                {
+                  "text": "追缴包补包赔 放心下单",
+                  "tone": "emphasis"
+                }
+              ]
+            },
+            {
+              "type": "rich",
+              "parts": [
+                {
+                  "text": "服务时间：",
+                  "tone": "default"
+                },
+                {
+                  "text": "全天 24 小时接单",
+                  "tone": "highlight"
+                }
+              ]
+            },
+            {
+              "type": "rich",
+              "parts": [
+                {
+                  "text": "迷因电竞保障老板",
+                  "tone": "default"
+                },
+                {
+                  "text": "游戏体验必须第一！",
+                  "tone": "highlight"
+                }
+              ]
+            },
+            {
+              "type": "rich",
+              "parts": [
+                {
+                  "text": "打手态度 / 客服售后 ",
+                  "tone": "default"
+                },
+                {
+                  "text": "全权维护到底！",
+                  "tone": "emphasis"
+                }
+              ]
+            },
+            {
+              "type": "rich",
+              "parts": [
+                {
+                  "text": "接受",
+                  "tone": "default"
+                },
+                {
+                  "text": "投诉批评",
+                  "tone": "emphasis"
+                },
+                {
+                  "text": " 加以改进！",
+                  "tone": "default"
+                }
+              ]
+            },
+            {
+              "type": "rich",
+              "parts": [
+                {
+                  "text": "也欢迎老板投稿新的",
+                  "tone": "default"
+                },
+                {
+                  "text": "创意单类",
+                  "tone": "link"
+                }
+              ]
+            }
+          ]
+        },
+        "live": {
+          "id": "live",
+          "title": "直播考核",
+          "icon": "🎮",
+          "blocks": [
+            {
+              "type": "paragraph",
+              "text": "抖音搜直播间：迷因电竞",
+              "center": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "cp-agreement",
+      "slug": "agreement",
+      "title": "用户协议",
+      "payload": {
+        "title": "用户协议",
+        "summary": "规范您与 迷因电竞 之间的服务使用关系，请在下单与使用功能前仔细阅读。",
+        "updatedAt": "2026年5月1日",
+        "sections": [
+          {
+            "title": "一、协议的接受",
+            "paragraphs": [
+              "欢迎使用 迷因电竞小程序（以下简称「本平台」）。在使用本平台提供的护航、陪玩及相关信息服务前，请您仔细阅读本协议。点击同意或实际使用服务，即表示您已阅读并同意受本协议约束。"
+            ]
+          },
+          {
+            "title": "二、服务说明",
+            "paragraphs": [
+              "本平台为用户提供游戏护航、陪玩预约、订单管理、在线沟通及账户相关功能。具体服务内容以页面展示及订单详情为准。",
+              "本平台不从事游戏代练、游戏装备及其他虚拟商品交易；所有商品与服务均为信息发布与撮合，具体履约由入驻服务方完成。"
+            ]
+          },
+          {
+            "title": "三、账号与安全",
+            "paragraphs": [
+              "您应使用本人真实手机号或微信授权登录，并妥善保管账号信息。因您保管不善导致的损失由您自行承担。",
+              "如发现账号被盗用或异常，请立即联系平台客服处理。"
+            ]
+          },
+          {
+            "title": "四、下单与支付",
+            "paragraphs": [
+              "下单前请仔细核对商品描述、价格、服务时长及规则说明。支付成功后，订单进入待确认/待服务流程，具体状态以订单页为准。",
+              "因游戏版本更新、封号、网络异常等不可抗力导致无法履约的，按平台公示规则协商退款或改期。"
+            ]
+          },
+          {
+            "title": "五、用户行为规范",
+            "paragraphs": [
+              "您不得利用本平台从事违法违规、骚扰、欺诈、外挂、辱骂或其他损害平台及第三方权益的行为。",
+              "平台有权对违规账号采取限制功能、冻结账户、终止服务等措施，并依法追究法律责任。"
+            ]
+          },
+          {
+            "title": "六、知识产权",
+            "paragraphs": [
+              "本平台内的商标、界面设计、文案及技术内容的知识产权归平台或权利人所有。未经授权，不得复制、传播或用于商业用途。"
+            ]
+          },
+          {
+            "title": "七、免责声明",
+            "paragraphs": [
+              "在法律允许范围内，平台对因网络故障、第三方服务中断、用户操作不当等导致的间接损失不承担责任。",
+              "游戏内数据、段位、物资等以游戏官方规则为准，平台不对游戏厂商政策变更承担责任。"
+            ]
+          },
+          {
+            "title": "八、协议变更",
+            "paragraphs": [
+              "平台有权根据业务需要修订本协议，并通过小程序公告等方式通知。若您继续使用服务，视为接受修订后的协议。"
+            ]
+          },
+          {
+            "title": "九、联系我们",
+            "paragraphs": [
+              "如有疑问，请通过小程序内「聊天-客服」或帮助中心与我们联系。"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "cp-privacy",
+      "slug": "privacy",
+      "title": "隐私政策",
+      "payload": {
+        "title": "隐私政策",
+        "summary": "说明我们如何收集、使用与保护您的个人信息，以及您可行使的相关权利。",
+        "updatedAt": "2026年5月1日",
+        "sections": [
+          {
+            "title": "一、引言",
+            "paragraphs": [
+              "迷因电竞（以下简称「我们」）重视您的个人信息保护。本政策说明我们如何收集、使用、存储及保护您的信息，以及您享有的权利。"
+            ]
+          },
+          {
+            "title": "二、我们收集的信息",
+            "paragraphs": [
+              "为向您提供服务，我们可能收集：手机号码（验证码登录）、微信授权标识（微信一键登录）、昵称及头像、订单与支付记录、聊天记录及服务日志。",
+              "您可选择是否绑定手机号；部分功能（如下单、提现）可能需完成实名或手机号验证。"
+            ]
+          },
+          {
+            "title": "三、信息的使用",
+            "paragraphs": [
+              "我们使用上述信息用于：账号注册与登录、订单处理与客服、安全风控、产品改进及法律合规。",
+              "未经您同意，我们不会向第三方出售您的个人信息。为完成支付、短信验证等必要环节，我们可能向合作服务商提供最小必要信息。"
+            ]
+          },
+          {
+            "title": "四、信息的存储与保护",
+            "paragraphs": [
+              "您的信息存储于中华人民共和国境内具备安全措施的服务器。我们采用加密传输、访问控制等方式降低泄露风险。",
+              "在法定或业务所需的保存期限届满后，我们将删除或匿名化处理您的个人信息。"
+            ]
+          },
+          {
+            "title": "五、您的权利",
+            "paragraphs": [
+              "您有权查询、更正您的账户信息，可通过「我的-设置」或联系客服申请注销账号。",
+              "您可拒绝提供非必要信息，但可能无法使用部分功能。您有权就个人信息处理向我们提出疑问或投诉。"
+            ]
+          },
+          {
+            "title": "六、未成年人保护",
+            "paragraphs": [
+              "若您为未成年人，请在监护人指导下阅读本政策并使用服务。我们不会主动面向未成年人推广不适宜内容。"
+            ]
+          },
+          {
+            "title": "七、政策更新",
+            "paragraphs": [
+              "我们可能适时修订本政策，修订后将通过小程序内提示等方式公布。重大变更将再次征得您的同意（如法律要求）。"
+            ]
+          },
+          {
+            "title": "八、联系我们",
+            "paragraphs": [
+              "如对本政策有任何问题，请通过小程序客服渠道与我们联系。"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "cp-minor-guide",
+      "slug": "minor-guide",
+      "title": "未成年人指引",
+      "payload": {
+        "title": "未成年人保护指引",
+        "summary": "我们重视未成年人身心健康，请未成年用户及监护人共同阅读并遵守以下指引。",
+        "updatedAt": "2026年5月1日",
+        "notice": "未成年人禁止下单。本平台服务面向具备完全民事行为能力的用户，请监护人履行监护职责。",
+        "sections": [
+          {
+            "title": "一、适用对象",
+            "paragraphs": [
+              "本指引适用于未满十八周岁的用户及其监护人。若您为未成年人，请在监护人陪同、指导下阅读本指引并使用本平台。",
+              "监护人应帮助未成年人理解网络服务风险，合理规划上网与游戏时间。"
+            ]
+          },
+          {
+            "title": "二、年龄与下单限制",
+            "paragraphs": [
+              "为保护未成年人权益，本平台不向未成年人提供下单、支付及履约类服务。首页及下单流程均会提示「未成年人禁止下单」。",
+              "若发现未成年人冒用成年人信息下单，平台有权取消订单、冻结相关功能，并配合监护人处理。"
+            ]
+          },
+          {
+            "title": "三、内容与行为规范",
+            "paragraphs": [
+              "平台不提供违法违规、低俗暴力、赌博类等内容，不鼓励过度消费与沉迷游戏。",
+              "用户不得利用本平台进行辱骂、骚扰、欺诈或其他损害未成年人身心健康的行为。违规账号将被限制或封禁。"
+            ]
+          },
+          {
+            "title": "四、个人信息保护",
+            "paragraphs": [
+              "我们遵循最小必要原则收集信息，不会主动向未成年人索取非必要的个人敏感信息。",
+              "监护人可通过「我的-设置」或联系客服，查询、更正或申请注销未成年人相关账号信息。"
+            ]
+          },
+          {
+            "title": "五、健康使用建议",
+            "paragraphs": [
+              "建议未成年人每日使用娱乐类功能不超过合理时长，避免影响学习与休息。",
+              "监护人应关注未成年人的消费行为，妥善保管支付账户与手机验证码，防止误操作支付。"
+            ]
+          },
+          {
+            "title": "六、举报与投诉",
+            "paragraphs": [
+              "如发现涉未成年人违规内容、诱导消费或冒用身份下单等情况，请通过「意见反馈」或「聊天-客服」向我们举报。",
+              "我们将在核实后及时处理，必要时向有关主管部门报告。"
+            ]
+          },
+          {
+            "title": "七、联系我们",
+            "paragraphs": [
+              "监护人对本指引或未成年人相关事宜有疑问，请通过小程序内客服渠道与我们联系，我们将协助核实与处理。"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "cp-invite",
+      "slug": "invite-banner",
+      "title": "邀请有礼",
+      "payload": {
+        "tag": "限时活动",
+        "title": "邀请好友 · 领取奖励",
+        "subtitle": "好友完成首单，双方均可获得优惠券",
+        "cta": "去邀请",
+        "navTag": "邀请",
+        "navTitle": "邀请好友有礼",
+        "rules": [
+          "分享邀请码或二维码给好友",
+          "好友通过链接进入小程序并完成注册",
+          "好友完成首单后，双方各得优惠券奖励"
+        ]
+      }
+    },
+    {
+      "id": "cp-invite-activity",
+      "slug": "invite-activity",
+      "title": "邀请活动",
+      "payload": {
+        "enabled": true,
+        "tag": "限时活动",
+        "title": "邀请好友 · 领取奖励",
+        "subtitle": "好友完成首单，双方均可获得优惠券",
+        "cta": "去邀请",
+        "navTag": "邀请",
+        "navTitle": "邀请好友有礼",
+        "rules": [
+          "分享邀请码或二维码给好友",
+          "好友通过链接进入小程序并完成注册",
+          "好友完成首单后，双方各得优惠券奖励"
+        ],
+        "poster": {
+          "headline": "邀请好友 · 领取奖励",
+          "footnote": "扫码或输入邀请码，一起领优惠券"
+        }
+      }
+    },
+    {
+      "id": "cp-feedback",
+      "slug": "feedback-config",
+      "title": "意见反馈配置",
+      "payload": {
+        "types": [
+          {
+            "id": "feature",
+            "label": "功能建议"
+          },
+          {
+            "id": "order",
+            "label": "订单问题"
+          },
+          {
+            "id": "account",
+            "label": "账号安全"
+          },
+          {
+            "id": "other",
+            "label": "其他"
+          }
+        ],
+        "contentMin": 10,
+        "contentMax": 500
+      }
+    },
+    {
+      "id": "cp-quick",
+      "slug": "quick-entries",
+      "title": "帮助入口",
+      "payload": {
+        "entries": [
+          {
+            "id": "guide",
+            "name": "购买说明",
+            "iconSrc": "/assets/profile/1.png"
+          },
+          {
+            "id": "notice",
+            "name": "下单须知",
+            "iconSrc": "/assets/profile/2.png"
+          },
+          {
+            "id": "cs",
+            "name": "客服",
+            "iconSrc": "/assets/profile/3.png"
+          },
+          {
+            "id": "live",
+            "name": "直播考核",
+            "iconSrc": "/assets/profile/4.png"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cp-vip",
+      "slug": "vip-config",
+      "title": "VIP 配置",
+      "payload": {
+        "vipMin": 0,
+        "vipMax": 10,
+        "levelList": [
+          {
+            "level": 0,
+            "label": "VIP0",
+            "title": "新秀",
+            "icon": "/assets/level/0.png",
+            "bg": "#C9A020",
+            "color": "#C9A020"
+          },
+          {
+            "level": 1,
+            "label": "VIP1",
+            "title": "青铜",
+            "icon": "/assets/level/1.png",
+            "bg": "#C9A020",
+            "color": "#C9A020"
+          },
+          {
+            "level": 2,
+            "label": "VIP2",
+            "title": "白银",
+            "icon": "/assets/level/2.png",
+            "bg": "#C9A020",
+            "color": "#C9A020"
+          },
+          {
+            "level": 3,
+            "label": "VIP3",
+            "title": "黄金",
+            "icon": "/assets/level/3.png",
+            "bg": "#C9A020",
+            "color": "#C9A020"
+          },
+          {
+            "level": 4,
+            "label": "VIP4",
+            "title": "铂金",
+            "icon": "/assets/level/4.png",
+            "bg": "#C9A020",
+            "color": "#C9A020"
+          },
+          {
+            "level": 5,
+            "label": "VIP5",
+            "title": "钻石",
+            "icon": "/assets/level/5.png",
+            "bg": "#C9A020",
+            "color": "#C9A020"
+          },
+          {
+            "level": 6,
+            "label": "VIP6",
+            "title": "大师",
+            "icon": "/assets/level/6.png",
+            "bg": "#C9A020",
+            "color": "#C9A020"
+          },
+          {
+            "level": 7,
+            "label": "VIP7",
+            "title": "宗师",
+            "icon": "/assets/level/7.png",
+            "bg": "#C9A020",
+            "color": "#C9A020"
+          },
+          {
+            "level": 8,
+            "label": "VIP8",
+            "title": "王者",
+            "icon": "/assets/level/8.png",
+            "bg": "#C9A020",
+            "color": "#C9A020"
+          },
+          {
+            "level": 9,
+            "label": "VIP9",
+            "title": "传奇",
+            "icon": "/assets/level/9.png",
+            "bg": "#C9A020",
+            "color": "#C9A020"
+          },
+          {
+            "level": 10,
+            "label": "VIP10",
+            "title": "至尊",
+            "icon": "/assets/level/10.png",
+            "bg": "#C9A020",
+            "color": "#C9A020"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cp-vip-activity",
+      "slug": "vip-activity",
+      "title": "VIP 活动",
+      "payload": {
+        "consumeLabel": "消费金额",
+        "promotionRewardText": "升级等级获取更多消费奖励",
+        "maxLevelHint": "您已达到最高等级",
+        "upgradeHintTemplate": "还需{remain}元{consumeLabel}可升级至{nextTag}",
+        "sectionTitle": "会员特权",
+        "sectionSubtitleTemplate": "{levelTag} 专属特权",
+        "levelList": [
+          {
+            "level": 0,
+            "cumulativeThreshold": 0,
+            "upgradeTarget": 500,
+            "privilegeRows": [
+              {
+                "id": "consume_reward",
+                "name": "消费奖励",
+                "value": "—",
+                "unlocked": false
+              },
+              {
+                "id": "upgrade_reward",
+                "name": "升级消费奖励",
+                "value": "—",
+                "unlocked": false
+              },
+              {
+                "id": "service",
+                "name": "专属客服",
+                "value": "V3 解锁",
+                "unlocked": false
+              },
+              {
+                "id": "birthday",
+                "name": "生日礼金",
+                "value": "V5 解锁",
+                "unlocked": false
+              },
+              {
+                "id": "priority",
+                "name": "优先匹配打手",
+                "value": "V7 解锁",
+                "unlocked": false
+              },
+              {
+                "id": "discount",
+                "name": "全场折扣",
+                "value": "V9 解锁",
+                "unlocked": false
+              }
+            ]
+          },
+          {
+            "level": 1,
+            "cumulativeThreshold": 500,
+            "upgradeTarget": 500,
+            "privilegeRows": [
+              {
+                "id": "consume_reward",
+                "name": "消费奖励",
+                "value": "专享优惠券×1",
+                "unlocked": true
+              },
+              {
+                "id": "upgrade_reward",
+                "name": "升级消费奖励",
+                "value": "礼券100元",
+                "unlocked": true
+              },
+              {
+                "id": "service",
+                "name": "专属客服",
+                "value": "V3 解锁",
+                "unlocked": false
+              },
+              {
+                "id": "birthday",
+                "name": "生日礼金",
+                "value": "V5 解锁",
+                "unlocked": false
+              },
+              {
+                "id": "priority",
+                "name": "优先匹配打手",
+                "value": "V7 解锁",
+                "unlocked": false
+              },
+              {
+                "id": "discount",
+                "name": "全场折扣",
+                "value": "V9 解锁",
+                "unlocked": false
+              }
+            ]
+          },
+          {
+            "level": 2,
+            "cumulativeThreshold": 1000,
+            "upgradeTarget": 1000,
+            "privilegeRows": [
+              {
+                "id": "consume_reward",
+                "name": "消费奖励",
+                "value": "专享优惠券×2",
+                "unlocked": true
+              },
+              {
+                "id": "upgrade_reward",
+                "name": "升级消费奖励",
+                "value": "礼券200元",
+                "unlocked": true
+              },
+              {
+                "id": "service",
+                "name": "专属客服",
+                "value": "V3 解锁",
+                "unlocked": false
+              },
+              {
+                "id": "birthday",
+                "name": "生日礼金",
+                "value": "V5 解锁",
+                "unlocked": false
+              },
+              {
+                "id": "priority",
+                "name": "优先匹配打手",
+                "value": "V7 解锁",
+                "unlocked": false
+              },
+              {
+                "id": "discount",
+                "name": "全场折扣",
+                "value": "V9 解锁",
+                "unlocked": false
+              }
+            ]
+          },
+          {
+            "level": 3,
+            "cumulativeThreshold": 2000,
+            "upgradeTarget": 3000,
+            "privilegeRows": [
+              {
+                "id": "consume_reward",
+                "name": "消费奖励",
+                "value": "专享优惠券×3",
+                "unlocked": true
+              },
+              {
+                "id": "upgrade_reward",
+                "name": "升级消费奖励",
+                "value": "礼券300元",
+                "unlocked": true
+              },
+              {
+                "id": "service",
+                "name": "专属客服",
+                "value": "7×24 在线",
+                "unlocked": true
+              },
+              {
+                "id": "birthday",
+                "name": "生日礼金",
+                "value": "V5 解锁",
+                "unlocked": false
+              },
+              {
+                "id": "priority",
+                "name": "优先匹配打手",
+                "value": "V7 解锁",
+                "unlocked": false
+              },
+              {
+                "id": "discount",
+                "name": "全场折扣",
+                "value": "V9 解锁",
+                "unlocked": false
+              }
+            ]
+          },
+          {
+            "level": 4,
+            "cumulativeThreshold": 5000,
+            "upgradeTarget": 5000,
+            "privilegeRows": [
+              {
+                "id": "consume_reward",
+                "name": "消费奖励",
+                "value": "专享优惠券×4",
+                "unlocked": true
+              },
+              {
+                "id": "upgrade_reward",
+                "name": "升级消费奖励",
+                "value": "礼券400元",
+                "unlocked": true
+              },
+              {
+                "id": "service",
+                "name": "专属客服",
+                "value": "7×24 在线",
+                "unlocked": true
+              },
+              {
+                "id": "birthday",
+                "name": "生日礼金",
+                "value": "V5 解锁",
+                "unlocked": false
+              },
+              {
+                "id": "priority",
+                "name": "优先匹配打手",
+                "value": "V7 解锁",
+                "unlocked": false
+              },
+              {
+                "id": "discount",
+                "name": "全场折扣",
+                "value": "V9 解锁",
+                "unlocked": false
+              }
+            ]
+          },
+          {
+            "level": 5,
+            "cumulativeThreshold": 10000,
+            "upgradeTarget": 10000,
+            "privilegeRows": [
+              {
+                "id": "consume_reward",
+                "name": "消费奖励",
+                "value": "专享优惠券×5",
+                "unlocked": true
+              },
+              {
+                "id": "upgrade_reward",
+                "name": "升级消费奖励",
+                "value": "礼券500元",
+                "unlocked": true
+              },
+              {
+                "id": "service",
+                "name": "专属客服",
+                "value": "7×24 在线",
+                "unlocked": true
+              },
+              {
+                "id": "birthday",
+                "name": "生日礼金",
+                "value": "250元",
+                "unlocked": true
+              },
+              {
+                "id": "priority",
+                "name": "优先匹配打手",
+                "value": "V7 解锁",
+                "unlocked": false
+              },
+              {
+                "id": "discount",
+                "name": "全场折扣",
+                "value": "V9 解锁",
+                "unlocked": false
+              }
+            ]
+          },
+          {
+            "level": 6,
+            "cumulativeThreshold": 20000,
+            "upgradeTarget": 15000,
+            "privilegeRows": [
+              {
+                "id": "consume_reward",
+                "name": "消费奖励",
+                "value": "专享优惠券×6",
+                "unlocked": true
+              },
+              {
+                "id": "upgrade_reward",
+                "name": "升级消费奖励",
+                "value": "礼券600元",
+                "unlocked": true
+              },
+              {
+                "id": "service",
+                "name": "专属客服",
+                "value": "7×24 在线",
+                "unlocked": true
+              },
+              {
+                "id": "birthday",
+                "name": "生日礼金",
+                "value": "300元",
+                "unlocked": true
+              },
+              {
+                "id": "priority",
+                "name": "优先匹配打手",
+                "value": "V7 解锁",
+                "unlocked": false
+              },
+              {
+                "id": "discount",
+                "name": "全场折扣",
+                "value": "V9 解锁",
+                "unlocked": false
+              }
+            ]
+          },
+          {
+            "level": 7,
+            "cumulativeThreshold": 35000,
+            "upgradeTarget": 20000,
+            "privilegeRows": [
+              {
+                "id": "consume_reward",
+                "name": "消费奖励",
+                "value": "专享优惠券×7",
+                "unlocked": true
+              },
+              {
+                "id": "upgrade_reward",
+                "name": "升级消费奖励",
+                "value": "礼券700元",
+                "unlocked": true
+              },
+              {
+                "id": "service",
+                "name": "专属客服",
+                "value": "7×24 在线",
+                "unlocked": true
+              },
+              {
+                "id": "birthday",
+                "name": "生日礼金",
+                "value": "350元",
+                "unlocked": true
+              },
+              {
+                "id": "priority",
+                "name": "优先匹配打手",
+                "value": "已开通",
+                "unlocked": true
+              },
+              {
+                "id": "discount",
+                "name": "全场折扣",
+                "value": "V9 解锁",
+                "unlocked": false
+              }
+            ]
+          },
+          {
+            "level": 8,
+            "cumulativeThreshold": 55000,
+            "upgradeTarget": 25000,
+            "privilegeRows": [
+              {
+                "id": "consume_reward",
+                "name": "消费奖励",
+                "value": "专享优惠券×8",
+                "unlocked": true
+              },
+              {
+                "id": "upgrade_reward",
+                "name": "升级消费奖励",
+                "value": "礼券800元",
+                "unlocked": true
+              },
+              {
+                "id": "service",
+                "name": "专属客服",
+                "value": "7×24 在线",
+                "unlocked": true
+              },
+              {
+                "id": "birthday",
+                "name": "生日礼金",
+                "value": "400元",
+                "unlocked": true
+              },
+              {
+                "id": "priority",
+                "name": "优先匹配打手",
+                "value": "已开通",
+                "unlocked": true
+              },
+              {
+                "id": "discount",
+                "name": "全场折扣",
+                "value": "V9 解锁",
+                "unlocked": false
+              }
+            ]
+          },
+          {
+            "level": 9,
+            "cumulativeThreshold": 80000,
+            "upgradeTarget": 20000,
+            "privilegeRows": [
+              {
+                "id": "consume_reward",
+                "name": "消费奖励",
+                "value": "专享优惠券×9",
+                "unlocked": true
+              },
+              {
+                "id": "upgrade_reward",
+                "name": "升级消费奖励",
+                "value": "礼券900元",
+                "unlocked": true
+              },
+              {
+                "id": "service",
+                "name": "专属客服",
+                "value": "7×24 在线",
+                "unlocked": true
+              },
+              {
+                "id": "birthday",
+                "name": "生日礼金",
+                "value": "450元",
+                "unlocked": true
+              },
+              {
+                "id": "priority",
+                "name": "优先匹配打手",
+                "value": "已开通",
+                "unlocked": true
+              },
+              {
+                "id": "discount",
+                "name": "全场折扣",
+                "value": "94.5折",
+                "unlocked": true
+              }
+            ]
+          },
+          {
+            "level": 10,
+            "cumulativeThreshold": 100000,
+            "upgradeTarget": 0,
+            "privilegeRows": [
+              {
+                "id": "consume_reward",
+                "name": "消费奖励",
+                "value": "专享优惠券×10",
+                "unlocked": true
+              },
+              {
+                "id": "upgrade_reward",
+                "name": "升级消费奖励",
+                "value": "礼券1000元",
+                "unlocked": true
+              },
+              {
+                "id": "service",
+                "name": "专属客服",
+                "value": "7×24 在线",
+                "unlocked": true
+              },
+              {
+                "id": "birthday",
+                "name": "生日礼金",
+                "value": "500元",
+                "unlocked": true
+              },
+              {
+                "id": "priority",
+                "name": "优先匹配打手",
+                "value": "已开通",
+                "unlocked": true
+              },
+              {
+                "id": "discount",
+                "name": "全场折扣",
+                "value": "94.0折",
+                "unlocked": true
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "cp-coupons",
+      "slug": "coupons",
+      "title": "优惠券",
+      "payload": {
+        "items": [
+          {
+            "id": "cp_welcome",
+            "name": "新人满减券",
+            "description": "注册后可领取，首单可用",
+            "type": "fixed",
+            "value": 10,
+            "minSpend": 50,
+            "maxDiscount": 0,
+            "validDays": 30,
+            "scope": "all",
+            "enabled": true,
+            "sortOrder": 1
+          },
+          {
+            "id": "cp_vip_escort",
+            "name": "VIP 护航券",
+            "description": "VIP 会员护航订单可用",
+            "type": "fixed",
+            "value": 20,
+            "minSpend": 100,
+            "maxDiscount": 0,
+            "validDays": 7,
+            "scope": "escort",
+            "enabled": true,
+            "sortOrder": 2
+          },
+          {
+            "id": "cp_discount_95",
+            "name": "全场 95 折券",
+            "description": "限时折扣，最高减 50 元",
+            "type": "percent",
+            "value": 9.5,
+            "minSpend": 80,
+            "maxDiscount": 50,
+            "validDays": 14,
+            "scope": "all",
+            "enabled": true,
+            "sortOrder": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": "cp-product-intros",
+      "slug": "product-intros",
+      "title": "商品玩法介绍",
+      "payload": {
+        "sections": {
+          "p1": [
+            {
+              "type": "h",
+              "text": "玩法说明"
+            },
+            {
+              "type": "p",
+              "text": "本单为绝密模式体验护航，下单后由认证车队邀请组队，全程语音沟通路线与撤离点。适合想体验高端局节奏、又希望有保底收益的玩家。"
+            },
+            {
+              "type": "label",
+              "label": "保底范围：",
+              "content": "单局保底 3.33m～10m 哈夫币（以客服说明为准）。"
+            },
+            {
+              "type": "label",
+              "label": "服务特点：",
+              "content": "无上限续打，炸单不中断，按规则赠送额外局数。"
+            },
+            {
+              "type": "h",
+              "text": "炸单赠送规则"
+            },
+            {
+              "type": "ul",
+              "items": [
+                "炸 4 把送 1 把，炸 7 把送 2 把",
+                "炸 11 把送 3 把，炸 15 把送 4 把",
+                "炸 19 把送 5 把，炸 23 把送 6 把",
+                "炸 27 把送 7 把，炸 31 把送 8 把",
+                "炸 35 把送 9 把，炸 39 把送 10 把"
+              ]
+            },
+            {
+              "type": "h",
+              "text": "下单须知"
+            },
+            {
+              "type": "ul",
+              "items": [
+                "每人限购 1 单，请勿重复下单",
+                "请保持游戏与微信在线，按客服指引进组",
+                "护航过程中请勿恶意挂机、辱骂队友",
+                "如有争议请在订单完成后 24 小时内联系客服"
+              ]
+            },
+            {
+              "type": "tip",
+              "text": "温馨提示：绝密局风险较高，请提前备好装备与药品。平台仅提供组队护航服务，不涉及代练、装备交易。"
+            }
+          ],
+          "p2": [
+            {
+              "type": "h",
+              "text": "玩法说明"
+            },
+            {
+              "type": "p",
+              "text": "「拯救老板」面向破产或急需回本的玩家：车队以清图、击杀、协助撤离为目标，帮助老板在高压局里重新积累资源。"
+            },
+            {
+              "type": "label",
+              "label": "核心目标：",
+              "content": "累计击杀 30 名敌方干员，并协助老板成功撤离。"
+            },
+            {
+              "type": "h",
+              "text": "服务流程"
+            },
+            {
+              "type": "ul",
+              "items": [
+                "下单后客服确认地图、时段与联系方式",
+                "打手进组后全程报点，优先保护老板存活",
+                "达成击杀与撤离条件后截图结算",
+                "若因不可抗力未撤离，按平台规则协商补单或退款"
+              ]
+            },
+            {
+              "type": "h",
+              "text": "适合人群"
+            },
+            {
+              "type": "ul",
+              "items": [
+                "仓库见底、需要快速回血的玩家",
+                "希望有人带队、减少野排风险的玩家",
+                "可配合语音、听从战术安排的玩家"
+              ]
+            },
+            {
+              "type": "tip",
+              "text": "下单前请关闭会影响上号的二级密码限制，并确保账号可正常登录。"
+            }
+          ],
+          "p3": [
+            {
+              "type": "h",
+              "text": "活动玩法"
+            },
+            {
+              "type": "p",
+              "text": "五红对对碰为福利专区活动：在指定局数内，消除任意两枚红色品质战利品即可视为达成活动条件，门槛低于常规护航单。"
+            },
+            {
+              "type": "label",
+              "label": "结算条件：",
+              "content": "消除任意两红后，按客服要求上传截图审核。"
+            },
+            {
+              "type": "h",
+              "text": "参与说明"
+            },
+            {
+              "type": "ul",
+              "items": [
+                "活动库存有限，售罄后自动下架",
+                "每人限购 2 单，与日常护航规则不同",
+                "出红认定以平台审核为准，请勿 P 图",
+                "审核通过后 24 小时内完成结算"
+              ]
+            },
+            {
+              "type": "tip",
+              "text": "本活动侧重体验「出红」氛围，不承诺固定收益金额，详情以活动页说明为准。"
+            }
+          ],
+          "p4": [
+            {
+              "type": "h",
+              "text": "商品说明"
+            },
+            {
+              "type": "p",
+              "text": "折扣区 AW 子弹包，包含 5 发 AW 相关服务（具体交付形式以游戏版本与客服说明为准）。适合需要指定弹药、又不想全价购买的玩家。"
+            },
+            {
+              "type": "h",
+              "text": "交付流程"
+            },
+            {
+              "type": "ul",
+              "items": [
+                "下单后 30 分钟内客服主动联系",
+                "确认游戏 ID、在线时段与交付方式",
+                "完成后双方确认，订单完结",
+                "版本更新导致无法交付时，可协商退款或置换"
+              ]
+            },
+            {
+              "type": "h",
+              "text": "注意事项"
+            },
+            {
+              "type": "ul",
+              "items": [
+                "每人限购 3 单",
+                "折扣商品不支持七天无理由",
+                "请勿在交付过程中修改密码或顶号"
+              ]
+            },
+            {
+              "type": "tip",
+              "text": "本商品为折扣特价项，价格随活动调整，以下单页显示为准。"
+            }
+          ],
+          "p5": [
+            {
+              "type": "h",
+              "text": "陪玩说明"
+            },
+            {
+              "type": "p",
+              "text": "娱乐陪玩 1 小时：语音开黑、娱乐局为主，不限段位与地图。陪玩师负责活跃气氛、基础报点与娱乐组队，非强制上分。"
+            },
+            {
+              "type": "h",
+              "text": "服务内容"
+            },
+            {
+              "type": "ul",
+              "items": [
+                "微信/游戏语音连线，时长 60 分钟",
+                "可备注：娱乐唠嗑 / 轻度教学 / 方言偏好等",
+                "支持常规地图，极端模式需提前沟通",
+                "禁止辱骂、挂机、广告引流等行为"
+              ]
+            },
+            {
+              "type": "h",
+              "text": "下单建议"
+            },
+            {
+              "type": "ul",
+              "items": [
+                "预约时段请尽量准确，迟到可能压缩时长",
+                "不满意可在订单完成后 24 小时内申诉",
+                "未成年人请在监护人同意下使用"
+              ]
+            },
+            {
+              "type": "tip",
+              "text": "陪玩师均通过平台基础考核，匹配结果以客服安排为准。"
+            }
+          ],
+          "p6": [
+            {
+              "type": "h",
+              "text": "陪玩说明"
+            },
+            {
+              "type": "p",
+              "text": "上分陪玩 2 小时：由高分段陪玩师带队，侧重胜率与打法复盘，适合希望提升段位或隐藏分的玩家。"
+            },
+            {
+              "type": "label",
+              "label": "服务时长：",
+              "content": "连续 2 小时（可协商分段，需提前说明）。"
+            },
+            {
+              "type": "h",
+              "text": "服务重点"
+            },
+            {
+              "type": "ul",
+              "items": [
+                "进组前沟通当前段位、常用地图与打法风格",
+                "局内指挥节奏、报点、关键团战提醒",
+                "局后简要复盘失误点（时间允许范围内）",
+                "不保证段位必定上升，但承诺尽力打好每一局"
+              ]
+            },
+            {
+              "type": "h",
+              "text": "适合人群"
+            },
+            {
+              "type": "ul",
+              "items": [
+                "有上分目标、能配合战术的玩家",
+                "愿意听指挥、可开麦交流的玩家",
+                "希望减少野排不确定性的玩家"
+              ]
+            },
+            {
+              "type": "tip",
+              "text": "请如实告知段位与账号情况，以便匹配合适陪玩师。恶意隐瞒可能导致服务体验下降。"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "productReviews": [
+    {
+      "id": "r1",
+      "productId": "p1",
+      "userName": "玩家***7K",
+      "rate": 5,
+      "content": "打手很稳，绝密一把出红，值这个价。",
+      "reviewTime": "2026-05-20",
+      "sortOrder": 0
+    },
+    {
+      "id": "r2",
+      "productId": "p1",
+      "userName": "三角洲***猫",
+      "rate": 5,
+      "content": "客服响应快，车队语音清晰，会再来。",
+      "reviewTime": "2026-05-18",
+      "sortOrder": 1
+    },
+    {
+      "id": "r3",
+      "productId": "p1",
+      "userName": "路人***9",
+      "rate": 4,
+      "content": "整体不错，晚上排队稍久。",
+      "reviewTime": "2026-05-15",
+      "sortOrder": 2
+    },
+    {
+      "id": "r3b",
+      "productId": "p1",
+      "userName": "绝密***手",
+      "rate": 5,
+      "content": "炸单送局数说到做到，车队配合默契。",
+      "reviewTime": "2026-05-12",
+      "sortOrder": 3
+    },
+    {
+      "id": "r4",
+      "productId": "p2",
+      "userName": "老板***救",
+      "rate": 5,
+      "content": "30杀撤离真的做到了，破产回血。",
+      "reviewTime": "2026-05-22",
+      "sortOrder": 4
+    },
+    {
+      "id": "r5",
+      "productId": "p2",
+      "userName": "用户***A1",
+      "rate": 5,
+      "content": "打手意识很好，推荐。",
+      "reviewTime": "2026-05-19",
+      "sortOrder": 5
+    },
+    {
+      "id": "r6",
+      "productId": "p5",
+      "userName": "开黑***鸭",
+      "rate": 5,
+      "content": "小姐姐声音好听，娱乐局很开心。",
+      "reviewTime": "2026-05-21",
+      "sortOrder": 6
+    },
+    {
+      "id": "r7",
+      "productId": "p5",
+      "userName": "深夜***人",
+      "rate": 5,
+      "content": "一小时很快就过去了，体验轻松。",
+      "reviewTime": "2026-05-17",
+      "sortOrder": 7
+    }
+  ],
+  "chatConversations": [
+    {
+      "id": "chat_service",
+      "type": "service",
+      "name": "迷因官方客服",
+      "roleLabel": "平台客服",
+      "avatarText": "客",
+      "avatarColor": "#3d5240",
+      "lastMessage": "收到，已为您联系打手处理",
+      "lastTime": "15:20",
+      "unread": 1,
+      "online": true,
+      "sortOrder": 0
+    },
+    {
+      "id": "chat_player_1",
+      "type": "player",
+      "name": "魔王s 贰拾",
+      "roleLabel": "服务打手",
+      "escortLevel": "demon",
+      "avatarText": "魔",
+      "avatarColor": "#4a5f52",
+      "linkedOrderId": "D_260524154235_231533",
+      "lastMessage": "今晚 8 点可以开局，您方便吗？",
+      "lastTime": "14:52",
+      "unread": 0,
+      "online": true,
+      "sortOrder": 1
+    },
+    {
+      "id": "chat_player_2",
+      "type": "player",
+      "name": "阿凯",
+      "roleLabel": "服务打手",
+      "escortLevel": "ace",
+      "avatarText": "凯",
+      "avatarColor": "#3a4540",
+      "linkedOrderId": "D_260520180000_998877",
+      "lastMessage": "订单已完成，欢迎评价～",
+      "lastTime": "昨天",
+      "unread": 0,
+      "online": false,
+      "sortOrder": 2
+    }
+  ],
+  "chatMessages": [
+    {
+      "id": "m1",
+      "from": "other",
+      "type": "text",
+      "content": "您好，我是迷因电竞客服，有什么可以帮您？",
+      "time": "14:30",
+      "conversationId": "chat_service"
+    },
+    {
+      "id": "m2",
+      "from": "self",
+      "type": "text",
+      "content": "我有一单想催一下打手",
+      "time": "14:32",
+      "conversationId": "chat_service"
+    },
+    {
+      "id": "m3",
+      "from": "other",
+      "type": "text",
+      "content": "您可以直接发送订单卡片，我会联系对应打手",
+      "time": "14:33",
+      "conversationId": "chat_service"
+    },
+    {
+      "id": "m4",
+      "from": "other",
+      "type": "text",
+      "content": "收到，已为您联系打手处理",
+      "time": "15:20",
+      "conversationId": "chat_service"
+    },
+    {
+      "id": "p1",
+      "from": "other",
+      "type": "text",
+      "content": "老板好，我是您这单的护航打手魔王",
+      "time": "14:10",
+      "conversationId": "chat_player_1"
+    },
+    {
+      "id": "p2",
+      "from": "self",
+      "type": "text",
+      "content": "好的，大概什么时候开始？",
+      "time": "14:15",
+      "conversationId": "chat_player_1"
+    },
+    {
+      "id": "p3",
+      "from": "other",
+      "type": "text",
+      "content": "今晚 8 点可以开局，您方便吗？",
+      "time": "14:52",
+      "conversationId": "chat_player_1"
+    },
+    {
+      "id": "p4",
+      "from": "other",
+      "type": "text",
+      "content": "绝密单已撤离成功",
+      "time": "昨天 18:00",
+      "conversationId": "chat_player_2"
+    },
+    {
+      "id": "p5",
+      "from": "other",
+      "type": "text",
+      "content": "订单已完成，欢迎评价～",
+      "time": "昨天 18:05",
+      "conversationId": "chat_player_2"
+    }
+  ]
+}

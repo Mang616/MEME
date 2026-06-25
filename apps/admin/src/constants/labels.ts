@@ -16,11 +16,7 @@ export const SERVICE_TYPE_LABELS = {
   companion: "陪玩",
 } as const;
 
-export const ESCORT_LEVEL_MAP = {
-  demon: "魔王",
-  ace: "王牌",
-  rookie: "新锐",
-} as const;
+export { ESCORT_LEVEL_MAP, ESCORT_LEVELS, type EscortLevel } from "@/constants/escort-level";
 
 export const REGION_MAP = {
   pc: "端游",
@@ -41,4 +37,9 @@ export const BANNER_LINK_TYPE_MAP = {
 export const ANNOUNCEMENT_PLACEMENT_MAP = {
   home_bar: "首页提示条",
   popup: "弹窗",
+} as const;
+
+export const PRODUCT_TAG_STYLE_MAP = {
+  recommend: "推荐样式",
+  new: "新品样式",
 } as const;

@@ -4,38 +4,47 @@
 const themedPage = require('../../behaviors/themed-page')
 const theme = require('../../utils/theme')
 const auth = require('../../utils/auth')
-const { initProfilePage, refreshProfilePage } = require('../../utils/profile-page')
+const { loadProfilePage, refreshProfilePage } = require('../../utils/profile-page')
 const { TAB_ROUTES, PAGE_ROUTES } = require('../../utils/constants')
 const {
   openLogin,
   openProfileEdit,
   openVipLevel,
+  openAccount,
+  openCoupons,
 } = require('../../utils/nav')
 const {
   dispatchProfileHelpTap,
   dispatchProfileMenuTap,
 } = require('../../utils/profile-actions')
 const { handleInviteTap } = require('../../utils/invite')
-const { runPullRefresh, getPullRefresh } = require('../../utils/pull-refresh')
 
 const PROFILE_REDIRECT = TAB_ROUTES.PROFILE
 
 Page({
   behaviors: themedPage,
 
-  data: initProfilePage(),
+  data: {
+    loggedIn: false,
+    user: {},
+    helpQuickEntries: [],
+    menuItems: [],
+    guideVisible: false,
+    activeGuide: null,
+  },
 
+  onLoad() {
+    void loadProfilePage().then((state) => this.setData(state))
+  },
   onShow() {
-    this.setData(refreshProfilePage(this))
+    void refreshProfilePage(this).then((state) => this.setData(state))
   },
 
   onPullRefresh() {
     const pr = getPullRefresh(this, '#pullRefresh')
-    runPullRefresh(pr, () => {
-      return new Promise((resolve) => {
-        this.setData(refreshProfilePage(this), resolve)
-      })
-    })
+    runPullRefresh(pr, () => refreshProfilePage(this).then((state) => {
+      this.setData(state)
+    }))
   },
 
   onHeroTap() {
@@ -47,9 +56,14 @@ Page({
     openLogin({ redirect: PROFILE_REDIRECT })
   },
 
-  toggleBalance() {
-    if (!auth.requireLogin({ redirect: PROFILE_REDIRECT })) return
-    this.setData({ balanceVisible: !this.data.balanceVisible })
+  onAccountTap() {
+    if (!auth.requireLogin({ redirect: PAGE_ROUTES.ACCOUNT })) return
+    openAccount()
+  },
+
+  onCouponsTap() {
+    if (!auth.requireLogin({ redirect: PAGE_ROUTES.COUPONS })) return
+    openCoupons()
   },
 
   onVipLevelTap() {

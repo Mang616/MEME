@@ -18,6 +18,9 @@
     "pages/feedback/index",
     "pages/minor-guide/index",
     "pages/vip-level/index",
+    "pages/account/index",
+    "pages/coupons/index",
+    "pages/invite/index",
     "pages/bind-phone/index"
   ],
   "window": {

@@ -1,0 +1,55 @@
+<page-shell
+  title="我的优惠券"
+  back="{{true}}"
+  subpage="{{true}}"
+  theme="{{theme}}"
+  nav-color="{{navColor}}"
+  nav-bg="{{navBg}}"
+>
+  <view class="coupons-page page-tab-main">
+    <view class="page-line-tabs-host page-pad-x">
+      <line-tabs
+        tabs="{{couponTabs}}"
+        active-id="{{activeFilter}}"
+        mode="scroll"
+        bind:tabchange="onTabChange"
+      />
+    </view>
+
+    <scroll-view class="coupons-scroll" scroll-y show-scrollbar="{{false}}">
+      <view class="coupons-list page-tab-scroll-body">
+      <view wx:if="{{loading}}" class="coupons-loading">
+        <text>加载中…</text>
+      </view>
+
+      <block wx:elif="{{coupons.length}}">
+        <view
+          wx:for="{{coupons}}"
+          wx:key="id"
+          class="coupon-card card {{item.isAvailable ? '' : 'is-inactive'}}"
+        >
+          <view class="coupon-card__value">
+            <text class="coupon-card__value-text">{{item.valueLabel}}</text>
+          </view>
+          <view class="coupon-card__divider" />
+          <view class="coupon-card__body">
+            <view class="coupon-card__head">
+              <text class="coupon-card__name">{{item.name}}</text>
+              <text class="coupon-card__status {{item.isAvailable ? 'is-available' : ''}}">{{item.statusLabel}}</text>
+            </view>
+            <text class="coupon-card__hint">{{item.hint}}</text>
+            <text wx:if="{{item.description}}" class="coupon-card__desc">{{item.description}}</text>
+            <text class="coupon-card__expires">{{item.expiresText}}</text>
+          </view>
+        </view>
+      </block>
+
+      <view wx:else class="coupons-empty">
+        <text class="coupons-empty__icon">🎫</text>
+        <text class="coupons-empty__text">{{emptyHint}}</text>
+        <text class="coupons-empty__hint">下单或参与活动后可领取优惠券</text>
+      </view>
+      </view>
+    </scroll-view>
+  </view>
+</page-shell>

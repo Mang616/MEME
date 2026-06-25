@@ -1,0 +1,79 @@
+.form-select {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid var(--color-border);
+  box-sizing: border-box;
+}
+
+.form-select__label {
+  flex-shrink: 0;
+  font-size: 28rpx;
+  color: var(--color-text-muted);
+  line-height: 1.2;
+}
+
+.form-select__control {
+  flex: 1;
+  min-width: 0;
+}
+
+.form-select__trigger {
+  width: 100%;
+  min-width: 0;
+  height: 72rpx;
+  padding: 0 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8rpx;
+  background: var(--color-bg-elevated);
+  border: 1rpx solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-sizing: border-box;
+}
+
+.form-select__value {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.form-select__text {
+  flex: 1;
+  min-width: 0;
+  font-size: 28rpx;
+  color: var(--color-text);
+  text-align: right;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.form-select__trigger.is-placeholder .form-select__text {
+  color: var(--color-text-muted);
+}
+
+.form-select__trigger.is-active .form-select__text {
+  color: var(--color-mint);
+}
+
+.form-select__trigger.is-loading .form-select__text {
+  color: var(--color-text-muted);
+}
+
+.form-select__trigger.is-disabled {
+  opacity: 0.55;
+}
+
+.form-select__arrow {
+  flex-shrink: 0;
+  font-size: 32rpx;
+  color: var(--color-text-muted);
+  line-height: 1;
+}

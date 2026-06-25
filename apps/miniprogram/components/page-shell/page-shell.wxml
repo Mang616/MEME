@@ -1,4 +1,7 @@
-<view class="theme-scope theme-{{theme}} page-root {{subpage ? 'page-root--subpage' : ''}}">
+<view
+  class="theme-scope theme-{{theme}} page-root {{subpage ? 'page-root--subpage' : ''}}"
+  style="{{layoutStyle}}"
+>
   <navigation-bar
     nav-variant="{{navVariant}}"
     title="{{title}}"

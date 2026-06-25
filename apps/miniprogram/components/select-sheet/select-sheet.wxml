@@ -1,0 +1,34 @@
+<view wx:if="{{show}}" class="select-sheet-mask" bindtap="onClose">
+  <view class="select-sheet card" catchtap="">
+    <view class="select-sheet__head">
+      <view class="select-sheet__side" />
+      <text class="select-sheet__title">{{title}}</text>
+      <view class="select-sheet__side" bindtap="onClose">
+        <text class="select-sheet__close">×</text>
+      </view>
+    </view>
+    <scroll-view class="select-sheet__list" scroll-y show-scrollbar="{{false}}">
+      <view
+        wx:for="{{options}}"
+        wx:key="id"
+        class="select-sheet-item {{item.id === selectedId ? 'is-active' : ''}} {{item.disabled ? 'is-disabled' : ''}}"
+        data-id="{{item.id}}"
+        data-index="{{index}}"
+        data-disabled="{{item.disabled ? 1 : 0}}"
+        bindtap="onSelectItem"
+      >
+        <view class="select-sheet-item__main">
+          <text class="select-sheet-item__label">{{item.label}}</text>
+          <text wx:if="{{item.hint}}" class="select-sheet-item__hint">{{item.hint}}</text>
+        </view>
+        <text
+          wx:if="{{item.extra}}"
+          class="select-sheet-item__extra {{item.extraMuted ? 'is-muted' : ''}}"
+        >{{item.extra}}</text>
+      </view>
+      <view wx:if="{{!loading && !options.length}}" class="select-sheet-empty">
+        <text>{{emptyText}}</text>
+      </view>
+    </scroll-view>
+  </view>
+</view>

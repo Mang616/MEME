@@ -1,5 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
+import { paramString } from "../../lib/request-params.js";
+import { adminApiPolicy, requireRead, requireWrite } from "../../middleware/admin-api-policy.js";
 import { catalogService, productService } from "../../services.js";
 
 const productBodySchema = z.object({
@@ -25,18 +27,18 @@ const productBodySchema = z.object({
 
 export const adminProductsRouter = Router();
 
-adminProductsRouter.get("/", async (_req, res) => {
+adminProductsRouter.get("/", requireRead(...adminApiPolicy.products.read), async (_req, res) => {
   const items = await productService.listAdminRows();
   res.json({ items, total: items.length });
 });
 
-adminProductsRouter.get("/categories", async (_req, res) => {
+adminProductsRouter.get("/categories", requireRead(...adminApiPolicy.products.read), async (_req, res) => {
   const catalog = await catalogService.getCatalog();
   res.json(catalog.subCategories);
 });
 
-adminProductsRouter.get("/:id", async (req, res) => {
-  const product = await productService.getById(req.params.id);
+adminProductsRouter.get("/:id", requireRead(...adminApiPolicy.products.read), async (req, res) => {
+  const product = await productService.getById(paramString(req.params.id));
   if (!product) {
     res.status(404).json({ error: "NOT_FOUND", message: "商品不存在" });
     return;
@@ -44,7 +46,7 @@ adminProductsRouter.get("/:id", async (req, res) => {
   res.json(product);
 });
 
-adminProductsRouter.post("/", async (req, res) => {
+adminProductsRouter.post("/", requireWrite(...adminApiPolicy.products.write), async (req, res) => {
   const parsed = productBodySchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: "INVALID_BODY", message: "商品参数错误" });
@@ -65,28 +67,48 @@ adminProductsRouter.post("/", async (req, res) => {
       res.status(409).json({ error: "CONFLICT", message: "商品 ID 已存在" });
       return;
     }
+    if (err instanceof Error && err.message === "INVALID_CATEGORY") {
+      res.status(400).json({ error: "INVALID_BODY", message: "所选分类不存在或与类型不匹配" });
+      return;
+    }
+    if (err instanceof Error && err.message === "INVALID_TAG") {
+      res.status(400).json({ error: "INVALID_BODY", message: "所选标签不存在或已停用" });
+      return;
+    }
     throw err;
   }
 });
 
-adminProductsRouter.put("/:id", async (req, res) => {
+adminProductsRouter.put("/:id", requireWrite(...adminApiPolicy.products.write), async (req, res) => {
   const parsed = productBodySchema.partial().safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: "INVALID_BODY", message: "商品参数错误" });
     return;
   }
 
-  const updated = await productService.update(req.params.id, parsed.data);
-  if (!updated) {
-    res.status(404).json({ error: "NOT_FOUND", message: "商品不存在" });
-    return;
-  }
+  try {
+    const updated = await productService.update(paramString(req.params.id), parsed.data);
+    if (!updated) {
+      res.status(404).json({ error: "NOT_FOUND", message: "商品不存在" });
+      return;
+    }
 
-  res.json(await productService.toAdminRow(updated));
+    res.json(await productService.toAdminRow(updated));
+  } catch (err) {
+    if (err instanceof Error && err.message === "INVALID_CATEGORY") {
+      res.status(400).json({ error: "INVALID_BODY", message: "所选分类不存在或与类型不匹配" });
+      return;
+    }
+    if (err instanceof Error && err.message === "INVALID_TAG") {
+      res.status(400).json({ error: "INVALID_BODY", message: "所选标签不存在或已停用" });
+      return;
+    }
+    throw err;
+  }
 });
 
-adminProductsRouter.delete("/:id", async (req, res) => {
-  const ok = await productService.remove(req.params.id);
+adminProductsRouter.delete("/:id", requireWrite(...adminApiPolicy.products.write), async (req, res) => {
+  const ok = await productService.remove(paramString(req.params.id));
   if (!ok) {
     res.status(404).json({ error: "NOT_FOUND", message: "商品不存在" });
     return;

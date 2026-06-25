@@ -7,30 +7,49 @@ type PageShellProps = {
   subtitle?: string;
   action?: ReactNode;
   loading?: boolean;
+  /** 无边框 Card 包裹，适用于会话/权限等自带容器的页面 */
+  bare?: boolean;
   children: ReactNode;
 };
 
-export function PageShell({ title, subtitle, action, loading = false, children }: PageShellProps) {
+export function PageShell({
+  title,
+  subtitle,
+  action,
+  loading = false,
+  bare = false,
+  children,
+}: PageShellProps) {
+  const body = bare ? (
+    <div className="page-shell-bare">
+      <Spin loading={loading} style={{ width: "100%", display: "flex", flexDirection: "column", flex: 1 }}>
+        {children}
+      </Spin>
+    </div>
+  ) : (
+    <Card bordered={false}>
+      <Spin loading={loading} style={{ width: "100%" }}>
+        {children}
+      </Spin>
+    </Card>
+  );
+
   return (
     <Space direction="vertical" size={16} style={{ width: "100%" }}>
       <div className="page-header">
-        <div>
+        <div className="page-header__body">
           <Typography.Title heading={5} style={{ margin: 0 }}>
             {title}
           </Typography.Title>
           {subtitle ? (
-            <Typography.Text type="secondary" style={{ fontSize: 13 }}>
+            <Typography.Text type="secondary" className="page-header__subtitle" style={{ fontSize: 13 }}>
               {subtitle}
             </Typography.Text>
           ) : null}
         </div>
         {action}
       </div>
-      <Card bordered={false}>
-        <Spin loading={loading} style={{ width: "100%" }}>
-          {children}
-        </Spin>
-      </Card>
+      {body}
     </Space>
   );
 }

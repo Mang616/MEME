@@ -1,0 +1,10 @@
+{
+  "name": "@meme/user-profile",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "main": "./index.js",
+  "exports": {
+    ".": "./index.js"
+  }
+}

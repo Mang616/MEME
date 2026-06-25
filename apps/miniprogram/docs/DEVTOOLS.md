@@ -41,8 +41,9 @@ cd apps/miniprogram && du -sh assets pages components utils styles
 3. **Banner / 商品封面本身无图**  
    `utils/mock/banners.js` 与 `server` 种子数据里 `image` / `cover` 多为空字符串，界面只显示**绿色渐变占位**，不是加载失败。
 
-4. **WebP 在个别 Skyline 真机环境异常**  
-   品牌 Logo 已用 `logo.png`；其余小图仍为 WebP。若仅真机不显示、模拟器正常，再考虑批量转 PNG。
+4. **WebP 在 Skyline 下本地图不显示**  
+   网络图（Banner COS 等）可为 WebP；**包内静态图**请用 PNG。已提供 `utils/local-image.js` 自动把 `/assets/...webp` 映射为 `.png`，新增 WebP 后执行 `npm run miniprogram:assets-png` 生成 PNG。  
+   `service-panel` 人物区用 `clip-path` 实现向上「突出」效果（原设计）；Skyline 控制台可能提示不支持，但视觉效果以此为准。图片请用 PNG（见上条）。
 
 **勿**把 `assets/` 放进 `packOptions.ignore`（与 `miniapp/icons` 不同），否则模拟器会提示「文件已被配置忽略打包上传，模拟器无法获取」。
 
@@ -124,11 +125,37 @@ npm run miniprogram:icons
 
 ---
 
+## Skyline 打开后全页空白（只有顶栏 / 纯黑屏）
+
+**现象**：模拟器已开 Skyline，所有 Tab 页、子页都看不到列表/卡片，像「没内容」；有时只剩自定义导航栏。
+
+**最常见原因**（按顺序排查）：
+
+1. **多端模式**（`project.config.json` 里 `"projectArchitecture": "multiPlatform"`）  
+   日志里若出现 `wxext…` 扩展 ID，说明在用多端模拟器，对 **glass-easel + Skyline** 支持不完整，页面常会整页空白。  
+   **处理**：日常开发请用 **普通小程序项目** 打开 `apps/miniprogram/`（不要用「多端应用」入口）；IPA/APK 打包再切多端。
+
+2. **`scroll-view` 在 Skyline 下必须有明确高度**（主因）  
+   旧方案用 `flex:1 + height:0`，或 `enableScrollViewAutoSize`——后者在 **基础库 3.6.x 开发者工具里会报 invalid 且不生效**。  
+   **现方案**：`utils/page-layout.js` 用 `wx.getWindowInfo()` 算出 `--page-body-h`（px），由 `page-shell` 注入，各 `scroll-view` 设 `height:100%`。  
+   改完后：**清缓存 → 重新编译**。
+
+3. **未开 Skyline 调试**  
+   **详情 → 本地设置 → 开启 Skyline 渲染调试**（`project.private.config.json` 里 `skylineRenderEnable: true`）。
+
+4. **基础库过低**  
+   调试基础库建议 ≥ **3.0.1**（当前 `libVersion`: 3.16.1）。
+
+5. **临时联调**  
+   模拟器右上角渲染模式切 **WebView**，可验证业务/API 是否正常（上线仍以 Skyline 真机为准）。
+
+---
+
 ## Skyline / 控制台告警
 
 ### `无效的 app.json rendererOptions.skyline[...]`
 
-**原因**：新版开发者工具对 `app.json` 里部分 Skyline 字段的 schema 校验滞后，会误报 `tagNameStyleIsolation`、`enableScrollViewAutoSize`、`keyframeStyleIsolation` 等（[社区讨论](https://developers.weixin.qq.com/community/develop/doc/0006829bdd46d8caeb545b87966800)）。`app.json` 仅保留工具认可的 `defaultDisplayBlock`、`defaultContentBox`、`disableABTest`、`sdkVersionBegin/End`；其余能力依赖组件内 `styleIsolation: apply-shared` 与页面布局适配。
+**原因**：新版开发者工具对 `app.json` 里部分 Skyline 字段的 schema 校验滞后（[社区讨论](https://developers.weixin.qq.com/community/develop/doc/0006829bdd46d8caeb545b87966800)）。**不要**写 `enableScrollViewAutoSize`（3.6.x 会报 invalid 且不生效）；滚动区高度改由 `page-layout.js` 注入 `--page-body-h`。
 
 **请同时确认**：
 

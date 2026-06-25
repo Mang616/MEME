@@ -2,8 +2,6 @@ import { formatDateTime } from "./format-time.js";
 import { AUTO_ASSIGN_LABEL, ORDER_STATUS_TEXT } from "../constants.js";
 import type { Order, OrderProductSnapshot } from "../types.js";
 
-export { formatDateTime as formatOrderTime };
-
 function pad2(value: number) {
   return String(value).padStart(2, "0");
 }
@@ -18,15 +16,27 @@ export type CreateOrderInput = {
   quantity: number;
   region: string;
   userId: string;
+  ownerUserId?: string;
   assignedPlayer: string;
   remark?: string;
+  userCouponId?: string;
   product: Pick<OrderProductSnapshot, "title" | "desc" | "price" | "cover" | "coverColor">;
 };
 
-export function buildOrder(input: CreateOrderInput): Order {
+export type OrderPricing = {
+  subtotal: number;
+  couponDiscount: number;
+  totalPaid: number;
+  userCouponId?: string;
+  couponName?: string;
+};
+
+export function buildOrder(input: CreateOrderInput, pricing?: OrderPricing): Order {
   const qty = Math.max(1, Number(input.quantity) || 1);
   const unitPrice = Number(input.product.price) || 0;
-  const totalPaid = Math.round(unitPrice * qty * 100) / 100;
+  const subtotal = pricing?.subtotal ?? Math.round(unitPrice * qty * 100) / 100;
+  const couponDiscount = pricing?.couponDiscount ?? 0;
+  const totalPaid = pricing?.totalPaid ?? subtotal;
 
   return {
     id: buildOrderId(),
@@ -36,6 +46,7 @@ export function buildOrder(input: CreateOrderInput): Order {
     orderTime: formatDateTime(),
     region: input.region,
     userId: input.userId,
+    ownerUserId: input.ownerUserId,
     assignedPlayer: input.assignedPlayer || AUTO_ASSIGN_LABEL,
     servicePlayer: "—",
     remark: input.remark ?? "",
@@ -47,6 +58,10 @@ export function buildOrder(input: CreateOrderInput): Order {
       cover: input.product.cover ?? "",
       coverColor: input.product.coverColor ?? "",
     },
+    subtotal,
+    couponDiscount: couponDiscount > 0 ? couponDiscount : undefined,
+    userCouponId: pricing?.userCouponId,
+    couponName: pricing?.couponName,
     totalPaid,
     paid: true,
     refunded: false,

@@ -42,13 +42,6 @@ const ACTION_LABELS = Object.fromEntries(
   ORDER_ACTIONS.map((item) => [item.action, item.label]),
 )
 
-/** 订单 id → 打手会话 id（mock） */
-const ORDER_PLAYER_CHAT = {
-  D_260524154235_231533: 'chat_player_1',
-  D_260520180000_998877: 'chat_player_2',
-  D_260523091200_110022: 'chat_player_1',
-}
-
 const BUTTON_CLASS = {
   outline: 'btn-outline order-card__btn',
   muted: 'btn-outline order-card__btn order-card__btn--muted',
@@ -108,6 +101,20 @@ function enrichOrder(order) {
   const buttons = buildActionButtons(order.actions)
   const product = mergeProductSnapshot(order, catalog)
   const price = product.price ?? catalog?.price
+  const couponDiscount = Number(order.couponDiscount) || 0
+  const infoRows = buildInfoRows(order)
+  if (couponDiscount > 0) {
+    infoRows.push({
+      label: '优惠券',
+      value: order.couponName || '已使用优惠券',
+      copyable: false,
+    })
+    infoRows.push({
+      label: '优惠减免',
+      value: `-¥${formatMoney(couponDiscount)}`,
+      copyable: false,
+    })
+  }
 
   const compact = order.status === 'completed'
 
@@ -115,10 +122,13 @@ function enrichOrder(order) {
     ...order,
     compact,
     statusClass: STATUS_CLASS[order.status] || '',
-    infoRows: buildInfoRows(order),
+    infoRows,
     listInfoRows: buildInfoRows(order, LIST_INFO_FIELDS),
     buttons,
     hasActions: buttons.length > 0,
+    hasCouponDiscount: couponDiscount > 0,
+    couponDiscountDisplay: formatMoney(couponDiscount),
+    subtotalDisplay: formatMoney(order.subtotal ?? order.totalPaid),
     totalPaidDisplay: formatMoney(order.totalPaid),
     product: {
       ...product,
@@ -144,8 +154,17 @@ function handleOrderAction({ action, id, productId } = {}) {
     return true
   }
 
-  if (action === 'contact') {
-    openChatRoom(ORDER_PLAYER_CHAT[id] || 'chat_service')
+  if (action === 'contact' && id) {
+    const auth = require('./auth')
+    if (!auth.requireLogin({ silent: true })) {
+      const { openLogin } = require('./nav')
+      openLogin()
+      return true
+    }
+    const { ensureOrderConversation } = require('./chat-store')
+    ensureOrderConversation(id)
+      .then((conv) => openChatRoom(conv.id))
+      .catch((err) => showTip(err.message || '暂时无法打开会话'))
     return true
   }
 

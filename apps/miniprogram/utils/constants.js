@@ -26,6 +26,9 @@ const PAGE_ROUTES = {
   FEEDBACK: '/pages/feedback/index',
   MINOR_GUIDE: '/pages/minor-guide/index',
   VIP_LEVEL: '/pages/vip-level/index',
+  ACCOUNT: '/pages/account/index',
+  COUPONS: '/pages/coupons/index',
+  INVITE: '/pages/invite/index',
 }
 
 /** 登录方式 */

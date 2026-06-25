@@ -1,0 +1,45 @@
+<page-shell
+  title="我的账户"
+  back="{{true}}"
+  subpage="{{true}}"
+  theme="{{theme}}"
+  nav-color="{{navColor}}"
+  nav-bg="{{navBg}}"
+>
+  <scroll-view class="page-scroll account-scroll" scroll-y show-scrollbar="{{false}}">
+    <view class="account-page page-pad-x page-tab-scroll-body">
+      <view class="account-balance card">
+        <text class="account-balance__label">账户余额（元）</text>
+        <text class="account-balance__value">¥{{balanceText}}</text>
+        <text class="account-balance__sub">累计消费 ¥{{totalConsumeText}}</text>
+        <view class="account-balance__action btn-primary" bindtap="onRechargeTap">充值</view>
+      </view>
+
+      <view class="account-section card">
+        <text class="account-section__title">账户流水</text>
+        <block wx:if="{{!emptyLedger}}">
+          <view
+            wx:for="{{ledgerRows}}"
+            wx:key="id"
+            class="account-ledger-item"
+          >
+            <view class="account-ledger-item__main">
+              <text class="account-ledger-item__type">{{item.typeLabel}}</text>
+              <text class="account-ledger-item__remark">{{item.remark}}</text>
+              <text class="account-ledger-item__time">{{item.time}}</text>
+            </view>
+            <view class="account-ledger-item__side">
+              <text class="account-ledger-item__delta {{item.deltaPositive ? 'is-plus' : 'is-minus'}}">{{item.deltaText}}</text>
+              <text class="account-ledger-item__after">余额 ¥{{item.balanceAfterText}}</text>
+            </view>
+          </view>
+        </block>
+        <view wx:else class="account-empty">
+          <text class="account-empty__icon">💳</text>
+          <text class="account-empty__text">暂无流水记录</text>
+          <text class="account-empty__hint">充值或下单后将在此展示</text>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+</page-shell>

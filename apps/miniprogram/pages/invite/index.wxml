@@ -1,0 +1,87 @@
+<page-shell
+  title="邀请好友"
+  back="{{true}}"
+  subpage="{{true}}"
+  theme="{{theme}}"
+  nav-color="{{navColor}}"
+  nav-bg="{{navBg}}"
+>
+  <scroll-view class="page-scroll invite-scroll" scroll-y show-scrollbar="{{false}}">
+    <view class="invite-page page-tab-scroll-body">
+      <view wx:if="{{loading}}" class="invite-loading">
+        <text>加载中…</text>
+      </view>
+
+      <block wx:else>
+        <view class="invite-hero card">
+          <text class="invite-hero__tag">{{tag}}</text>
+          <text class="invite-hero__title">{{title}}</text>
+          <text class="invite-hero__subtitle">{{subtitle}}</text>
+        </view>
+
+        <view class="invite-poster card">
+          <text class="invite-poster__title">邀请海报</text>
+          <image
+            wx:if="{{posterDataUrl}}"
+            class="invite-poster__image"
+            src="{{posterDataUrl}}"
+            mode="widthFix"
+            show-menu-by-longpress="{{true}}"
+          />
+          <view wx:else class="invite-poster__placeholder">
+            <text>海报加载失败</text>
+          </view>
+          <text class="invite-poster__hint">保存海报后可分享到朋友圈或发给好友</text>
+        </view>
+
+        <view class="invite-qr card">
+          <view class="invite-qr__frame">
+            <image
+              wx:if="{{qrDataUrl}}"
+              class="invite-qr__image"
+              src="{{qrDataUrl}}"
+              mode="aspectFit"
+              show-menu-by-longpress="{{true}}"
+            />
+            <view wx:else class="invite-qr__placeholder">
+              <text>二维码加载失败</text>
+            </view>
+          </view>
+          <text class="invite-qr__hint">长按保存或转发二维码给好友</text>
+        </view>
+
+        <view class="invite-code card">
+          <text class="invite-code__label">我的邀请码</text>
+          <view class="invite-code__row">
+            <text class="invite-code__value">{{inviteCode}}</text>
+            <view class="invite-code__btn" bindtap="onCopyCode">复制</view>
+          </view>
+        </view>
+
+        <view class="invite-rules card">
+          <text class="invite-rules__title">活动规则</text>
+          <view
+            wx:for="{{rules}}"
+            wx:key="*this"
+            class="invite-rule-item"
+          >
+            <text class="invite-rule-item__index">{{index + 1}}</text>
+            <text class="invite-rule-item__text">{{item}}</text>
+          </view>
+        </view>
+
+        <view class="invite-actions">
+          <button class="invite-actions__share btn-primary" open-type="share">分享给好友</button>
+          <view
+            class="invite-actions__save invite-actions__save--primary {{savingPoster ? 'is-disabled' : ''}}"
+            bindtap="onSavePoster"
+          >{{savingPoster ? '保存中…' : '保存邀请海报'}}</view>
+          <view
+            class="invite-actions__save {{saving ? 'is-disabled' : ''}}"
+            bindtap="onSaveQr"
+          >{{saving ? '保存中…' : '仅保存二维码'}}</view>
+        </view>
+      </block>
+    </view>
+  </scroll-view>
+</page-shell>

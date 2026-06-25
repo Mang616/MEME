@@ -1,5 +1,5 @@
 const themedPage = require('../../behaviors/themed-page')
-const { buildProductDetailState } = require('../../utils/product-page')
+const { loadProductDetailState } = require('../../utils/product-page')
 const { platformNotice } = require('../../utils/config')
 const { openOrderCreateWithAuth, openServiceChat } = require('../../utils/nav')
 const { showMockFeature, showNotFoundAndExit } = require('../../utils/ui')
@@ -19,14 +19,15 @@ Page({
 
   onLoad(options) {
     withCatalog(() => {
-      const state = buildProductDetailState(options.id)
-      if (!state.product) {
-        showNotFoundAndExit('商品不存在', { delay: 800 })
-        return
-      }
-      this.setData({
-        ...state,
-        scrollTop: 0,
+      void loadProductDetailState(options.id).then((state) => {
+        if (!state.product) {
+          showNotFoundAndExit('商品不存在', { delay: 800 })
+          return
+        }
+        this.setData({
+          ...state,
+          scrollTop: 0,
+        })
       })
     })
   },

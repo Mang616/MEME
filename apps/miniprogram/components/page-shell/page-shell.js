@@ -1,10 +1,8 @@
 /**
  * 统一页面壳：主题容器 + 自定义导航栏 + 默认插槽
- *
- * navVariant:
- *   default — 居中标题 + 左操作（返回/搜索/主题）
- *   home    — 仅首页：Logo、品牌名、推广按钮
  */
+const { buildPageShellStyle } = require('../../utils/page-layout')
+
 Component({
   options: {
     multipleSlots: false,
@@ -77,7 +75,27 @@ Component({
     },
   },
 
+  data: {
+    layoutStyle: '',
+  },
+
+  lifetimes: {
+    attached() {
+      this.applyLayoutStyle()
+    },
+  },
+
+  pageLifetimes: {
+    show() {
+      this.applyLayoutStyle()
+    },
+  },
+
   methods: {
+    applyLayoutStyle() {
+      this.setData({ layoutStyle: buildPageShellStyle() })
+    },
+
     onNavSearchTap() {
       this.triggerEvent('search')
     },

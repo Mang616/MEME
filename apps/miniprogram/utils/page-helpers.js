@@ -5,12 +5,18 @@ const { getTabChangeId } = require('./line-tabs')
 const { runPullRefresh, getPullRefresh } = require('./pull-refresh')
 
 /**
- * 筛选列表页 onLoad：缓存数据源并 setData
+ * 筛选列表页 onLoad：缓存数据源并 setData（initFn 可返回 Promise）
  */
 function mountFilterList(page, initFn, { cacheKey, pickCache, pickPageData }) {
+  const apply = (result) => {
+    page[cacheKey] = pickCache(result)
+    page.setData(pickPageData(result))
+  }
   const result = initFn()
-  page[cacheKey] = pickCache(result)
-  page.setData(pickPageData(result))
+  if (result && typeof result.then === 'function') {
+    return result.then(apply)
+  }
+  apply(result)
 }
 
 /** 筛选列表页 onTabChange */
@@ -32,13 +38,18 @@ function ensureAgreed(agreed, message = '请先阅读并同意用户协议') {
 /**
  * 列表页下拉刷新：缓存未就绪时仅结束动画，否则执行 reload(page)
  */
-function runCachedListPullRefresh(page, { scrollSelector, cacheKey, reload }) {
+/**
+ * 列表页下拉刷新：缓存未就绪时仅结束动画，否则执行 reload(page)
+ * @param {(page: object) => Promise<void>} [options.waitFor] 首次加载未完成时等待
+ */
+function runCachedListPullRefresh(page, { scrollSelector, cacheKey, reload, waitFor }) {
   const pr = getPullRefresh(page, scrollSelector)
-  if (!page[cacheKey]) {
+  if (!waitFor && !page[cacheKey]) {
     pr?.stopRefresh?.()
     return
   }
-  runPullRefresh(pr, () => Promise.resolve().then(() => reload(page)))
+  const ready = waitFor ? waitFor(page) : Promise.resolve()
+  runPullRefresh(pr, () => ready.then(() => Promise.resolve().then(() => reload(page))))
 }
 
 module.exports = {

@@ -6,7 +6,7 @@ const { formatCountBadge } = require('./format')
 const {
   getTotalUnreadCount,
   markConversationRead,
-} = require('./mock/chats')
+} = require('./chat-store')
 
 function getChatTabIndex() {
   return TAB_ROUTE_LIST.indexOf(TAB_ROUTES.CHAT)

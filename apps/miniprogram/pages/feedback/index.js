@@ -5,17 +5,31 @@ const {
   initFeedbackPage,
   patchFeedbackContent,
   validateFeedback,
-  submitFeedbackMock,
+  submitFeedback,
 } = require('../../utils/feedback-page')
 
 Page({
   behaviors: themedPage,
 
-  data: initFeedbackPage(),
+  data: {
+    types: [],
+    typeId: '',
+    content: '',
+    contact: '',
+    contentLength: 0,
+    contentMax: 500,
+    contentMin: 10,
+    submitting: false,
+    submitted: false,
+  },
+
+  onLoad() {
+    void initFeedbackPage().then((state) => this.setData(state))
+  },
 
   onShow() {
     if (this.data.submitted) return
-    this.setData(initFeedbackPage())
+    void initFeedbackPage().then((state) => this.setData(state))
   },
 
   onTypeTap(e) {
@@ -38,6 +52,8 @@ Page({
     const err = validateFeedback({
       typeId: this.data.typeId,
       content: this.data.content,
+      contentMin: this.data.contentMin,
+      contentMax: this.data.contentMax,
     })
     if (err) {
       showTip(err)
@@ -46,7 +62,11 @@ Page({
 
     this.setData({ submitting: true })
     try {
-      await submitFeedbackMock()
+      await submitFeedback({
+        typeId: this.data.typeId,
+        content: this.data.content,
+        contact: this.data.contact,
+      })
       this.setData({ submitting: false, submitted: true })
       showTip('提交成功，感谢反馈', 'success')
     } catch (submitErr) {
@@ -57,7 +77,7 @@ Page({
   },
 
   onSubmitAgain() {
-    this.setData(initFeedbackPage())
+    void initFeedbackPage().then((state) => this.setData(state))
   },
 
   onServiceTap() {

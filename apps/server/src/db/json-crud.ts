@@ -6,10 +6,19 @@ type Entity = { id: string };
 type CollectionKey =
   | "products"
   | "handlers"
+  | "clubs"
   | "orders"
   | "users"
   | "banners"
-  | "announcements";
+  | "announcements"
+  | "contentPages"
+  | "productReviews"
+  | "chatConversations"
+  | "chatMessages"
+  | "feedbacks"
+  | "userLedger"
+  | "userCoupons"
+  | "adminUsers";
 
 type EntityOf<K extends CollectionKey> = Database[K][number];
 
@@ -67,4 +76,32 @@ export async function jsonRemove<K extends CollectionKey>(key: K, id: string) {
     removed = (db[key] as Entity[]).length < before;
   });
   return removed;
+}
+
+export async function jsonFindContentBySlug(slug: string) {
+  const db = await jsonStore.readDb();
+  return db.contentPages.find((page) => page.slug === slug) ?? null;
+}
+
+export async function jsonUpsertContentPage(page: import("../types.js").ContentPage) {
+  await jsonStore.updateDb((db) => {
+    const index = db.contentPages.findIndex(
+      (row) => row.slug === page.slug || row.id === page.id,
+    );
+    if (index >= 0) db.contentPages[index] = page;
+    else db.contentPages.push(page);
+  });
+  return page;
+}
+
+export async function jsonListReviewsByProduct(productId: string) {
+  const list = await jsonList("productReviews");
+  return list
+    .filter((review) => review.productId === productId)
+    .sort((a, b) => (b.reviewTime > a.reviewTime ? 1 : b.reviewTime < a.reviewTime ? -1 : 0));
+}
+
+export async function jsonListChatMessages(conversationId: string) {
+  const list = await jsonList("chatMessages");
+  return list.filter((message) => message.conversationId === conversationId);
 }

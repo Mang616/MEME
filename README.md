@@ -15,6 +15,8 @@ packages/
   theme/            Web 设计 token
   types/            跨端共享类型与常量（server 使用）
 docs/               产品与架构文档
+config/
+  domains.json      平台域名唯一配置源（改后 npm run config:sync）
 scripts/
   check.mjs         全仓库校验
   miniprogram/      小程序校验脚本
@@ -31,7 +33,20 @@ scripts/
 | `npm run admin:dev` | 启动运营后台（:4180） |
 | `npm run stack:dev` | API + 运营后台 |
 | `npm run check` | 全仓库校验 |
+| `npm run config:sync` | 将 `config/domains.json` 同步到小程序等 |
 | `npm run miniprogram:verify` | 校验小程序页面文件 |
+
+## 域名配置（memepw.top）
+
+**只改一处：** [config/domains.json](config/domains.json)，然后执行 `npm run config:sync`。
+
+| 环境 | 地址 |
+|------|------|
+| 官网 | https://memepw.top |
+| API | https://api.memepw.top |
+| 运营后台 | https://admin.memepw.top |
+
+详见 [config/README.md](config/README.md)。
 
 ## 开发入口
 
@@ -59,5 +74,8 @@ scripts/
 
 | 变量 | 说明 |
 |------|------|
-| `NEXT_PUBLIC_SITE_URL` | 官网域名 |
-| `NEXT_PUBLIC_ORDER_SITE_URL` | 外部下单站地址 |
+| `NEXT_PUBLIC_SITE_URL` | 官网域名（默认 `https://memepw.top`） |
+| `NEXT_PUBLIC_ORDER_SITE_URL` | 下单页（默认 `https://memepw.top/order`） |
+| `NEXT_PUBLIC_API_ORIGIN` | API 根路径（默认 `https://api.memepw.top`） |
+
+生产域名以 `config/domains.json` 为准，见 `apps/website/.env.example`。

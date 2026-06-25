@@ -125,6 +125,27 @@ function openVipLevel() {
   })
 }
 
+/** 我的账户（余额 / 充值 / 流水） */
+function openAccount() {
+  wx.navigateTo({
+    url: PAGE_ROUTES.ACCOUNT,
+  })
+}
+
+/** 我的优惠券 */
+function openCoupons() {
+  wx.navigateTo({
+    url: PAGE_ROUTES.COUPONS,
+  })
+}
+
+/** 邀请好友 */
+function openInvite() {
+  wx.navigateTo({
+    url: PAGE_ROUTES.INVITE,
+  })
+}
+
 /**
  * 登录子页
  * @param {{ redirect?: string, mode?: 'sms'|'wechat' }} [options]
@@ -210,8 +231,22 @@ function openChatRoom(conversationId) {
 }
 
 /** 打开与官方客服的会话 */
-function openServiceChat() {
-  openChatRoom('chat_service')
+async function openServiceChat() {
+  const auth = require('./auth')
+  if (!auth.requireLogin({ silent: true })) {
+    openLogin()
+    return
+  }
+  try {
+    const repository = require('./api/repository')
+    await repository.ensureCatalog()
+    const { ensureServiceConversation } = require('./chat-store')
+    const conv = await ensureServiceConversation()
+    openChatRoom(conv.id)
+  } catch (err) {
+    const { showTip } = require('./ui')
+    showTip(err.message || '暂时无法连接客服')
+  }
 }
 
 /**
@@ -274,6 +309,9 @@ module.exports = {
   openSettings,
   openProfileEdit,
   openVipLevel,
+  openAccount,
+  openCoupons,
+  openInvite,
   openLegal,
   openAgreement,
   openPrivacy,

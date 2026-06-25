@@ -18,6 +18,17 @@
   border-radius: var(--radius-md);
 }
 
+/* 正方形占位由 ::after 撑开；内层 slot 铺满（勿用 cover-media 标签选择器，Skyline 不生效） */
+.cover-wrap__slot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  overflow: hidden;
+}
+
 .cover-wrap::after {
   content: '';
   display: block;

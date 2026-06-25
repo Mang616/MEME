@@ -4,12 +4,14 @@
 const { CHAT_TYPE, getChatTypeLabel } = require('./constants')
 const { listOrders } = require('./api/repository')
 const {
+  ensureLoaded,
+  ensureMessages,
   listConversations,
   getConversationById,
   getMessages,
   appendMessage,
   markAllConversationsRead,
-} = require('./mock/chats')
+} = require('./chat-store')
 const { FILTER_ALL } = require('./line-tabs')
 const { formatTimeHm, formatCountBadge, formatOnlineStatus } = require('./format')
 const { withEscortLevelDisplay, EMPTY_LEVEL_FIELDS } = require('./escort-level')
@@ -98,6 +100,23 @@ function markAllConversationsAsRead(page, cacheKey, filterId = FILTER_ALL) {
   return true
 }
 
+async function prepareChatPage(filterId = FILTER_ALL) {
+  await ensureLoaded()
+  return initChatPage(filterId)
+}
+
+async function refreshChatFromApi(filterId = FILTER_ALL) {
+  const { refreshFromApi } = require('./chat-store')
+  await refreshFromApi()
+  return initChatPage(filterId)
+}
+
+async function loadChatRoomState(conversationId) {
+  await ensureLoaded()
+  await ensureMessages(conversationId)
+  return buildChatRoomState(conversationId)
+}
+
 function buildChatRoomState(conversationId) {
   const raw = getConversationById(conversationId)
   if (!raw) {
@@ -134,17 +153,10 @@ function enrichMessage(msg) {
 
 function addTextMessage(conversationId, content) {
   const text = (content || '').trim()
-  if (!text) return null
-
-  const message = {
-    id: `msg_${Date.now()}`,
-    from: 'self',
-    type: 'text',
-    content: text,
-    time: formatTimeHm(),
-  }
-  appendMessage(conversationId, message)
-  return enrichMessage(message)
+  if (!text) return Promise.resolve(null)
+  return require('./chat-store')
+    .sendTextMessage(conversationId, text)
+    .then((message) => (message ? enrichMessage(message) : null))
 }
 
 function addOrderMessage(conversationId, orderItem) {
@@ -164,10 +176,13 @@ function addOrderMessage(conversationId, orderItem) {
 
 module.exports = {
   initChatPage,
+  prepareChatPage,
+  refreshChatFromApi,
   buildChatListSlice,
   applyChatListToPage,
   markAllConversationsAsRead,
   buildChatRoomState,
+  loadChatRoomState,
   addTextMessage,
   addOrderMessage,
 }

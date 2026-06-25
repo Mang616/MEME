@@ -5,11 +5,12 @@ const { getTabChangeId } = require('../../utils/line-tabs')
 const {
   markBannerImageReady,
   markBannerImageFailed,
+  pickBannerFields,
 } = require('../../utils/home-banner')
 const {
-  buildHomeBannerState,
   buildCatalogState,
-  loadHomeBanners,
+  syncHomeProducts,
+  loadHomePageData,
   loadHomeAnnouncement,
   refreshHomePage,
   minorOrderNotice,
@@ -18,12 +19,10 @@ const {
   followBannerLink,
   openProductFromEvent,
 } = require('../../utils/nav')
-const {
-  confirmMinorAge,
-} = require('../../utils/minor-notice')
+const { confirmMinorAge } = require('../../utils/minor-notice')
 const { showMockFeature, showTip } = require('../../utils/ui')
 const { runPullRefresh, getPullRefresh } = require('../../utils/pull-refresh')
-const { withCatalog } = require('../../utils/page-data')
+const { captureInviterFromQuery } = require('../../utils/invite-storage')
 const api = require('../../utils/api/index')
 
 Page({
@@ -32,7 +31,11 @@ Page({
   data: {
     storeName,
     brandLogo,
-    ...buildHomeBannerState(),
+    bannerCount: 0,
+    bannerShowDots: false,
+    bannerAutoplay: false,
+    bannerCircular: false,
+    banners: [],
     serviceTypes: [],
     activeType: SERVICE_TYPE.ESCORT,
     products: [],
@@ -40,18 +43,42 @@ Page({
     minorNoticeText: minorOrderNotice,
   },
 
-  onLoad() {
-    void loadHomeBanners(api).then((list) => {
-      this.setData(buildHomeBannerState(list))
-    })
+  applyHomeState(state, { bannersOnly = false } = {}) {
+    if (bannersOnly) {
+      if (state.bannerCount > 0) this.setData(pickBannerFields(state))
+      return
+    }
+    this.setData(state)
+  },
 
-    withCatalog(() => {
-      this.setData(buildCatalogState(SERVICE_TYPE.ESCORT))
+  loadHomeState({ bannersOnly = false } = {}) {
+    if (bannersOnly && this.data.bannerCount > 0) return
+    void loadHomePageData(api, this.data.activeType, {
+      previousBanners: this.data.banners,
+      previousProducts: this.data.products,
     })
+      .then((state) => this.applyHomeState(state, { bannersOnly }))
+      .catch((err) => {
+        console.warn('[home] load failed', err)
+      })
+  },
 
-    void loadHomeAnnouncement(api).then((patch) => {
-      if (Object.keys(patch).length) this.setData(patch)
-    })
+  onLoad(options) {
+    captureInviterFromQuery(options)
+    this.loadHomeState()
+
+    void loadHomeAnnouncement(api)
+      .then((patch) => {
+        if (Object.keys(patch).length) this.setData(patch)
+      })
+      .catch((err) => {
+        console.warn('[home] announcement failed', err)
+      })
+  },
+
+  onShow() {
+    this.setData(syncHomeProducts(this.data.activeType, this.data.products))
+    this.loadHomeState({ bannersOnly: true })
   },
 
   async onMinorNoticeClose() {
@@ -84,9 +111,7 @@ Page({
   onBannerTap(e) {
     const banner = this.data.banners[e.currentTarget.dataset.index]
     if (!banner) return
-    if (!followBannerLink(banner)) {
-      showTip(banner.title)
-    }
+    followBannerLink(banner)
   },
 
   onTabChange(e) {
@@ -106,7 +131,12 @@ Page({
   onPullRefresh() {
     const pr = getPullRefresh(this, '#pullRefresh')
     runPullRefresh(pr, () =>
-      refreshHomePage(api, this.data.activeType).then((state) => this.setData(state)),
+      refreshHomePage(
+        api,
+        this.data.activeType,
+        this.data.banners,
+        this.data.products,
+      ).then((state) => this.setData(state)),
     )
   },
 })

@@ -1,30 +1,40 @@
 /**
  * 协议 / 隐私政策展示页状态
  */
-const { getLegalDoc } = require('./mock/legal')
+const { fetchContent } = require('./api/content')
 const { mapDocSections } = require('./doc-sections')
 
-function buildLegalPageState(type) {
+async function loadLegalPageState(type) {
   const docKind = type === 'privacy' ? 'privacy' : 'agreement'
-  const doc = getLegalDoc(docKind)
-  if (!doc) {
-    return {
-      title: '文档不存在',
-      summary: '',
-      updatedAt: '',
-      docKind,
-      sections: [],
+  try {
+    const page = await fetchContent(docKind)
+    const doc = page.payload
+    if (!doc) {
+      return emptyLegalState(docKind)
     }
+    return {
+      title: doc.title,
+      summary: doc.summary || '',
+      updatedAt: doc.updatedAt,
+      docKind,
+      sections: mapDocSections(doc.sections),
+    }
+  } catch (err) {
+    console.warn('[legal] load failed', err.message)
+    return emptyLegalState(docKind)
   }
+}
+
+function emptyLegalState(docKind) {
   return {
-    title: doc.title,
-    summary: doc.summary || '',
-    updatedAt: doc.updatedAt,
+    title: '文档不存在',
+    summary: '',
+    updatedAt: '',
     docKind,
-    sections: mapDocSections(doc.sections),
+    sections: [],
   }
 }
 
 module.exports = {
-  buildLegalPageState,
+  loadLegalPageState,
 }

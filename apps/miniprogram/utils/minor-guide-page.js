@@ -1,11 +1,12 @@
 /**
  * 未成年人保护指引展示页状态
  */
-const { getMinorGuide } = require('./mock/minor-guide')
+const { fetchContent } = require('./api/content')
 const { mapDocSections } = require('./doc-sections')
 
-function buildMinorGuidePageState() {
-  const doc = getMinorGuide()
+async function loadMinorGuidePageState() {
+  const page = await fetchContent('minor-guide')
+  const doc = page.payload
   return {
     title: doc.title,
     summary: doc.summary || '',
@@ -16,5 +17,5 @@ function buildMinorGuidePageState() {
 }
 
 module.exports = {
-  buildMinorGuidePageState,
+  loadMinorGuidePageState,
 }

@@ -9,12 +9,16 @@ import {
   Table,
 } from "@arco-design/web-react";
 import type { ColumnProps } from "@arco-design/web-react/es/Table";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { BoolTag } from "@/components/BoolTag";
+import { ListFilterBar } from "@/components/ListFilterBar";
+import { ImageUrlField } from "@/components/ImageUrlField";
+import { ProductCoverThumb } from "@/components/ProductCoverThumb";
 import { EditDeleteActions } from "@/components/EditDeleteActions";
 import { DEFAULT_TABLE_PAGINATION, PageShell } from "@/components/PageShell";
 import { BANNER_LINK_TYPE_MAP } from "@/constants/labels";
 import { useCrudResource } from "@/hooks/useCrudResource";
+import { matchBoolFilter, matchKeyword, matchSelect } from "@/lib/list-filter";
 import { api, type BannerRow } from "@/lib/api";
 
 type BannerFormValues = Omit<BannerRow, "id">;
@@ -32,6 +36,9 @@ const emptyForm: BannerFormValues = {
 
 export default function BannersPage() {
   const [form] = Form.useForm<BannerFormValues>();
+  const [keyword, setKeyword] = useState("");
+  const [publishedFilter, setPublishedFilter] = useState<"all" | "yes" | "no">("all");
+  const [linkTypeFilter, setLinkTypeFilter] = useState<BannerRow["linkType"] | "all">("all");
   const linkType = Form.useWatch("linkType", form) as BannerRow["linkType"] | undefined;
 
   const crud = useCrudResource<BannerRow, BannerFormValues>({
@@ -46,8 +53,33 @@ export default function BannersPage() {
     },
   });
 
+  const filteredRows = useMemo(() => {
+    return crud.rows.filter((row) => {
+      if (!matchSelect(row.linkType, linkTypeFilter)) return false;
+      if (!matchBoolFilter(row.published, publishedFilter)) return false;
+      return matchKeyword(
+        [row.title, row.subtitle, row.linkValue, BANNER_LINK_TYPE_MAP[row.linkType]],
+        keyword,
+      );
+    });
+  }, [crud.rows, keyword, publishedFilter, linkTypeFilter]);
+
+  function resetFilters() {
+    setKeyword("");
+    setPublishedFilter("all");
+    setLinkTypeFilter("all");
+  }
+
   const columns: ColumnProps<BannerRow>[] = useMemo(
     () => [
+      {
+        title: "图片",
+        dataIndex: "image",
+        width: 112,
+        render: (_image: string, row: BannerRow) => (
+          <ProductCoverThumb cover={row.image} coverColor={row.bgColor} width={96} height={54} />
+        ),
+      },
       { title: "标题", dataIndex: "title" },
       { title: "副标题", dataIndex: "subtitle", ellipsis: true },
       {
@@ -89,10 +121,41 @@ export default function BannersPage() {
           </Button>
         }
       >
+        <ListFilterBar
+          keyword={keyword}
+          onKeywordChange={setKeyword}
+          keywordPlaceholder="搜索标题 / 副标题 / 跳转"
+          selects={[
+            {
+              value: linkTypeFilter,
+              onChange: (value) => setLinkTypeFilter(value as BannerRow["linkType"] | "all"),
+              placeholder: "跳转类型",
+              width: 130,
+              options: [
+                { value: "all", label: "全部跳转" },
+                ...Object.entries(BANNER_LINK_TYPE_MAP).map(([value, label]) => ({ value, label })),
+              ],
+            },
+            {
+              value: publishedFilter,
+              onChange: (value) => setPublishedFilter(value as "all" | "yes" | "no"),
+              placeholder: "上架状态",
+              width: 120,
+              options: [
+                { value: "all", label: "全部状态" },
+                { value: "yes", label: "已上架" },
+                { value: "no", label: "已下架" },
+              ],
+            },
+          ]}
+          total={crud.rows.length}
+          filtered={filteredRows.length}
+          onReset={resetFilters}
+        />
         <Table
           rowKey="id"
           columns={columns}
-          data={crud.rows}
+          data={filteredRows}
           pagination={DEFAULT_TABLE_PAGINATION}
         />
       </PageShell>
@@ -112,8 +175,12 @@ export default function BannersPage() {
           <Form.Item label="副标题" field="subtitle">
             <Input />
           </Form.Item>
-          <Form.Item label="图片 URL" field="image">
-            <Input placeholder="留空则显示纯色占位" />
+          <Form.Item label="图片" field="image">
+            <ImageUrlField
+              folder="banners"
+              entityId={crud.editing?.id}
+              placeholder="留空则显示纯色占位"
+            />
           </Form.Item>
           <Form.Item label="占位色" field="bgColor">
             <Input placeholder="#2d4a35" />

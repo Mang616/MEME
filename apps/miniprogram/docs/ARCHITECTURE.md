@@ -82,7 +82,7 @@ onTabChange(e) {
 
 | 页面 | 入口 |
 |------|------|
-| 首页 | `catalog.buildHomeState`；Banner `home-banner.enrichBanners` |
+| 首页 | `catalog.buildHomeState`；Banner `home-banner.buildHomeBannerState` |
 | 商品 | `products-page` → `catalog.buildProductsPageState` / `buildProductsPageSlice` |
 | 搜索 | `catalog.buildSearchPageState` |
 | 详情 | `product-page.buildProductDetailState` |

@@ -19,7 +19,8 @@
       <view class="detail-hero">
         <cover-media
           class="detail-hero__cover"
-          src="{{product.cover}}"
+          src="{{product.coverDisplay || product.cover}}"
+          media-key="{{product.coverKey}}"
           color="{{product.coverColor}}"
         />
         <view class="detail-hero__mask" />

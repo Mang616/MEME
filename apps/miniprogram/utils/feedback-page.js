@@ -2,22 +2,30 @@
  * 意见反馈页状态与校验
  */
 const auth = require('./auth')
-const {
-  FEEDBACK_TYPES,
-  CONTENT_MIN,
-  CONTENT_MAX,
-} = require('./mock/feedback')
+const { fetchContent } = require('./api/content')
+const { request } = require('./api/request')
 
-function initFeedbackPage() {
+let feedbackConfig = null
+
+async function ensureFeedbackConfig() {
+  if (feedbackConfig) return feedbackConfig
+  const page = await fetchContent('feedback-config')
+  feedbackConfig = page.payload || { types: [], contentMin: 10, contentMax: 500 }
+  return feedbackConfig
+}
+
+async function initFeedbackPage() {
+  const cfg = await ensureFeedbackConfig()
   const user = auth.getUser()
   const phone = user && user.phone ? String(user.phone) : ''
   return {
-    types: FEEDBACK_TYPES,
+    types: cfg.types || [],
     typeId: '',
     content: '',
     contact: phone,
     contentLength: 0,
-    contentMax: CONTENT_MAX,
+    contentMax: cfg.contentMax || 500,
+    contentMin: cfg.contentMin || 10,
     submitting: false,
     submitted: false,
   }
@@ -31,24 +39,24 @@ function patchFeedbackContent(content) {
   }
 }
 
-function validateFeedback({ typeId, content }) {
+function validateFeedback({ typeId, content, contentMin = 10, contentMax = 500 }) {
   if (!typeId) {
     return '请选择反馈类型'
   }
   const text = String(content || '').trim()
-  if (text.length < CONTENT_MIN) {
-    return `请至少输入 ${CONTENT_MIN} 字描述`
+  if (text.length < contentMin) {
+    return `请至少输入 ${contentMin} 字描述`
   }
-  if (text.length > CONTENT_MAX) {
-    return `描述不超过 ${CONTENT_MAX} 字`
+  if (text.length > contentMax) {
+    return `描述不超过 ${contentMax} 字`
   }
   return ''
 }
 
-/** mock 提交，上线后替换为 API */
-function submitFeedbackMock() {
-  return new Promise((resolve) => {
-    setTimeout(resolve, 500)
+async function submitFeedback({ typeId, content, contact }) {
+  return request('/feedbacks', {
+    method: 'POST',
+    body: { typeId, content: String(content || '').trim(), contact: contact || '' },
   })
 }
 
@@ -56,6 +64,5 @@ module.exports = {
   initFeedbackPage,
   patchFeedbackContent,
   validateFeedback,
-  submitFeedbackMock,
-  CONTENT_MIN,
+  submitFeedback,
 }

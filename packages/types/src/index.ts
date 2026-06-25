@@ -17,4 +17,5 @@ export const ORDER_STATUS_TEXT: Record<OrderStatus, string> = {
 export const SERVICE_TYPES = ["escort", "companion"] as const;
 export type ServiceType = (typeof SERVICE_TYPES)[number];
 
-export const ORDER_REGIONS = ["端游", "手游"] as const;
+export const ORDER_REGIONS = ["PC端游", "手游Android", "手游iOS"] as const;
+export type OrderGamePort = (typeof ORDER_REGIONS)[number];

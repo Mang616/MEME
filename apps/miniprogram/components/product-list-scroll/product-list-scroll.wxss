@@ -2,15 +2,14 @@
   flex: 1;
   min-height: 0;
   width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
 }
 
 .product-list-scroll {
-  flex: 1;
-  min-height: 0;
-  height: 0;
   width: 100%;
+  height: var(--page-body-h, 100%);
   display: flex;
   flex-direction: column;
   background: var(--color-bg);

@@ -14,8 +14,8 @@
         <minor-notice-bar text="{{minorNoticeText}}" bind:closetap="onMinorNoticeClose" />
       </view>
 
+      <view class="home-banner-wrap" hidden="{{!bannerCount}}">
       <swiper
-        wx:if="{{bannerCount}}"
         class="home-banner"
         indicator-dots="{{bannerShowDots}}"
         indicator-color="rgba(255,255,255,0.35)"
@@ -31,7 +31,7 @@
           class="home-banner__item"
         >
           <view
-            class="banner-card {{item.showPhoto ? 'banner-card--photo' : ''}}"
+            class="banner-card"
             data-index="{{index}}"
             bindtap="onBannerTap"
           >
@@ -45,20 +45,15 @@
                 class="banner-card__media banner-card__media--photo {{item.showImage ? 'banner-card__media--visible' : ''}}"
                 src="{{item.image}}"
                 mode="aspectFill"
-                lazy-load
                 data-id="{{item.id}}"
                 bindload="onBannerImageLoad"
                 binderror="onBannerImageError"
               />
             </view>
-            <view class="banner-card__shade" />
-            <view class="banner-card__content">
-              <text class="banner-card__title">{{item.title}}</text>
-              <text class="banner-card__subtitle">{{item.subtitle}}</text>
-            </view>
           </view>
         </swiper-item>
       </swiper>
+      </view>
 
       <view class="page-content">
         <service-panel

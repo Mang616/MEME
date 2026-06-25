@@ -15,6 +15,7 @@ const {
   openSearch,
 } = require('../../utils/nav')
 const { getTabChangeId } = require('../../utils/line-tabs')
+const { mergeCoverLoadedState } = require('../../utils/merge-cover-state')
 const { runPullRefresh, getPullRefresh } = require('../../utils/pull-refresh')
 const { withCatalog } = require('../../utils/page-data')
 const api = require('../../utils/api/index')
@@ -63,10 +64,12 @@ Page({
 
   onPullRefresh() {
     const pr = getPullRefresh(this, '#productsPanel')
-    const { activeType, activeSubCategoryId, subCategories } = this.data
+    const { activeType, activeSubCategoryId, subCategories, products } = this.data
     runPullRefresh(pr, () =>
       api.refreshCatalog().then(() => {
-        this.setData(applySubCategory(activeType, activeSubCategoryId, subCategories))
+        const next = applySubCategory(activeType, activeSubCategoryId, subCategories)
+        next.products = mergeCoverLoadedState(next.products, products)
+        this.setData(next)
       }),
     )
   },

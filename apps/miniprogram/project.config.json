@@ -23,7 +23,8 @@
     "swc": false,
     "disableSWC": true,
     "ignoreDevUnusedFiles": false,
-    "ignoreUploadUnusedFiles": false
+    "ignoreUploadUnusedFiles": false,
+    "urlCheck": false
   },
   "compileType": "miniprogram",
   "simulatorPluginLibVersion": {

@@ -1,6 +1,6 @@
 const themedPage = require('../../behaviors/themed-page')
 const {
-  buildChatRoomState,
+  loadChatRoomState,
   addTextMessage,
   addOrderMessage,
 } = require('../../utils/chat-page')
@@ -22,14 +22,15 @@ Page({
   },
 
   onLoad(options) {
-    const state = buildChatRoomState(options.id)
-    if (!state.conversation) {
-      showNotFoundAndExit('会话不存在')
-      return
-    }
-    this._conversationId = options.id
-    markConversationReadAndSync(options.id)
-    this.setData(state, () => this.scrollToBottom())
+    void loadChatRoomState(options.id).then((state) => {
+      if (!state.conversation) {
+        showNotFoundAndExit('会话不存在')
+        return
+      }
+      this._conversationId = options.id
+      markConversationReadAndSync(options.id)
+      this.setData(state, () => this.scrollToBottom())
+    })
   },
 
   scrollToBottom() {
@@ -45,12 +46,13 @@ Page({
 
   onSendText() {
     const { draft } = this.data
-    const msg = addTextMessage(this._conversationId, draft)
-    if (!msg) return
-    this.setData({
-      messages: [...this.data.messages, msg],
-      draft: '',
-    }, () => this.scrollToBottom())
+    addTextMessage(this._conversationId, draft).then((msg) => {
+      if (!msg) return
+      this.setData({
+        messages: [...this.data.messages, msg],
+        draft: '',
+      }, () => this.scrollToBottom())
+    }).catch(() => showTip('发送失败'))
   },
 
   onOpenOrderPicker() {

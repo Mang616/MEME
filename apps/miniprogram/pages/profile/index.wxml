@@ -48,12 +48,12 @@
           <text class="profile-head__chevron">›</text>
         </view>
         <view class="profile-head__wallet">
-          <view class="profile-head__wallet-item" bindtap="toggleBalance">
+          <view class="profile-head__wallet-item" bindtap="onAccountTap">
             <text class="profile-head__wallet-label">账户余额</text>
-            <text class="profile-head__wallet-value">{{loggedIn && balanceVisible ? '¥' + user.balanceText : '****'}}</text>
+            <text class="profile-head__wallet-value">{{loggedIn ? '¥' + user.balanceText : '--'}}</text>
           </view>
           <view class="profile-head__wallet-divider" />
-          <view class="profile-head__wallet-item">
+          <view class="profile-head__wallet-item" bindtap="onCouponsTap">
             <text class="profile-head__wallet-label">优惠券</text>
             <text class="profile-head__wallet-value">{{loggedIn ? user.couponCount + ' 张' : '--'}}</text>
           </view>

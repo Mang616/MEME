@@ -63,9 +63,16 @@ function maskPhone(phone) {
 
 function mapProductForDisplay(product) {
   if (!product) return product
+  const { resolveMediaIdentity, appendMediaCacheBuster } = require('./media-key')
+  const { resolveTagClass } = require('./tag-class')
+  const cover = String(product.cover || '').trim()
+  const coverRev = product.coverRev || 0
   return {
     ...product,
     priceDisplay: formatPriceDisplay(product.price),
+    coverKey: resolveMediaIdentity(cover, coverRev),
+    coverDisplay: appendMediaCacheBuster(cover, coverRev),
+    tagClass: resolveTagClass(product.tag),
   }
 }
 

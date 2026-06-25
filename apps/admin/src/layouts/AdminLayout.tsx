@@ -1,23 +1,25 @@
-import {
-  IconImage,
-  IconPoweroff,
-} from "@arco-design/web-react/icon";
-import { Button, Layout, Menu, Typography } from "@arco-design/web-react";
+import { Layout, Menu } from "@arco-design/web-react";
+import { IconImage } from "@arco-design/web-react/icon";
 import { useMemo } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { AdminNavMenuLabel, AdminNavSubMenuTitle } from "@/components/AdminNavMenuLabel";
+import { AdminSidebarBrand } from "@/components/AdminSidebarBrand";
+import { AdminUserMenu } from "@/components/AdminUserMenu";
+import { AdminLivePollProvider } from "@/contexts/AdminLivePollContext";
+import { VipConfigProvider } from "@/contexts/VipConfigContext";
 import {
-  contentMenuOpen,
-  NAV_GROUPS,
+  filterNavGroups,
   resolveNavPath,
+  resolveOpenMenuKeys,
 } from "@/config/navigation";
-import { logout } from "@/lib/auth";
+import { hasAnyPermission } from "@/lib/session";
 import { memeColors } from "@/theme/arco-theme";
 
 const { Sider, Header, Content } = Layout;
 const MenuItem = Menu.Item;
 const SubMenu = Menu.SubMenu;
 
-export default function AdminLayout() {
+function AdminLayoutShell() {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -26,7 +28,8 @@ export default function AdminLayout() {
     [location.pathname],
   );
 
-  const openKeys = contentMenuOpen(location.pathname);
+  const openKeys = resolveOpenMenuKeys(location.pathname);
+  const visibleGroups = filterNavGroups((perms) => hasAnyPermission(perms));
 
   return (
     <Layout className="admin-layout">
@@ -37,22 +40,16 @@ export default function AdminLayout() {
         breakpoint="lg"
         style={{ background: memeColors.siderBg }}
       >
-        <div className="admin-brand">
-          <Typography.Title heading={5} style={{ margin: 0, color: memeColors.mint }}>
-            迷因电竞
-          </Typography.Title>
-          <Typography.Text style={{ fontSize: 12, color: memeColors.siderText }}>
-            运营后台
-          </Typography.Text>
-        </div>
+        <AdminSidebarBrand />
         <Menu
+          key={location.pathname}
           theme="dark"
           selectedKeys={[selectedKey]}
-          defaultOpenKeys={openKeys}
+          defaultOpenKeys={openKeys ?? []}
           style={{ background: "transparent" }}
           onClickMenuItem={(key) => navigate(key)}
         >
-          {NAV_GROUPS.map((group) => {
+          {visibleGroups.map((group) => {
             if (group.key && group.label) {
               const GroupIcon = group.icon ?? IconImage;
               return (
@@ -61,16 +58,22 @@ export default function AdminLayout() {
                   title={
                     <>
                       <GroupIcon />
-                      {group.label}
+                      <AdminNavSubMenuTitle
+                        label={group.label}
+                        showChatDot={group.groupBadge === "chatUnread"}
+                      />
                     </>
                   }
                 >
                   {group.items.map((item) => {
                     const ItemIcon = item.icon;
                     return (
-                      <MenuItem key={`/${item.path}`}>
+                      <MenuItem
+                        key={`/${item.path}`}
+                        className={item.featured ? "admin-menu-item--featured" : undefined}
+                      >
                         <ItemIcon />
-                        {item.label}
+                        <AdminNavMenuLabel label={item.label} badge={item.navBadge} />
                       </MenuItem>
                     );
                   })}
@@ -81,9 +84,12 @@ export default function AdminLayout() {
             return group.items.map((item) => {
               const ItemIcon = item.icon;
               return (
-                <MenuItem key={`/${item.path}`}>
+                <MenuItem
+                  key={`/${item.path}`}
+                  className={item.featured ? "admin-menu-item--featured" : undefined}
+                >
                   <ItemIcon />
-                  {item.label}
+                  <AdminNavMenuLabel label={item.label} badge={item.navBadge} />
                 </MenuItem>
               );
             });
@@ -92,22 +98,23 @@ export default function AdminLayout() {
       </Sider>
       <Layout className="admin-main">
         <Header className="admin-header">
-          <Typography.Text type="secondary">MEME Admin</Typography.Text>
-          <Button
-            type="text"
-            icon={<IconPoweroff />}
-            onClick={() => {
-              logout();
-              navigate("/login", { replace: true });
-            }}
-          >
-            退出
-          </Button>
+          <span className="admin-header__label">MEME Admin</span>
+          <AdminUserMenu />
         </Header>
         <Content className="admin-content">
           <Outlet />
         </Content>
       </Layout>
     </Layout>
+  );
+}
+
+export default function AdminLayout() {
+  return (
+    <VipConfigProvider>
+      <AdminLivePollProvider>
+        <AdminLayoutShell />
+      </AdminLivePollProvider>
+    </VipConfigProvider>
   );
 }

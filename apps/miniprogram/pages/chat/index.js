@@ -1,7 +1,8 @@
 const themedPage = require('../../behaviors/themed-page')
 const { FILTER_ALL } = require('../../utils/line-tabs')
 const {
-  initChatPage,
+  prepareChatPage,
+  refreshChatFromApi,
   buildChatListSlice,
   applyChatListToPage,
   markAllConversationsAsRead,
@@ -14,6 +15,7 @@ const {
 } = require('../../utils/page-helpers')
 const { CHAT_ASSETS } = require('../../utils/constants')
 const { showTip } = require('../../utils/ui')
+const { ensureLoaded } = require('../../utils/chat-store')
 
 const LIST_CACHE_KEY = '_conversations'
 const SCROLL_SELECTOR = '#chatList'
@@ -30,15 +32,22 @@ Page({
   },
 
   onLoad() {
-    mountFilterList(this, () => initChatPage(FILTER_ALL), {
+    this._chatReady = mountFilterList(this, () => prepareChatPage(FILTER_ALL), {
       cacheKey: LIST_CACHE_KEY,
       pickCache: (r) => r.conversations,
       pickPageData: (r) => r.pageData,
+    }).catch((err) => {
+      this._chatReady = null
+      showTip(err.message || '会话加载失败')
     })
   },
 
   onShow() {
-    applyChatListToPage(this, LIST_CACHE_KEY, this.data.activeFilter || FILTER_ALL)
+    const filterId = this.data.activeFilter || FILTER_ALL
+    const ready = this._chatReady || ensureLoaded()
+    void ready.then(() => {
+      applyChatListToPage(this, LIST_CACHE_KEY, filterId)
+    })
   },
 
   onTabChange(e) {
@@ -67,8 +76,13 @@ Page({
     runCachedListPullRefresh(this, {
       scrollSelector: SCROLL_SELECTOR,
       cacheKey: LIST_CACHE_KEY,
+      waitFor: (page) => page._chatReady || ensureLoaded(),
       reload: (page) =>
-        applyChatListToPage(page, LIST_CACHE_KEY, page.data.activeFilter),
+        refreshChatFromApi(page.data.activeFilter).then(({ conversations, pageData }) => {
+          page[LIST_CACHE_KEY] = conversations
+          page.setData(pageData)
+          return conversations
+        }),
     })
   },
 })

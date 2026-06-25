@@ -7,14 +7,23 @@
     "apps/website",
     "apps/admin",
     "apps/server",
-    "packages/types"
+    "packages/types",
+    "packages/admin-rbac",
+    "packages/user-profile",
+    "packages/vip-activity-defaults",
+    "packages/invite-activity-defaults"
   ],
   "scripts": {
     "dev": "npm run website:dev",
     "dev:host": "npm run website:dev -- --hostname 0.0.0.0",
     "check": "node scripts/check.mjs",
+    "config:sync": "node scripts/sync-domains.mjs",
     "miniprogram:verify": "node scripts/miniprogram/verify-pages.js",
+    "miniprogram:sync-profile": "node scripts/miniprogram/sync-user-profile.js",
+    "miniprogram:sync-vip-activity": "node scripts/miniprogram/sync-vip-activity-defaults.js",
+    "miniprogram:sync-invite-activity": "node scripts/miniprogram/sync-invite-activity-defaults.js",
     "miniprogram:icons": "bash apps/miniprogram/scripts/generate-app-icons.sh",
+    "miniprogram:assets-png": "bash apps/miniprogram/scripts/convert-webp-to-png.sh",
     "website:dev": "npm run dev --prefix apps/website",
     "website:build": "npm run build --prefix apps/website",
     "website:start": "npm run start --prefix apps/website",
@@ -26,8 +35,10 @@
     "server:start": "npm run start --prefix apps/server",
     "server:db:push": "npm run db:push --prefix apps/server",
     "server:db:seed": "npm run db:seed --prefix apps/server",
+    "server:upload-vip-icons": "npm run upload:vip-icons --prefix apps/server",
     "stack:dev": "concurrently -k -n server,admin -c blue,green \"npm run server:dev\" \"npm run admin:dev\"",
-    "types:build": "npm run build --prefix packages/types"
+    "types:build": "npm run build --prefix packages/types",
+    "admin-rbac:build": "npm run build --prefix packages/admin-rbac"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

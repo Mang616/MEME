@@ -121,6 +121,18 @@
       </view>
 
       <view class="order-card__tail">
+        <view wx:if="{{order.hasCouponDiscount}}" class="order-card__row">
+          <text class="order-card__sum-label">商品小计</text>
+          <view class="order-card__row-content">
+            <text class="order-card__row-value">¥{{order.subtotalDisplay}}</text>
+          </view>
+        </view>
+        <view wx:if="{{order.hasCouponDiscount}}" class="order-card__row">
+          <text class="order-card__sum-label">优惠减免</text>
+          <view class="order-card__row-content">
+            <text class="order-card__row-value order-card__discount">-¥{{order.couponDiscountDisplay}}</text>
+          </view>
+        </view>
         <view class="order-card__row order-card__row--sum">
           <text class="order-card__sum-label">实付款</text>
           <view class="order-card__row-content">

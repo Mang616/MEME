@@ -1,15 +1,14 @@
-<wxs src="../../wxs/product.wxs" module="p" />
-
 <view class="product-row" bindtap="onTap">
   <view class="product-row__thumb">
     <cover-media
-      src="{{product.cover}}"
+      src="{{product.coverDisplay || product.cover}}"
+      media-key="{{product.coverKey}}"
       color="{{product.coverColor}}"
       lazy-load="{{true}}"
     />
     <text
       wx:if="{{product.tag}}"
-      class="product-row__tag {{p.tagClass(product.tag)}}"
+      class="product-row__tag {{product.tagClass}}"
     >{{product.tag}}</text>
     <view class="product-row__foot">
       <price-badge value="{{product.priceDisplay}}" size="xs" thin />

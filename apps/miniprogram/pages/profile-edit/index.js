@@ -1,8 +1,7 @@
 const themedPage = require('../../behaviors/themed-page')
 const auth = require('../../utils/auth')
-const profileAvatar = require('../../utils/profile-avatar')
 const {
-  initProfileEditPage,
+  buildProfileEditState,
   validateNickname,
 } = require('../../utils/profile-edit-page')
 const { openLogin, openBindPhone } = require('../../utils/nav')
@@ -12,7 +11,7 @@ const { showTip } = require('../../utils/ui')
 Page({
   behaviors: themedPage,
 
-  data: initProfileEditPage(),
+  data: buildProfileEditState(),
 
   onLoad() {
     if (!auth.isLoggedIn()) {
@@ -20,9 +19,14 @@ Page({
     }
   },
 
-  onShow() {
+  async onShow() {
     if (!auth.isLoggedIn()) return
-    this.setData(initProfileEditPage())
+    try {
+      await auth.syncProfile()
+    } catch (err) {
+      console.warn('[profile-edit] sync failed', err.message)
+    }
+    this.setData(buildProfileEditState())
   },
 
   preventClose() {},
@@ -39,23 +43,26 @@ Page({
     this.setData({ genderSheetVisible: false })
   },
 
-  onGenderPick(e) {
+  async onGenderPick(e) {
     const { gender } = e.currentTarget.dataset
     if (!gender || gender === this.data.avatarGender) {
       this.onCloseGenderSheet()
       return
     }
 
-    profileAvatar.setStoredGender(gender)
-    auth.updateUser({ avatarGender: gender })
-    this.setData({
-      ...initProfileEditPage(),
-      genderSheetVisible: false,
-    })
-    showTip('头像已更新', 'success')
+    this.setData({ saving: true })
+    try {
+      await auth.updateProfile({ avatarGender: gender })
+      this.setData(buildProfileEditState({ genderSheetVisible: false }))
+      showTip('头像已更新', 'success')
+    } catch (err) {
+      showTip(err.message || '更新失败')
+    } finally {
+      this.setData({ saving: false })
+    }
   },
 
-  onSaveNickname() {
+  async onSaveNickname() {
     if (this.data.saving) return
 
     const err = validateNickname(this.data.nickname)
@@ -66,13 +73,15 @@ Page({
 
     const nickname = String(this.data.nickname).trim()
     this.setData({ saving: true })
-    auth.updateUser({ nickname })
-    this.setData({
-      ...initProfileEditPage(),
-      nickname,
-      saving: false,
-    })
-    showTip('资料已保存', 'success')
+    try {
+      await auth.updateProfile({ nickname })
+      this.setData(buildProfileEditState({ nickname }))
+      showTip('资料已保存', 'success')
+    } catch (err) {
+      showTip(err.message || '保存失败')
+    } finally {
+      this.setData({ saving: false })
+    }
   },
 
   onBindPhoneTap() {

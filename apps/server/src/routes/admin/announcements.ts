@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { adminApiPolicy } from "../../middleware/admin-api-policy.js";
 import { createAdminCrudRouter } from "./create-crud-router.js";
 import { announcementService } from "../../services/cms.js";
 import type { Announcement } from "../../types.js";
@@ -21,4 +22,6 @@ export const adminAnnouncementsRouter = createAdminCrudRouter<Announcement, Anno
   partialBodySchema: announcementBodySchema.partial(),
   entityLabel: "公告",
   existsError: "ANNOUNCEMENT_EXISTS",
+  readPermissions: adminApiPolicy.content.read,
+  writePermissions: adminApiPolicy.content.write,
 });

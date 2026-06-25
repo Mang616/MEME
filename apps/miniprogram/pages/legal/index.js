@@ -1,5 +1,5 @@
 const themedPage = require('../../behaviors/themed-page')
-const { buildLegalPageState } = require('../../utils/legal-page')
+const { loadLegalPageState } = require('../../utils/legal-page')
 
 Page({
   behaviors: themedPage,
@@ -14,6 +14,6 @@ Page({
 
   onLoad(options) {
     const type = options && options.type ? options.type : 'agreement'
-    this.setData(buildLegalPageState(type))
+    void loadLegalPageState(type).then((state) => this.setData(state))
   },
 })

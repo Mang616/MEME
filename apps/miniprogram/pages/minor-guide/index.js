@@ -1,8 +1,18 @@
 const themedPage = require('../../behaviors/themed-page')
-const { buildMinorGuidePageState } = require('../../utils/minor-guide-page')
+const { loadMinorGuidePageState } = require('../../utils/minor-guide-page')
 
 Page({
   behaviors: themedPage,
 
-  data: buildMinorGuidePageState(),
+  data: {
+    title: '',
+    summary: '',
+    notice: '',
+    updatedAt: '',
+    sections: [],
+  },
+
+  onLoad() {
+    void loadMinorGuidePageState().then((state) => this.setData(state))
+  },
 })

@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { SiteHeader } from "@/components/site-header";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SITE_COPY } from "@/lib/content";
-import { ASSETS, SITE_NAME, SITE_URL } from "@/lib/site";
+import { ASSETS, SITE_NAME, SITE_NAME_SHORT, SITE_URL } from "@/lib/site";
 import { themeInitScript } from "@/lib/theme";
 import "./globals.css";
 
@@ -28,6 +28,19 @@ export const metadata: Metadata = {
     locale: "zh_CN",
     siteName: SITE_NAME,
     images: [{ url: ASSETS.logo }],
+  },
+  icons: {
+    icon: [
+      { url: ASSETS.logo, sizes: "96x96", type: "image/png" },
+      { url: "/favicon.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+    shortcut: ASSETS.logo,
+  },
+  appleWebApp: {
+    capable: true,
+    title: SITE_NAME_SHORT,
+    statusBarStyle: "black-translucent",
   },
 };
 

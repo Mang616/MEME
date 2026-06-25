@@ -2,39 +2,38 @@
 
 ## Modules
 
-- Website: SEO-first brand website for Delta Force escort and meme esports services.
-- Client: PWA ordering client with light/dark modes and mini-program style interactions.
-- Admin: operations dashboard for services, packages, orders, banners, and SEO content.
-- Mini program: migrated into `apps/miniprogram/miniapp` and now acts as the visual source of truth.
+| Module | Path | Status |
+|--------|------|--------|
+| Website | `apps/website` | Live — brand landing, Pepe meme style |
+| Mini program | `apps/miniprogram` | Live — visual source of truth, core order flow |
+| API | `apps/server` | Live — products, orders, handlers, admin auth |
+| Admin | `apps/admin` | Live — orders / products / handlers CRUD |
+| Client | `apps/client` | Placeholder — future PWA / desktop |
 
-## First Milestone
+## Milestones
 
-- Establish visual system from the migrated mini program: primary mint `#d1ffbd`, accent red `#ff3b30`, black/white modes, red price stickers, service-panel surfaces, and meme-esports visual assets.
-- Launch a crawlable website home page and a Delta Force SEO page.
-- Launch a PWA shell that can later become the ordering client.
-- Launch an admin shell for product, order, banner, and article operations.
+### Done
 
-## SEO Targets
+- Mini program UI: home, catalog, order create, order list, profile, chat shell.
+- Unified API with JSON persistence; admin dashboard wired to same data.
+- Mini program business data migrated from local mock to `utils/api/`.
+- Website meme landing; shared mint `#d1ffbd` / accent `#ff3b30` tokens on web.
 
-- 三角洲行动护航
-- 三角洲护航车队
-- 三角洲行动陪玩
-- 三角洲老板单
-- 迷因电竞
+### Next
+
+- Mini program: chat, auth, VIP, banners → API (or CMS in admin).
+- Real payment and WeChat login (replace `auth-api.js` mock).
+- Database (replace `db.json`); pagination and user-scoped orders.
+- Client PWA shell.
 
 ## Design Source
 
-All color and component styling decisions should follow the mini program first:
+Mini program first. See `docs/design-system.md` and `packages/theme/tokens.css`.
 
-- Canonical tokens: `apps/miniprogram/miniapp/styles/theme/tokens.wxss`
-- Theme behavior: `apps/miniprogram/miniapp/utils/theme.js`
-- External design summary: `docs/design-system.md`
-- Web shared tokens: `packages/theme/tokens.css`
+User-facing copy must not mention SEO strategy, backend internals, or implementation jargon.
 
-Website/admin/client user-facing copy must not mention SEO strategy, backend configuration, PWA implementation details, or other internal project language.
+## Open Decisions
 
-## Next Decisions
-
-- Real order flow: online payment or customer-service confirmation.
-- Login method: phone, WeChat, account password, or mixed.
-- Data backend: start with API mock data, then add database and admin auth.
+- Payment: online vs customer-service confirmation.
+- Login: phone + WeChat mix (current mock uses SMS code `123456`).
+- Order visibility: filter by logged-in user on public API.

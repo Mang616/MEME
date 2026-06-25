@@ -24,7 +24,46 @@ const WEBSITE_REQUIRED_FILES = [
   "apps/website/public/assets/theme-light.png",
   "apps/website/public/assets/pepe-thinking.png",
   "apps/website/public/assets/pepe-hero.png",
+  "apps/website/public/favicon.png",
+  "apps/website/public/apple-touch-icon.png",
   "packages/theme/tokens.css",
+  "packages/types/src/index.ts",
+];
+
+const ADMIN_REQUIRED_FILES = [
+  "apps/admin/package.json",
+  "apps/admin/vite.config.ts",
+  "apps/admin/index.html",
+  "apps/admin/src/main.tsx",
+  "apps/admin/src/router/index.tsx",
+  "apps/admin/src/layouts/AdminLayout.tsx",
+  "apps/admin/src/lib/api.ts",
+  "apps/admin/src/constants/labels.ts",
+  "apps/admin/src/pages/login/index.tsx",
+  "apps/admin/src/pages/orders/index.tsx",
+  "apps/admin/src/pages/products/index.tsx",
+  "apps/admin/src/pages/handlers/index.tsx",
+  "apps/admin/public/favicon.png",
+  "apps/admin/public/apple-touch-icon.png",
+  "apps/admin/public/site.webmanifest",
+];
+
+const SERVER_REQUIRED_FILES = [
+  "apps/server/package.json",
+  "apps/server/seed/initial.json",
+  "apps/server/README.md",
+  "apps/server/src/index.ts",
+  "apps/server/src/services.ts",
+  "apps/server/src/db.ts",
+  "apps/server/src/routes/admin/orders.ts",
+  "apps/server/src/routes/admin/products.ts",
+  "apps/server/src/routes/admin/handlers.ts",
+  "apps/server/src/routes/public.ts",
+];
+
+const MINIPROGRAM_DOC_FILES = [
+  "apps/miniprogram/docs/ARCHITECTURE.md",
+  "apps/miniprogram/docs/DEVTOOLS.md",
 ];
 
 const DEPRECATED_STATIC_FILES = [
@@ -142,7 +181,7 @@ async function assertWebsite() {
 }
 
 function assertMiniprogram() {
-  const script = fromRoot("apps/miniprogram/scripts/verify-miniapp-pages.js");
+  const script = fromRoot("scripts/miniprogram/verify-pages.js");
   const result = spawnSync(process.execPath, [script], {
     cwd: ROOT,
     stdio: "inherit",
@@ -155,6 +194,29 @@ function assertMiniprogram() {
   console.log("Miniprogram checks passed.");
 }
 
+async function assertAdmin() {
+  for (const file of ADMIN_REQUIRED_FILES) {
+    await assertFileExists(file);
+  }
+  console.log("Admin checks passed.");
+}
+
+async function assertServer() {
+  for (const file of SERVER_REQUIRED_FILES) {
+    await assertFileExists(file);
+  }
+  console.log("Server checks passed.");
+}
+
+async function assertMiniprogramDocs() {
+  for (const file of MINIPROGRAM_DOC_FILES) {
+    await assertFileExists(file);
+  }
+}
+
 await assertWebsite();
 assertMiniprogram();
+await assertAdmin();
+await assertServer();
+await assertMiniprogramDocs();
 console.log("All checks passed.");

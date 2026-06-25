@@ -1,63 +1,63 @@
 # MEME
 
-迷因电竞 MEME — 陪玩品牌官网 + 微信小程序下单端（monorepo）。
+迷因电竞 MEME — 陪玩品牌官网 + 微信小程序 + 统一 API + 运营后台（monorepo）。
 
 ## 目录结构
 
 ```text
 apps/
-  website/        Next.js 官网（品牌宣传、引导下单）
-  miniprogram/    微信原生小程序（miniapp/ 用开发者工具打开）
-  client/         客户端占位（规划中）
-  admin/          运营后台占位（规划中）
+  website/          Next.js 官网
+  miniprogram/      微信小程序（开发者工具打开此目录）
+  server/           统一后端 API
+  admin/            运营后台
+  client/           客户端占位（未启动）
 packages/
-  theme/          Web 设计 token（tokens.css）
-docs/             产品与视觉说明
+  theme/            Web 设计 token
+  types/            跨端共享类型与常量（server 使用）
+docs/               产品与架构文档
 scripts/
-  check.mjs       仓库级校验（官网 + 小程序）
+  check.mjs         全仓库校验
+  miniprogram/      小程序校验脚本
 ```
+
+完整说明见 [docs/architecture.md](docs/architecture.md)。
 
 ## 常用命令
 
-在仓库根目录执行：
-
 | 命令 | 说明 |
 |------|------|
-| `npm run dev` | 启动官网开发服务 |
-| `npm run check` | 校验官网关键文件 + 小程序页面完整性 |
-| `npm run miniprogram:verify` | 仅校验小程序 `app.json` 页面文件 |
-| `npm run website:build` | 构建官网 |
-| `npm run website:start` | 启动官网生产预览 |
+| `npm run dev` | 启动官网（:4173） |
+| `npm run server:dev` | 启动 API（:3000） |
+| `npm run admin:dev` | 启动运营后台（:4180） |
+| `npm run stack:dev` | API + 运营后台 |
+| `npm run check` | 全仓库校验 |
+| `npm run miniprogram:verify` | 校验小程序页面文件 |
 
-官网开发地址：http://localhost:4173/
+## 开发入口
 
-## 官网路由
+| 应用 | 打开方式 |
+|------|----------|
+| 官网 | http://localhost:4173 |
+| 运营后台 | http://localhost:4180（`admin` / `admin123`） |
+| API | http://localhost:3000/api |
+| 小程序 | 微信开发者工具 → `apps/miniprogram/`，勾选不校验合法域名 |
 
-| 路径 | 说明 |
+小程序开发前需先 `npm run server:dev`。登录 mock 验证码：`123456`。
+
+## 文档
+
+| 文档 | 说明 |
 |------|------|
-| `/` | 首页 |
-| `/order` | 去下单（打开下单站 / 下载应用 / 微信小程序） |
-| `/#about` | 关于我们（首页锚点） |
-| `/download` | 重定向到 `/order#install` |
-| `/mini-program` | 重定向到 `/order#wechat` |
+| [docs/architecture.md](docs/architecture.md) | Monorepo 架构与数据流 |
+| [docs/design-system.md](docs/design-system.md) | 跨端视觉规范 |
+| [docs/product-plan.md](docs/product-plan.md) | 产品规划 |
+| [apps/miniprogram/README.md](apps/miniprogram/README.md) | 小程序开发 |
+| [apps/server/README.md](apps/server/README.md) | API |
+| [apps/admin/README.md](apps/admin/README.md) | 运营后台 |
 
 ## 环境变量（官网）
 
 | 变量 | 说明 |
 |------|------|
-| `NEXT_PUBLIC_SITE_URL` | 官网域名，默认 `https://meme.example.com` |
-| `NEXT_PUBLIC_ORDER_SITE_URL` | 外部下单站地址，默认 `https://order.meme.example.com` |
-
-## 小程序
-
-微信开发者工具打开：
-
-```text
-apps/miniprogram/miniapp/
-```
-
-开发 mock 登录验证码：`123456`
-
-## 设计规范
-
-小程序为视觉基准；Web 侧通过 `packages/theme/tokens.css` 对齐黑/白模式、薄荷绿 `#d1ffbd`、强调红 `#ff3b30` 等 token。详见 `docs/design-system.md`。
+| `NEXT_PUBLIC_SITE_URL` | 官网域名 |
+| `NEXT_PUBLIC_ORDER_SITE_URL` | 外部下单站地址 |

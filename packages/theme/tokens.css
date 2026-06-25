@@ -1,7 +1,7 @@
 :root {
   color-scheme: dark light;
 
-  /* Canonical palette mirrors apps/miniprogram/miniapp/styles/theme/tokens.wxss. */
+  /* Canonical palette mirrors apps/miniprogram/styles/theme/tokens.wxss. */
   --color-accent: #ff3b30;
   --color-accent-deep: #e6352b;
   --color-accent-soft: #ff6b63;

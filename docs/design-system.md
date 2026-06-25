@@ -4,9 +4,9 @@ The mini program is the visual source of truth for MEME. Website, PWA client, ad
 
 ## Source Of Truth
 
-- Canonical mini program tokens: `apps/miniprogram/miniapp/styles/theme/tokens.wxss`
-- Mini program theme runtime: `apps/miniprogram/miniapp/utils/theme.js`
-- Mini program token audit: `apps/miniprogram/miniapp/docs/DESIGN_TOKENS.md`
+- Canonical mini program tokens: `apps/miniprogram/styles/theme/tokens.wxss`
+- Mini program theme runtime: `apps/miniprogram/utils/theme.js`
+- Mini program token audit: `apps/miniprogram/docs/DESIGN_TOKENS.md`
 - Shared web aliases: `packages/theme/tokens.css`
 
 If a color or typography rule conflicts, the mini program files win.
@@ -51,13 +51,4 @@ Legacy aliases currently map as follows:
 
 ## Mini Program Quality Notes
 
-The migrated mini program currently totals about 3 MB of local files. WeChat DevTools reports main package size pressure and image/audio package warnings. No single checked asset exceeded 200 KB, but several visual assets are large enough to optimize later:
-
-- `assets/profile/girls.png` around 150 KB
-- `assets/level/bg.png` around 148 KB
-- `assets/profile/bag.png` around 143 KB
-- `assets/profile/boys.png` around 140 KB
-- `assets/fonts/price-italic.ttf` around 113 KB
-- `assets/home/huhang.png` around 104 KB
-
-Later optimization should compress PNGs, consider WebP where supported, move large non-critical assets into subpackages or CDN, and keep the skipped price font behavior unless a smaller HTTPS-hosted subset font is available.
+The mini program main package targets **&lt; 1.5 MB** (WeChat recommendation; upload hard limit 2 MB). Raster assets under `apps/miniprogram/assets/` use **WebP** where possible. Size budgets and troubleshooting: `apps/miniprogram/docs/DEVTOOLS.md`.

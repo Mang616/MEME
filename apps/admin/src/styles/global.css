@@ -1,0 +1,57 @@
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-fill-2, #f2f3f5);
+}
+
+.admin-layout {
+  min-height: 100vh;
+}
+
+.admin-sider {
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.06);
+}
+
+.admin-sider .arco-menu-dark .arco-menu-item.arco-menu-selected {
+  background: rgba(209, 255, 189, 0.12);
+}
+
+.admin-brand {
+  padding: 20px 16px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  padding: 0 20px;
+  background: #fff;
+  border-bottom: 1px solid var(--color-border-2, #e5e6eb);
+}
+
+.admin-content {
+  padding: 20px;
+  min-height: calc(100vh - 56px);
+}
+
+.login-page {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 24px;
+  background: linear-gradient(160deg, #141414 0%, #1a2a1f 45%, #2d4a35 100%);
+}
+
+.login-card {
+  width: min(400px, 100%);
+  padding: 8px 4px;
+  border-radius: 12px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.28);
+}

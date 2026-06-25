@@ -1,0 +1,83 @@
+/**
+ * 绑定手机号（需已登录；与登录页分离，不换 session）
+ */
+const themedPage = require('../../behaviors/themed-page')
+const auth = require('../../utils/auth')
+const { initBindPhonePage } = require('../../utils/bind-phone-page')
+const { COUNTDOWN_SEC, patchLoginView } = require('../../utils/login-page')
+const { createSmsCountdown } = require('../../utils/sms-countdown')
+const { openLogin } = require('../../utils/nav')
+const { PAGE_ROUTES } = require('../../utils/constants')
+const { maskPhone } = require('../../utils/format')
+const { showTip } = require('../../utils/ui')
+
+Page({
+  behaviors: themedPage,
+
+  data: {
+    ...initBindPhonePage(),
+    showBound: false,
+    maskedPhone: '',
+  },
+
+  onLoad() {
+    this._smsCountdown = createSmsCountdown(this, patchLoginView)
+    if (!auth.isLoggedIn()) {
+      showTip('请先登录')
+      openLogin({ redirect: PAGE_ROUTES.BIND_PHONE })
+      return
+    }
+    const user = auth.getUser()
+    this.setData({
+      ...initBindPhonePage(),
+      showBound: !!(user && user.phone),
+      maskedPhone: maskPhone(user && user.phone),
+    })
+  },
+
+  onUnload() {
+    if (this._smsCountdown) this._smsCountdown.clear()
+  },
+
+  onPhoneInput(e) {
+    this.setData({ phone: e.detail.value })
+  },
+
+  onCodeInput(e) {
+    this.setData({ smsCode: e.detail.value })
+  },
+
+  onSendCode() {
+    const { phone, countdown, sending } = this.data
+    if (sending || countdown > 0) return
+
+    this.setData(patchLoginView(this.data, { sending: true }))
+    auth
+      .sendBindPhoneCode(phone)
+      .then((res) => {
+        showTip('验证码已发送')
+        if (res.devHint) setTimeout(() => showTip(res.devHint), 1600)
+        this._smsCountdown.start(COUNTDOWN_SEC)
+      })
+      .catch((err) => showTip(err.message || '发送失败'))
+      .finally(() =>
+        this.setData(patchLoginView(this.data, { sending: false })),
+      )
+  },
+
+  async onSubmit() {
+    if (this.data.submitting) return
+    const { phone, smsCode } = this.data
+
+    this.setData({ submitting: true })
+    try {
+      await auth.bindPhone(phone, smsCode)
+      showTip('绑定成功', 'success')
+      setTimeout(() => wx.navigateBack(), 400)
+    } catch (err) {
+      showTip(err.message || '绑定失败')
+    } finally {
+      this.setData({ submitting: false })
+    }
+  },
+})

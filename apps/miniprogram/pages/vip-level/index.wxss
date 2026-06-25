@@ -1,0 +1,339 @@
+@import '../../styles/level-icon-glow.wxss';
+
+/* VIP 等级页：黑金主题，上区参考设计稿 */
+.vip-page {
+  min-height: 100%;
+  background: #000000;
+  padding-bottom: var(--page-content-bottom-gap);
+  box-sizing: border-box;
+}
+
+.vip-top {
+  position: relative;
+  padding: 8rpx 32rpx 40rpx;
+  box-sizing: border-box;
+  overflow: visible;
+}
+
+.vip-top__bg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.vip-status,
+.vip-timeline,
+.vip-reward {
+  position: relative;
+  z-index: 1;
+}
+
+/* —— 当前等级 —— */
+.vip-status {
+  display: flex;
+  align-items: flex-start;
+  gap: 20rpx;
+  padding: 16rpx 48rpx 36rpx;
+  box-sizing: border-box;
+}
+
+.vip-status__icon-wrap {
+  flex-shrink: 0;
+  width: 200rpx;
+  height: 200rpx;
+}
+
+.vip-status__icon {
+  width: 180rpx;
+  height: 180rpx;
+}
+
+.vip-status__info {
+  flex: 1;
+  min-width: 0;
+  padding-top: 12rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+}
+
+.vip-status__title-row {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4rpx;
+}
+
+.vip-status__level {
+  font-size: 52rpx;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #e8c56a;
+  letter-spacing: 1rpx;
+}
+
+.vip-status__member {
+  font-size: 40rpx;
+  font-weight: 600;
+  line-height: 1.15;
+  color: #f5e6e8;
+}
+
+.vip-status__metric {
+  display: flex;
+  align-items: baseline;
+  gap: 12rpx;
+}
+
+.vip-status__metric-value {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.vip-status__metric-label {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.vip-status__progress {
+  width: 72%;
+  max-width: 360rpx;
+  padding: 10rpx 0;
+  box-sizing: border-box;
+}
+
+.vip-status__progress:active {
+  opacity: 0.85;
+}
+
+.vip-status__progress-track {
+  width: 100%;
+  height: 8rpx;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+
+.vip-status__progress-fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: var(--color-cta-gradient);
+  transition: width 0.25s ease;
+}
+
+.vip-status__hint {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.45);
+  line-height: 1.45;
+}
+
+/* —— 等级时间轴：轨道与圆点同一水平中线 —— */
+.vip-timeline {
+  position: relative;
+  padding: 0 8rpx 36rpx;
+  box-sizing: border-box;
+}
+
+/* 圆点槽固定高度，轨道 top = (槽高 - 线高) / 2 */
+.vip-timeline__track {
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  top: 14rpx;
+  height: 4rpx;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.2);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.vip-timeline__nodes {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.vip-timeline__node {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14rpx;
+  min-width: 0;
+}
+
+.vip-timeline__dot-slot {
+  width: 100%;
+  height: 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.vip-timeline__dot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.vip-timeline__label {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.38);
+  line-height: 1;
+  text-align: center;
+}
+
+.vip-timeline__node:active {
+  opacity: 0.82;
+}
+
+/* —— 晋升奖励：高 92rpx(≈46px)，无 padding，文案整框居中 —— */
+.vip-reward {
+  position: relative;
+  height: 92rpx;
+  padding: 0;
+  border-radius: var(--radius-md);
+  border: 1rpx solid #fce77e;
+  background: linear-gradient(180deg, #8b0607 0%, #5d0201 100%);
+  overflow: visible;
+  box-sizing: border-box;
+}
+
+.vip-reward__text {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #fce77e;
+  line-height: 1.3;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
+  z-index: 0;
+}
+
+/* gift.webp 原图 100×50，2 倍 200×100rpx，不缩放 */
+.vip-reward__icon {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  z-index: 1;
+  width: 200rpx;
+  height: auto;
+  transform: translateY(-50%);
+  display: block;
+  pointer-events: none;
+}
+
+/* —— 下方内容区 —— */
+.vip-body {
+  padding: 16rpx 32rpx 0;
+  box-sizing: border-box;
+}
+
+.vip-deco-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16rpx;
+  padding: 24rpx 0 28rpx;
+}
+
+.vip-deco-title__wing {
+  width: 80rpx;
+  height: 24rpx;
+  flex-shrink: 0;
+}
+
+.vip-deco-title__wing--right {
+  transform: scaleX(1);
+}
+
+.vip-deco-title__text {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.vip-body__subtitle {
+  display: block;
+  margin: -12rpx 0 24rpx;
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--color-text-muted);
+  line-height: 1.35;
+}
+
+.vip-privilege {
+  border-radius: var(--radius-md);
+  border: 1rpx solid var(--color-mint-strong-dim);
+  background: rgba(255, 255, 255, 0.04);
+  overflow: hidden;
+}
+
+.vip-privilege__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24rpx;
+  padding: 28rpx 28rpx;
+  border-top: 1rpx solid rgba(255, 255, 255, 0.06);
+  box-sizing: border-box;
+}
+
+.vip-privilege__row:first-child {
+  border-top: none;
+}
+
+.vip-privilege__row--locked {
+  opacity: 0.5;
+}
+
+.vip-privilege__name {
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.vip-privilege__value {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--color-price);
+  text-align: right;
+}
+
+.vip-privilege__row--locked .vip-privilege__value {
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.vip-footnote {
+  display: block;
+  margin-top: 28rpx;
+  padding-bottom: 16rpx;
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.35);
+  line-height: 1.55;
+  text-align: center;
+}

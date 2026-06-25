@@ -4,15 +4,30 @@
   "private": true,
   "type": "module",
   "workspaces": [
-    "apps/website"
+    "apps/website",
+    "apps/admin",
+    "apps/server",
+    "packages/types"
   ],
   "scripts": {
     "dev": "npm run website:dev",
     "dev:host": "npm run website:dev -- --hostname 0.0.0.0",
     "check": "node scripts/check.mjs",
-    "miniprogram:verify": "node apps/miniprogram/scripts/verify-miniapp-pages.js",
+    "miniprogram:verify": "node scripts/miniprogram/verify-pages.js",
+    "miniprogram:icons": "bash apps/miniprogram/scripts/generate-app-icons.sh",
     "website:dev": "npm run dev --prefix apps/website",
     "website:build": "npm run build --prefix apps/website",
-    "website:start": "npm run start --prefix apps/website"
+    "website:start": "npm run start --prefix apps/website",
+    "admin:dev": "npm run dev --prefix apps/admin",
+    "admin:build": "npm run build --prefix apps/admin",
+    "admin:preview": "npm run preview --prefix apps/admin",
+    "server:dev": "npm run dev --prefix apps/server",
+    "server:build": "npm run build --prefix apps/server",
+    "server:start": "npm run start --prefix apps/server",
+    "stack:dev": "concurrently -k -n server,admin -c blue,green \"npm run server:dev\" \"npm run admin:dev\"",
+    "types:build": "npm run build --prefix packages/types"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
   }
 }

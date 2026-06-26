@@ -19,15 +19,17 @@ Page({
 
   onLoad(options) {
     const selectedId = options && options.selectedId ? options.selectedId : ''
+    const serviceType = options && options.serviceType ? options.serviceType : ''
     withHandlers(() => {
-      this.setData(buildHandlerSelectState(selectedId))
+      this.setData(buildHandlerSelectState(selectedId, FILTER_ALL, serviceType))
     })
   },
 
   onTabChange(e) {
+    if (this.data.lockedServiceType) return
     const filterId = getTabChangeId(e, this.data.activeFilter)
     if (!filterId) return
-    this.setData(buildHandlerSelectState(this.data.selectedId, filterId))
+    this.setData(buildHandlerSelectState(this.data.selectedId, filterId, this.data.lockedServiceType))
   },
 
   onSelect(e) {

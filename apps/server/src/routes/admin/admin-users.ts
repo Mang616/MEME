@@ -13,6 +13,7 @@ const createSchema = z.object({
   displayName: z.string().min(1).max(128),
   roles: z.array(adminRoleEnum).min(1),
   enabled: z.boolean().default(true),
+  handlerId: z.string().max(64).optional(),
 });
 
 const patchSchema = z.object({
@@ -20,6 +21,7 @@ const patchSchema = z.object({
   password: z.string().min(6).max(64).optional(),
   roles: z.array(adminRoleEnum).min(1).optional(),
   enabled: z.boolean().optional(),
+  handlerId: z.string().max(64).optional(),
 });
 
 export const adminStaffRouter = Router();

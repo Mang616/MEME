@@ -4,7 +4,13 @@
  * 运行时配置来自 CMS slug `invite-activity`（兼容旧 `invite-banner`）。
  */
 
-/** @typedef {{ enabled: boolean, tag: string, title: string, subtitle: string, cta: string, navTag: string, navTitle: string, rules: string[], poster: { headline: string, footnote: string } }} InviteActivityPayload */
+/** @typedef {{ inviterTemplateIds: string[], inviteeTemplateIds: string[] }} InviteActivityRewards */
+/** @typedef {{ enabled: boolean, tag: string, title: string, subtitle: string, cta: string, navTag: string, navTitle: string, rules: string[], poster: { headline: string, footnote: string }, rewards: InviteActivityRewards }} InviteActivityPayload */
+
+const INVITE_REWARD_DEFAULTS = {
+  inviterTemplateIds: ["cp_invite_inviter"],
+  inviteeTemplateIds: ["cp_invite_invitee"],
+};
 
 const INVITE_ACTIVITY_DEFAULTS = {
   enabled: true,
@@ -23,7 +29,28 @@ const INVITE_ACTIVITY_DEFAULTS = {
     headline: "邀请好友 · 领取奖励",
     footnote: "扫码或输入邀请码，一起领优惠券",
   },
+  rewards: INVITE_REWARD_DEFAULTS,
 };
+
+function normalizeTemplateIds(ids) {
+  if (!Array.isArray(ids)) return [];
+  return [...new Set(ids.map((item) => String(item).trim()).filter(Boolean))];
+}
+
+function normalizeRewards(raw) {
+  const input = raw && typeof raw === "object" ? raw : {};
+  const inviterTemplateIds = normalizeTemplateIds(input.inviterTemplateIds);
+  const inviteeTemplateIds = normalizeTemplateIds(input.inviteeTemplateIds);
+
+  return {
+    inviterTemplateIds: inviterTemplateIds.length
+      ? inviterTemplateIds
+      : [...INVITE_REWARD_DEFAULTS.inviterTemplateIds],
+    inviteeTemplateIds: inviteeTemplateIds.length
+      ? inviteeTemplateIds
+      : [...INVITE_REWARD_DEFAULTS.inviteeTemplateIds],
+  };
+}
 
 function normalizeRules(rules) {
   if (!Array.isArray(rules) || !rules.length) {
@@ -55,6 +82,7 @@ function normalizeInviteActivityPayload(raw) {
         input.poster?.headline?.trim() || title || INVITE_ACTIVITY_DEFAULTS.poster.headline,
       footnote: input.poster?.footnote?.trim() || INVITE_ACTIVITY_DEFAULTS.poster.footnote,
     },
+    rewards: normalizeRewards(input.rewards),
   };
 }
 
@@ -74,6 +102,7 @@ function toInviteBannerPayload(raw) {
 
 export {
   INVITE_ACTIVITY_DEFAULTS,
+  INVITE_REWARD_DEFAULTS,
   normalizeInviteActivityPayload,
   toInviteBannerPayload,
 };

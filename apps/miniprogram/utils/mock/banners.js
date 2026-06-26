@@ -1,7 +1,7 @@
 /**
- * 首页 Banner mock — 后续由 server API 替换
+ * 首页 Banner 本地兜底（无图时显示渐变占位）
  *
- * image：可选，小程序项目根路径；无图或加载失败时显示绿色占位
+ * image：可选；空则仅渐变
  * bgColor：占位主色
  * linkType：见 utils/constants.js BANNER_LINK
  */

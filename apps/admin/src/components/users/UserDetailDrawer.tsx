@@ -23,6 +23,7 @@ import { useVipConfig } from "@/contexts/VipConfigContext";
 import {
   api,
   type OrderRow,
+  type UserDetailPayload,
   type UserLedgerEntry,
   type UserRow,
 } from "@/lib/api";
@@ -34,7 +35,7 @@ type UserDetailDrawerProps = {
   userId: string | null;
   visible: boolean;
   onClose: () => void;
-  onUserUpdated: (user: UserRow) => void;
+  onUserUpdated?: (user: UserRow) => void;
 };
 
 export function UserDetailDrawer({
@@ -47,6 +48,7 @@ export function UserDetailDrawer({
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<UserRow | null>(null);
   const [ledger, setLedger] = useState<UserLedgerEntry[]>([]);
+  const [orders, setOrders] = useState<OrderRow[]>([]);
   const [inviter, setInviter] = useState<UserDetailPayload["inviter"]>(null);
   const [balanceOpen, setBalanceOpen] = useState(false);
 
@@ -258,7 +260,7 @@ export function UserDetailDrawer({
         onClose={() => setBalanceOpen(false)}
         onUpdated={(updated) => {
           setUser(updated);
-          onUserUpdated(updated);
+          onUserUpdated?.(updated);
           void load();
         }}
       />

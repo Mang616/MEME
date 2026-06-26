@@ -75,7 +75,22 @@ function formatCouponOptionLabel(coupon) {
   return `${coupon.name}（${discountText}）`
 }
 
-function enrichCouponOption(coupon, subtotal, serviceType) {
+function isProductCouponAllowed(product) {
+  return product?.couponAllowed !== false
+}
+
+function enrichCouponOption(coupon, subtotal, serviceType, couponAllowed = true) {
+  if (!couponAllowed) {
+    return {
+      ...coupon,
+      discount: 0,
+      discountDisplay: formatMoney(0),
+      applicable: false,
+      valueLabel: formatCouponValue(coupon),
+      hint: '该商品不支持使用优惠券',
+      optionLabel: `${coupon.name}（不可用）`,
+    }
+  }
   const discount = calcCouponDiscount(coupon, subtotal, serviceType)
   return {
     ...coupon,
@@ -88,12 +103,14 @@ function enrichCouponOption(coupon, subtotal, serviceType) {
   }
 }
 
-function pickBestCoupon(coupons, subtotal, serviceType) {
-  const enriched = (coupons || []).map((item) => enrichCouponOption(item, subtotal, serviceType))
+function pickBestCoupon(coupons, subtotal, serviceType, couponAllowed = true) {
+  if (!couponAllowed) return null
+  const enriched = (coupons || []).map((item) => enrichCouponOption(item, subtotal, serviceType, couponAllowed))
   return enriched.find((item) => item.applicable) || null
 }
 
 module.exports = {
+  isProductCouponAllowed,
   calcSubtotal,
   calcCouponDiscount,
   calcTotalPaid,

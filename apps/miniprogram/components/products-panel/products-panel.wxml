@@ -52,7 +52,6 @@
 
         <list-empty
           wx:if="{{productCount === 0}}"
-          icon="📦"
           text="{{listEmptyText}}"
           hint="{{listEmptyHint}}"
         />

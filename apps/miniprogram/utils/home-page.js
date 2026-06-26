@@ -18,19 +18,7 @@ function withMinorNotice(state) {
   }
 }
 
-async function refreshHomePage(api, activeType, previousBanners = [], previousProducts = []) {
-  const [catalogResult, bannerResult] = await Promise.allSettled([
-    api.refreshCatalog(),
-    loadHomeBanners(api, { force: true }),
-  ])
-
-  if (catalogResult.status === 'rejected') {
-    throw catalogResult.reason
-  }
-
-  const bannerList =
-    bannerResult.status === 'fulfilled' ? bannerResult.value : api.getBanners()
-
+function buildHomePageState(activeType, bannerList, previousBanners = [], previousProducts = []) {
   const homeState = buildHomeState(activeType)
   return withMinorNotice({
     ...homeState,
@@ -39,26 +27,42 @@ async function refreshHomePage(api, activeType, previousBanners = [], previousPr
   })
 }
 
-async function loadHomePageData(api, activeType, options = {}) {
-  const { forceBanners = false, previousBanners = [], previousProducts = [] } = options
-  const [, bannerList] = await Promise.all([
-    api.ensureCatalog(),
-    loadHomeBanners(api, { force: forceBanners }),
+/**
+ * 并行拉取商品目录与 Banner；单项失败不阻断页面渲染。
+ * @param {{ refresh?: boolean, forceBanners?: boolean }} options
+ */
+async function fetchHomeRemoteData(api, { refresh = false, forceBanners = false } = {}) {
+  const catalogTask = refresh ? api.refreshCatalog() : api.ensureCatalog()
+  const [catalogResult, bannerResult] = await Promise.allSettled([
+    catalogTask,
+    loadHomeBanners(api, { force: refresh || forceBanners }),
   ])
 
-  const homeState = buildHomeState(activeType)
-  return withMinorNotice({
-    ...homeState,
-    products: mergeCoverLoadedState(homeState.products, previousProducts),
-    ...buildHomeBannerState(bannerList, previousBanners),
-  })
+  if (catalogResult.status === 'rejected') {
+    console.warn(
+      `[home] catalog ${refresh ? 'refresh' : 'load'} failed`,
+      catalogResult.reason?.message,
+    )
+  }
+
+  return bannerResult.status === 'fulfilled' ? bannerResult.value : api.getBanners()
+}
+
+async function refreshHomePage(api, activeType, previousBanners = [], previousProducts = []) {
+  const bannerList = await fetchHomeRemoteData(api, { refresh: true })
+  return buildHomePageState(activeType, bannerList, previousBanners, previousProducts)
+}
+
+async function loadHomePageData(api, activeType, options = {}) {
+  const { forceBanners = false, previousBanners = [], previousProducts = [] } = options
+  const bannerList = await fetchHomeRemoteData(api, { forceBanners })
+  return buildHomePageState(activeType, bannerList, previousBanners, previousProducts)
 }
 
 function buildCatalogState(serviceType) {
   return withMinorNotice(buildHomeState(serviceType))
 }
 
-/** 从 API 内存缓存重建首页商品（商品 Tab 刷新后回到首页可同步封面） */
 function syncHomeProducts(activeType, previousProducts = []) {
   const homeState = buildHomeState(activeType)
   return {
@@ -78,6 +82,7 @@ async function loadHomeAnnouncement(api) {
 
 module.exports = {
   buildCatalogState,
+  buildHomePageState,
   syncHomeProducts,
   loadHomeAnnouncement,
   loadHomePageData,

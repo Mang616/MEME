@@ -4,6 +4,7 @@
 const { enrichCoverMedia } = require('./cover-media')
 const { resolveMediaIdentity } = require('./media-key')
 const { mergeBannerLoadedState } = require('./merge-cover-state')
+const { resolveBanners } = require('./offline-fallbacks')
 
 const BANNER_PAGE_KEYS = [
   'bannerCount',
@@ -48,10 +49,10 @@ function markBannerImageFailed(banners, id) {
   return patchBannerById(banners, id, { showImage: false })
 }
 
-/** 刷新时保留同媒体标识的 showImage，避免无变化时闪烁 */
+/** 空列表或离线时回退本地 Banner；刷新时保留同媒体的 showImage 避免闪烁 */
 function buildHomeBannerState(list, previous = []) {
   const banners = mergeBannerLoadedState(
-    (list || []).map(enrichBanner),
+    resolveBanners(list).map(enrichBanner),
     previous,
   )
   return { ...buildHomeBannerMeta(banners), banners }

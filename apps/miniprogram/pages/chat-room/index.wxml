@@ -55,7 +55,7 @@
       </view>
     </scroll-view>
 
-    <view class="chat-room__composer">
+    <view class="chat-room__composer" wx:if="{{canSendText}}">
       <view
         wx:if="{{canSendOrder}}"
         class="chat-room__action"
@@ -94,6 +94,10 @@
           mode="aspectFit"
         />
       </view>
+    </view>
+
+    <view wx:else class="chat-room__composer chat-room__composer--closed">
+      <text class="chat-room__closed-tip">{{inputPlaceholder}}</text>
     </view>
 
     <view

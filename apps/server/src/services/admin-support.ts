@@ -32,6 +32,8 @@ export type AdminChatRow = {
   unread: number;
   online: boolean;
   linkedOrderId: string;
+  /** 打手/陪玩会话终止时间（空=进行中） */
+  closedAt?: string;
 };
 
 export type AdminChatMessageRow = {
@@ -46,6 +48,7 @@ export type AdminChatMessageRow = {
 export type AdminFeedbackRow = {
   id: string;
   userId: string;
+  userNickname: string;
   typeId: string;
   typeLabel: string;
   content: string;
@@ -81,6 +84,7 @@ function toAdminChatRow(conversation: ChatConversation, user?: AppUser): AdminCh
     unread: conversation.staffUnread ?? 0,
     online: conversation.online,
     linkedOrderId: conversation.linkedOrderId ?? "",
+    closedAt: conversation.closedAt,
   };
 }
 
@@ -116,14 +120,23 @@ function toAdminMessageRow(
 }
 
 export const adminSupportService = {
-  async listChatRows(roles: AdminRole[]) {
-    const items = await chatDomainService.listForAdmin(roles);
+  async listChatRows(roles: AdminRole[], linkedHandlerId?: string) {
+    const items = await chatDomainService.listForAdmin(roles, linkedHandlerId);
     const ownerMap = await loadOwnerMap(items);
     return items.map((conv) => toAdminChatRow(conv, ownerMap.get(conv.ownerUserId ?? "")));
   },
 
-  async getChatMessages(conversationId: string, roles: AdminRole[], adminDisplayName: string) {
-    const detail = await chatDomainService.getMessagesForAdmin(conversationId, roles);
+  async getChatMessages(
+    conversationId: string,
+    roles: AdminRole[],
+    adminDisplayName: string,
+    linkedHandlerId?: string,
+  ) {
+    const detail = await chatDomainService.getMessagesForAdmin(
+      conversationId,
+      roles,
+      linkedHandlerId,
+    );
     if (!detail) return null;
 
     const user = detail.conversation.ownerUserId
@@ -145,8 +158,15 @@ export const adminSupportService = {
     adminId: string,
     content: string,
     adminDisplayName: string,
+    linkedHandlerId?: string,
   ) {
-    const message = await chatDomainService.sendStaffMessage(conversationId, adminId, content, roles);
+    const message = await chatDomainService.sendStaffMessage(
+      conversationId,
+      adminId,
+      content,
+      roles,
+      linkedHandlerId,
+    );
     return toAdminMessageRow(
       { ...message, from: "self" },
       adminDisplayName,
@@ -154,17 +174,38 @@ export const adminSupportService = {
     );
   },
 
+  async closeChat(conversationId: string, roles: AdminRole[], linkedHandlerId?: string) {
+    const conv = await chatDomainService.getConversationForAdmin(
+      conversationId,
+      roles,
+      linkedHandlerId,
+    );
+    if (!conv) throw new Error("CHAT_NOT_FOUND");
+    if (conv.type === "service") throw new Error("CHAT_CLOSE_NOT_ALLOWED");
+    const closed = await chatDomainService.closePlayerConversation(conversationId, "会话已终止");
+    if (!closed) throw new Error("CHAT_NOT_FOUND");
+    const user = closed.ownerUserId ? await getUser(closed.ownerUserId) : undefined;
+    return toAdminChatRow(closed, user ?? undefined);
+  },
+
   async listFeedbackRows() {
     const { listFeedbacks } = await import("../db/index.js");
     const items = await listFeedbacks();
-    return items.map((feedback) => ({
-      id: feedback.id,
-      userId: feedback.userId,
-      typeId: feedback.typeId,
-      typeLabel: FEEDBACK_TYPE_LABELS[feedback.typeId] ?? feedback.typeId,
-      content: feedback.content,
-      contact: feedback.contact,
-      createdAt: feedback.createdAt,
-    })) satisfies AdminFeedbackRow[];
+    const rows = await Promise.all(
+      items.map(async (feedback) => {
+        const user = await getUser(feedback.userId);
+        return {
+          id: feedback.id,
+          userId: feedback.userId,
+          userNickname: formatUserDisplayName(user ?? undefined, feedback.userId),
+          typeId: feedback.typeId,
+          typeLabel: FEEDBACK_TYPE_LABELS[feedback.typeId] ?? feedback.typeId,
+          content: feedback.content,
+          contact: feedback.contact,
+          createdAt: feedback.createdAt,
+        } satisfies AdminFeedbackRow;
+      }),
+    );
+    return rows;
   },
 };

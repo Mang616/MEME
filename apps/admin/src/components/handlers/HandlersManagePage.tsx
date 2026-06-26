@@ -1,12 +1,8 @@
 import {
   Button,
   Form,
-  Input,
   Message,
-  Modal,
   Popconfirm,
-  Radio,
-  Select,
   Space,
   Switch,
   Table,
@@ -14,24 +10,20 @@ import {
 } from "@arco-design/web-react";
 import type { ColumnProps } from "@arco-design/web-react/es/Table";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { EscortLevelBadge, EscortLevelWithLabel } from "@/components/EscortLevelBadge";
+import { EscortLevelWithLabel } from "@/components/EscortLevelBadge";
+import {
+  emptyHandlerForm,
+  HandlerFormDrawer,
+  handlerRowToForm,
+  type HandlerFormValues,
+} from "@/components/handlers/HandlerFormDrawer";
 import { ListFilterBar } from "@/components/ListFilterBar";
 import { DEFAULT_TABLE_PAGINATION, PageShell } from "@/components/PageShell";
 import { ESCORT_LEVELS, ESCORT_LEVEL_MAP } from "@/constants/escort-level";
 import { REGION_MAP } from "@/constants/labels";
 import { matchBoolFilter, matchKeyword, matchSelect } from "@/lib/list-filter";
-import { formatClubOptionLabel, formatClubTag } from "@/lib/club-labels";
-import { api, type ClubRow, type HandlerRow } from "@/lib/api";
-
-type HandlerFormValues = {
-  name: string;
-  level: HandlerRow["level"];
-  region: HandlerRow["region"];
-  serviceType: HandlerRow["serviceType"];
-  gender: HandlerRow["gender"];
-  online: boolean;
-  clubId: string;
-};
+import { formatClubTag } from "@/lib/club-labels";
+import { ApiError, api, type ClubRow, type HandlerRow } from "@/lib/api";
 
 export type HandlersManageConfig = {
   serviceType: HandlerRow["serviceType"];
@@ -46,25 +38,13 @@ type HandlersManagePageProps = {
   config: HandlersManageConfig;
 };
 
-function emptyForm(serviceType: HandlerRow["serviceType"]): HandlerFormValues {
-  return {
-    name: "",
-    level: "rookie",
-    region: "pc",
-    serviceType,
-    gender: "male",
-    online: false,
-    clubId: "club_platform",
-  };
-}
-
 export function HandlersManagePage({ config }: HandlersManagePageProps) {
   const { serviceType, title, subtitle, entityLabel, levelFieldLabel, createButtonLabel } = config;
 
   const [loading, setLoading] = useState(true);
   const [rows, setRows] = useState<HandlerRow[]>([]);
   const [clubs, setClubs] = useState<ClubRow[]>([]);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [editing, setEditing] = useState<HandlerRow | null>(null);
   const [saving, setSaving] = useState(false);
   const [keyword, setKeyword] = useState("");
@@ -101,7 +81,15 @@ export function HandlersManagePage({ config }: HandlersManagePageProps) {
       if (!matchSelect(row.region, regionFilter)) return false;
       if (!matchBoolFilter(row.online, onlineFilter)) return false;
       return matchKeyword(
-        [row.id, row.name, row.clubName, ESCORT_LEVEL_MAP[row.level], REGION_MAP[row.region]],
+        [
+          row.id,
+          row.name,
+          row.realName,
+          row.adminUsername,
+          row.clubName,
+          ESCORT_LEVEL_MAP[row.level],
+          REGION_MAP[row.region],
+        ],
         keyword,
       );
     });
@@ -116,41 +104,45 @@ export function HandlersManagePage({ config }: HandlersManagePageProps) {
 
   function openCreate() {
     setEditing(null);
-    form.setFieldsValue(emptyForm(serviceType));
-    setModalOpen(true);
+    form.setFieldsValue(emptyHandlerForm(serviceType));
+    setDrawerOpen(true);
   }
 
   function openEdit(row: HandlerRow) {
     setEditing(row);
-    form.setFieldsValue({
-      name: row.name,
-      level: row.level,
-      region: row.region,
-      serviceType: row.serviceType,
-      gender: row.gender,
-      online: row.online,
-      clubId: row.clubId,
-    });
-    setModalOpen(true);
+    form.setFieldsValue(handlerRowToForm(row));
+    setDrawerOpen(true);
   }
 
   async function handleSave() {
     const values = await form.validate();
-    const payload = { ...values, serviceType };
     setSaving(true);
     try {
       if (editing) {
-        const updated = await api.updateHandler(editing.id, payload);
+        const {
+          username: _username,
+          password: _password,
+          displayName: _displayName,
+          ...payload
+        } = values;
+        const updated = await api.updateHandler(editing.id, { ...payload, serviceType });
         setRows((prev) => prev.map((row) => (row.id === updated.id ? updated : row)));
         Message.success(`${entityLabel}资料已更新`);
       } else {
-        const created = await api.createHandler(payload);
+        const { username, password, displayName, ...handlerFields } = values;
+        const created = await api.createHandlerWithAccount({
+          ...handlerFields,
+          serviceType,
+          username,
+          password,
+          displayName: displayName.trim() || undefined,
+        });
         setRows((prev) => [created, ...prev]);
-        Message.success(`${entityLabel}已创建`);
+        Message.success(`${entityLabel}已创建，后台账号 ${created.adminUsername || username} 已开通`);
       }
-      setModalOpen(false);
-    } catch {
-      Message.error(editing ? "更新失败" : "创建失败");
+      setDrawerOpen(false);
+    } catch (err) {
+      Message.error(err instanceof ApiError ? err.message : editing ? "更新失败" : "创建失败");
     } finally {
       setSaving(false);
     }
@@ -180,7 +172,7 @@ export function HandlersManagePage({ config }: HandlersManagePageProps) {
     {
       title: "昵称",
       dataIndex: "name",
-      width: 160,
+      width: 140,
       ellipsis: true,
       render: (name: string, row: HandlerRow) => (
         <EscortLevelWithLabel level={row.level} label={name} size="sm" />
@@ -189,7 +181,7 @@ export function HandlersManagePage({ config }: HandlersManagePageProps) {
     {
       title: "所属俱乐部",
       dataIndex: "clubName",
-      width: 160,
+      width: 140,
       render: (_: string, row: HandlerRow) => (
         <Tag color={row.isOwnClub ? "green" : "arcoblue"}>{formatClubTag({ ...row, name: row.clubName })}</Tag>
       ),
@@ -247,7 +239,7 @@ export function HandlersManagePage({ config }: HandlersManagePageProps) {
       <ListFilterBar
         keyword={keyword}
         onKeywordChange={setKeyword}
-        keywordPlaceholder={`搜索 ID / 昵称 / 俱乐部`}
+        keywordPlaceholder="搜索 ID / 昵称 / 姓名 / 后台账号 / 俱乐部"
         selects={[
           {
             value: levelFilter,
@@ -290,59 +282,21 @@ export function HandlersManagePage({ config }: HandlersManagePageProps) {
         columns={columns}
         data={filteredRows}
         pagination={DEFAULT_TABLE_PAGINATION}
-        scroll={{ x: 920 }}
+        scroll={{ x: 1100 }}
       />
 
-      <Modal
-        title={editing ? `编辑${entityLabel} ${editing.name}` : `新建${entityLabel}`}
-        visible={modalOpen}
-        confirmLoading={saving}
-        onOk={() => void handleSave()}
-        onCancel={() => setModalOpen(false)}
-        unmountOnExit
-      >
-        <Form form={form} layout="vertical">
-          <Form.Item label="昵称" field="name" rules={[{ required: true, message: "请输入昵称" }]}>
-            <Input />
-          </Form.Item>
-          <Form.Item label={levelFieldLabel} field="level" rules={[{ required: true }]}>
-            <Radio.Group className="escort-level-radio-group">
-              {ESCORT_LEVELS.map((level) => (
-                <Radio key={level} value={level} className="escort-level-radio">
-                  <EscortLevelBadge level={level} />
-                </Radio>
-              ))}
-            </Radio.Group>
-          </Form.Item>
-          <Form.Item label="大区" field="region" rules={[{ required: true }]}>
-            <Select>
-              {Object.entries(REGION_MAP).map(([value, label]) => (
-                <Select.Option key={value} value={value}>
-                  {label}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <Form.Item label="性别" field="gender" rules={[{ required: true }]}>
-            <Select>
-              <Select.Option value="male">男</Select.Option>
-              <Select.Option value="female">女</Select.Option>
-            </Select>
-          </Form.Item>
-          <Form.Item label="所属俱乐部" field="clubId" rules={[{ required: true }]}>
-            <Select
-              options={clubs.map((club) => ({
-                label: formatClubOptionLabel(club),
-                value: club.id,
-                disabled: !club.enabled,
-              }))}
-            />
-          </Form.Item>
-          <Form.Item label="在线" field="online" triggerPropName="checked">
-            <Switch />
-          </Form.Item>
-        </Form>
-      </Modal>
+      <HandlerFormDrawer
+        visible={drawerOpen}
+        editing={editing}
+        entityLabel={entityLabel}
+        levelFieldLabel={levelFieldLabel}
+        serviceType={serviceType}
+        clubs={clubs}
+        saving={saving}
+        form={form}
+        onClose={() => setDrawerOpen(false)}
+        onSave={() => void handleSave()}
+      />
     </PageShell>
   );
 }

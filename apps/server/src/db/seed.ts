@@ -1,3 +1,4 @@
+import { REGISTER_ACTIVITY_DEFAULTS } from "@meme/register-activity-defaults";
 import { USE_MYSQL } from "../config.js";
 import { DEFAULT_PRODUCT_TAGS } from "../constants/product-tags.js";
 import { loadSeedDatabase } from "../seed.js";
@@ -7,7 +8,26 @@ import * as jsonStore from "./json-store.js";
 import type { ContentPage } from "../types.js";
 
 /** 新增 CMS 内容页时在此登记，启动时自动补种 */
-const REQUIRED_CONTENT_SLUGS = ["vip-activity", "coupons", "invite-activity"] as const;
+const REQUIRED_CONTENT_SLUGS = [
+  "vip-activity",
+  "coupons",
+  "register-activity",
+  "invite-activity",
+] as const;
+
+const CONTENT_PAGE_FALLBACKS: Record<
+  (typeof REQUIRED_CONTENT_SLUGS)[number],
+  { id: string; title: string; payload: unknown }
+> = {
+  "vip-activity": { id: "cp-vip-activity", title: "VIP 活动", payload: {} },
+  coupons: { id: "cp-coupons", title: "优惠券", payload: { items: [] } },
+  "register-activity": {
+    id: "cp-register-activity",
+    title: "注册活动",
+    payload: REGISTER_ACTIVITY_DEFAULTS,
+  },
+  "invite-activity": { id: "cp-invite-activity", title: "邀请活动", payload: {} },
+};
 
 /** 空库时从 seed/initial.json 灌入（MySQL 或 JSON） */
 export async function seedDatabaseIfEmpty() {
@@ -77,24 +97,29 @@ export async function ensureExtendedSeeded() {
 /** 已有库补种缺失的 CMS 内容页（如 vip-activity） */
 export async function ensureMissingContentPages() {
   const data = await loadSeedDatabase();
-  const pages = data.contentPages.filter((page) =>
-    REQUIRED_CONTENT_SLUGS.includes(page.slug as (typeof REQUIRED_CONTENT_SLUGS)[number]),
-  );
-  if (!pages.length) return false;
-
   let seeded = false;
-  for (const page of pages) {
+
+  for (const slug of REQUIRED_CONTENT_SLUGS) {
+    const fromSeed = data.contentPages.find((page) => page.slug === slug);
+    const fallback = CONTENT_PAGE_FALLBACKS[slug];
+    const page = fromSeed ?? {
+      id: fallback.id,
+      slug,
+      title: fallback.title,
+      payload: fallback.payload,
+    };
+
     if (USE_MYSQL) {
-      const existing = await mysqlStore.getContentPageBySlug(page.slug);
+      const existing = await mysqlStore.getContentPageBySlug(slug);
       if (!existing) {
-        await mysqlStore.upsertContentPage(page);
+        await mysqlStore.upsertContentPage(page as ContentPage);
         seeded = true;
       }
       continue;
     }
 
     const db = await jsonStore.readDb();
-    if (!db.contentPages.some((item) => item.slug === page.slug)) {
+    if (!db.contentPages.some((item) => item.slug === slug)) {
       await jsonStore.updateDb((draft) => {
         draft.contentPages.push({ ...page } as ContentPage);
       });
@@ -127,6 +152,64 @@ export async function ensureAdminUsersSeeded() {
   });
   console.log("[meme-server] Admin users seeded (JSON store)");
   return true;
+}
+
+/** 旧库打手档案为空时回填；每个打手/陪玩确保有对应后台账号 */
+export async function ensureHandlerLegacyProfiles() {
+  const { migrateHandlerLegacyProfiles } = await import("./handler-legacy-migrate.js");
+  return migrateHandlerLegacyProfiles();
+}
+
+/** 会话数据回填 ownerUserId / handlerId，保证一对一 */
+export async function ensureChatConversationsMigrated() {
+  const { migrateChatConversations } = await import("./chat-legacy-migrate.js");
+  return migrateChatConversations();
+}
+
+/** 旧订单补写 serviceType（来自商品） */
+export async function ensureOrderServiceTypes() {
+  const { listOrders, listProducts, updateOrder } = await import("./index.js");
+  const { buildProductServiceTypeMap } = await import("../lib/order-service-type.js");
+  const productMap = buildProductServiceTypeMap(await listProducts());
+  let changed = false;
+  for (const order of await listOrders()) {
+    if (order.serviceType) continue;
+    const serviceType = productMap.get(order.productId);
+    if (!serviceType) continue;
+    await updateOrder(order.id, { serviceType });
+    changed = true;
+  }
+  if (changed) {
+    console.log("[meme-server] Order service types backfilled");
+  }
+  return changed;
+}
+
+/** 打手/陪玩角色权限与业务默认不一致时重置 */
+export async function ensureRbacHandlerDefaults() {
+  const { DEFAULT_ROLE_PERMISSIONS, permissionsEqual } = await import("@meme/admin-rbac");
+  const { getRolePermissionsMatrix } = await import("../constants/admin-rbac.js");
+  const { rolePermissionService } = await import("../services/role-permissions.js");
+
+  await rolePermissionService.load();
+  let changed = false;
+
+  for (const role of ["handler", "companion"] as const) {
+    const current = getRolePermissionsMatrix()[role];
+    const defaults = [...DEFAULT_ROLE_PERMISSIONS[role]];
+    const stale =
+      !permissionsEqual(current, defaults) &&
+      (current.includes("orders.read") ||
+        current.includes("after_sales.read") ||
+        defaults.some((perm) => !current.includes(perm)));
+
+    if (!stale) continue;
+    await rolePermissionService.resetRole(role);
+    console.log(`[meme-server] RBAC ${role} role reset:`, defaults.join(", "));
+    changed = true;
+  }
+
+  return changed;
 }
 
 /** 已有业务数据但标签表为空时补种默认标签 */
@@ -164,7 +247,7 @@ export async function ensureUsersVipSynced() {
 
 /** 已有用户但无优惠券时，按 CMS 模板补发默认可用券 */
 export async function ensureUserCouponsSeeded() {
-  const { grantDefaultCouponsForUser } = await import("../services/coupons.js");
+  const { grantRegisterRewardsForUser } = await import("../services/register-rewards.js");
 
   if (USE_MYSQL) {
     const mysqlStore = await import("./mysql-store.js");
@@ -172,7 +255,7 @@ export async function ensureUserCouponsSeeded() {
     const users = await mysqlStore.listUsers();
     let granted = 0;
     for (const user of users) {
-      const created = await grantDefaultCouponsForUser(user.id);
+      const created = await grantRegisterRewardsForUser(user.id);
       granted += created.length;
     }
     if (granted > 0) {
@@ -185,7 +268,7 @@ export async function ensureUserCouponsSeeded() {
   if ((db.userCoupons?.length ?? 0) > 0) return false;
   let granted = 0;
   for (const user of db.users) {
-    const created = await grantDefaultCouponsForUser(user.id);
+    const created = await grantRegisterRewardsForUser(user.id);
     granted += created.length;
   }
   if (granted > 0) {

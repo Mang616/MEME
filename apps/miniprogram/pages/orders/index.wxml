@@ -5,7 +5,6 @@
     active-id="{{activeStatus}}"
     mode="scroll"
     show-empty="{{orders.length === 0}}"
-    empty-icon="📋"
     empty-text="暂无订单"
     empty-hint="{{emptyHint}}"
     bind:tabchange="onTabChange"

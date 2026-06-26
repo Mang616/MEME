@@ -26,9 +26,11 @@
           class="select-sheet-item__extra {{item.extraMuted ? 'is-muted' : ''}}"
         >{{item.extra}}</text>
       </view>
-      <view wx:if="{{!loading && !options.length}}" class="select-sheet-empty">
-        <text>{{emptyText}}</text>
-      </view>
+      <list-empty
+        wx:if="{{!loading && !options.length}}"
+        size="compact"
+        text="{{emptyText}}"
+      />
     </scroll-view>
   </view>
 </view>

@@ -8,7 +8,9 @@ import {
 } from "@arco-design/web-react";
 import { useCallback, useEffect, useState } from "react";
 import { PageShell } from "@/components/PageShell";
+import { CouponTemplateMultiSelect } from "@/components/CouponTemplateMultiSelect";
 import { api } from "@/lib/api";
+import { normalizeCouponsPayload, type CouponItem } from "@/lib/coupons";
 import {
   INVITE_ACTIVITY_DEFAULTS,
   normalizeInviteActivityPayload,
@@ -17,6 +19,7 @@ import {
 
 export default function InviteActivityPage() {
   const [draft, setDraft] = useState<InviteActivityPayload>(INVITE_ACTIVITY_DEFAULTS);
+  const [couponOptions, setCouponOptions] = useState<CouponItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
@@ -26,9 +29,11 @@ export default function InviteActivityPage() {
     setLoading(true);
     try {
       const page = await api.getInviteActivity();
+      const couponsPage = await api.getCoupons();
       const next = normalizeInviteActivityPayload(page.payload);
       setDraft(next);
       form.setFieldsValue(next);
+      setCouponOptions(normalizeCouponsPayload(couponsPage.payload).items);
       setDirty(false);
     } catch (err) {
       Message.error(err instanceof Error ? err.message : "加载邀请活动配置失败");
@@ -50,6 +55,10 @@ export default function InviteActivityPage() {
     setDirty(true);
   }
 
+  function patchRewards(patch: Partial<InviteActivityPayload["rewards"]>) {
+    patchDraft({ rewards: { ...draft.rewards, ...patch } });
+  }
+
   function patchRules(rules: string[]) {
     patchDraft({ rules });
   }
@@ -64,6 +73,7 @@ export default function InviteActivityPage() {
         headline: values.poster?.headline || draft.poster.headline,
         footnote: values.poster?.footnote || draft.poster.footnote,
       },
+      rewards: draft.rewards,
     });
     setSaving(true);
     try {
@@ -83,7 +93,7 @@ export default function InviteActivityPage() {
   return (
     <PageShell
       title="邀请活动管理"
-      subtitle="配置小程序邀请页文案、规则与海报内容"
+      subtitle="配置小程序邀请页文案、规则、海报与首单邀请奖励"
       loading={loading}
       action={
         <Space>
@@ -139,6 +149,26 @@ export default function InviteActivityPage() {
         </Form.Item>
         <Form.Item label="海报底部说明" field="poster.footnote" rules={[{ required: true }]}>
           <Input onChange={(footnote) => patchDraft({ poster: { ...draft.poster, footnote } })} />
+        </Form.Item>
+
+        <Form.Item
+          label="邀请人奖励券（可多选，被邀请人完成首单后，每成功邀请 1 人发放 1 次）"
+        >
+          <CouponTemplateMultiSelect
+            coupons={couponOptions}
+            value={draft.rewards.inviterTemplateIds}
+            placeholder="选择邀请人奖励券"
+            onChange={(inviterTemplateIds) => patchRewards({ inviterTemplateIds })}
+          />
+        </Form.Item>
+
+        <Form.Item label="被邀请人奖励券（可多选，完成首单后发放，每人仅 1 次）">
+          <CouponTemplateMultiSelect
+            coupons={couponOptions}
+            value={draft.rewards.inviteeTemplateIds}
+            placeholder="选择被邀请人奖励券"
+            onChange={(inviteeTemplateIds) => patchRewards({ inviteeTemplateIds })}
+          />
         </Form.Item>
       </Form>
     </PageShell>

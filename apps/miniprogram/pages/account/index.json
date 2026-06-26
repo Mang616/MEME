@@ -1,6 +1,7 @@
 {
   "navigationStyle": "custom",
   "usingComponents": {
-    "page-shell": "/components/page-shell/page-shell"
+    "page-shell": "/components/page-shell/page-shell",
+    "list-empty": "/components/list-empty/list-empty"
   }
 }

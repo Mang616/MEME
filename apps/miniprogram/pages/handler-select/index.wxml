@@ -72,7 +72,6 @@
 
         <list-empty
           wx:else
-          icon="🎮"
           text="{{emptyText}}"
           hint="{{emptyHint}}"
         />

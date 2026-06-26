@@ -8,6 +8,8 @@ export type AdminSession = {
   adminId: string;
   roles: AdminRole[];
   permissions: AdminPermission[];
+  /** 打手角色绑定的打手档案 ID */
+  handlerId?: string;
 };
 
 const SESSION_KEY = "meme_admin_session";
@@ -19,6 +21,7 @@ export function toAdminSession(me: Partial<AdminSession> & Pick<AdminSession, "u
     adminId: me.adminId ?? "",
     roles: Array.isArray(me.roles) ? me.roles : [],
     permissions: Array.isArray(me.permissions) ? me.permissions : [],
+    handlerId: me.handlerId || undefined,
   };
 }
 

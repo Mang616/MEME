@@ -8,7 +8,7 @@ import * as jsonStore from "./json-store.js";
 import * as mysqlStore from "./mysql-store.js";
 import { pickStore, storageLabel } from "./store-bridge.js";
 
-export { seedDatabaseIfEmpty, ensureCmsSeeded, ensureExtendedSeeded, ensureMissingContentPages, ensureProductTagsSeeded, ensureAdminUsersSeeded, ensureUsersVipSynced, ensureUserCouponsSeeded, ensureUserInviteCodesSeeded } from "./seed.js";
+export { seedDatabaseIfEmpty, ensureCmsSeeded, ensureExtendedSeeded, ensureMissingContentPages, ensureProductTagsSeeded, ensureAdminUsersSeeded, ensureHandlerLegacyProfiles, ensureChatConversationsMigrated, ensureOrderServiceTypes, ensureRbacHandlerDefaults, ensureUsersVipSynced, ensureUserCouponsSeeded, ensureUserInviteCodesSeeded } from "./seed.js";
 export { storageLabel };
 
 export const getCategories = pickStore(

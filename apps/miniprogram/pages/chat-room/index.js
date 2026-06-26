@@ -3,6 +3,7 @@ const {
   loadChatRoomState,
   addTextMessage,
   addOrderMessage,
+  buildChatRoomState,
 } = require('../../utils/chat-page')
 const { markConversationReadAndSync } = require('../../utils/chat-tab-badge')
 const { showNotFoundAndExit, showTip } = require('../../utils/ui')
@@ -14,6 +15,7 @@ Page({
     conversation: null,
     messages: [],
     canSendOrder: false,
+    canSendText: true,
     orderPickerItems: [],
     orderPickerVisible: false,
     inputPlaceholder: '',
@@ -45,6 +47,10 @@ Page({
   },
 
   onSendText() {
+    if (!this.data.canSendText) {
+      showTip('会话已结束，仅可查看记录')
+      return
+    }
     const { draft } = this.data
     addTextMessage(this._conversationId, draft).then((msg) => {
       if (!msg) return
@@ -52,7 +58,14 @@ Page({
         messages: [...this.data.messages, msg],
         draft: '',
       }, () => this.scrollToBottom())
-    }).catch(() => showTip('发送失败'))
+    }).catch((err) => {
+      if (err && err.code === 'CHAT_CLOSED') {
+        this.setData(buildChatRoomState(this._conversationId))
+        showTip('会话已结束，仅可查看记录')
+        return
+      }
+      showTip('发送失败')
+    })
   },
 
   onOpenOrderPicker() {

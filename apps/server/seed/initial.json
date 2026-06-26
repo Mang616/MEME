@@ -62,7 +62,7 @@
       "region": "端游",
       "userId": "老玩家88",
       "assignedPlayer": "系统自动分配",
-      "servicePlayer": "阿凯",
+      "servicePlayer": "阿杰",
       "product": {
         "title": "68.8进绝密（每人限购1单）",
         "desc": "绝密体验，保底3.33m-10m，性价比最高",
@@ -401,7 +401,12 @@
       "gender": "male",
       "avatar": "/assets/profile/boys.webp",
       "online": true,
-      "clubId": "club_platform"
+      "clubId": "club_platform",
+      "realName": "张贰拾",
+      "idNumber": "110101199003031234",
+      "phone": "13800138001",
+      "wechat": "dashou_h1",
+      "alipay": "13800138001"
     },
     {
       "id": "h2",
@@ -412,7 +417,12 @@
       "gender": "male",
       "avatar": "/assets/home/huhang.webp",
       "online": true,
-      "clubId": "club_platform"
+      "clubId": "club_platform",
+      "realName": "李晓明",
+      "idNumber": "110101199105051234",
+      "phone": "13800138002",
+      "wechat": "lixm_h2",
+      "alipay": "13800138002"
     },
     {
       "id": "h3",
@@ -423,7 +433,12 @@
       "gender": "male",
       "avatar": "/assets/home/peiwan.webp",
       "online": false,
-      "clubId": "club_storm"
+      "clubId": "club_storm",
+      "realName": "王强",
+      "idNumber": "110101199206061234",
+      "phone": "13800138003",
+      "wechat": "wangq_h3",
+      "alipay": "13800138003"
     },
     {
       "id": "h4",
@@ -434,7 +449,12 @@
       "gender": "male",
       "avatar": "/assets/profile/boys.webp",
       "online": true,
-      "clubId": "club_storm"
+      "clubId": "club_storm",
+      "realName": "陈杰",
+      "idNumber": "110101199307071234",
+      "phone": "13800138004",
+      "wechat": "chenj_h4",
+      "alipay": "13800138004"
     },
     {
       "id": "h5",
@@ -445,7 +465,12 @@
       "gender": "female",
       "avatar": "/assets/profile/girls.webp",
       "online": true,
-      "clubId": "club_platform"
+      "clubId": "club_platform",
+      "realName": "赵小七",
+      "idNumber": "110101199408081234",
+      "phone": "13800138005",
+      "wechat": "zhaoq_h5",
+      "alipay": "13800138005"
     },
     {
       "id": "h6",
@@ -456,7 +481,12 @@
       "gender": "male",
       "avatar": "/assets/profile/boys.webp",
       "online": false,
-      "clubId": "club_alpha"
+      "clubId": "club_alpha",
+      "realName": "刘凯",
+      "idNumber": "110101199509091234",
+      "phone": "13800138006",
+      "wechat": "liuk_h6",
+      "alipay": "13800138006"
     }
   ],
   "categories": {
@@ -2044,47 +2074,58 @@
   ],
   "chatConversations": [
     {
-      "id": "chat_service",
+      "id": "chat_svc_u1",
       "type": "service",
       "name": "迷因官方客服",
       "roleLabel": "平台客服",
       "avatarText": "客",
       "avatarColor": "#3d5240",
+      "ownerUserId": "u1",
       "lastMessage": "收到，已为您联系打手处理",
       "lastTime": "15:20",
       "unread": 1,
+      "staffUnread": 0,
       "online": true,
       "sortOrder": 0
     },
     {
-      "id": "chat_player_1",
+      "id": "chat_ord_D_260524154235_231533",
       "type": "player",
       "name": "魔王s 贰拾",
-      "roleLabel": "服务打手",
+      "roleLabel": "护航打手",
       "escortLevel": "demon",
       "avatarText": "魔",
       "avatarColor": "#4a5f52",
       "linkedOrderId": "D_260524154235_231533",
+      "ownerUserId": "u1",
+      "handlerId": "h1",
+      "customerGameId": "麦当劳到了",
       "lastMessage": "今晚 8 点可以开局，您方便吗？",
       "lastTime": "14:52",
       "unread": 0,
+      "staffUnread": 0,
       "online": true,
       "sortOrder": 1
     },
     {
-      "id": "chat_player_2",
+      "id": "chat_ord_D_260520180000_998877",
       "type": "player",
-      "name": "阿凯",
-      "roleLabel": "服务打手",
-      "escortLevel": "ace",
-      "avatarText": "凯",
+      "name": "阿杰",
+      "roleLabel": "护航打手",
+      "escortLevel": "rookie",
+      "avatarText": "阿",
       "avatarColor": "#3a4540",
       "linkedOrderId": "D_260520180000_998877",
+      "ownerUserId": "u3",
+      "handlerId": "h4",
+      "customerGameId": "老玩家88",
       "lastMessage": "订单已完成，欢迎评价～",
       "lastTime": "昨天",
       "unread": 0,
+      "staffUnread": 0,
       "online": false,
-      "sortOrder": 2
+      "sortOrder": 2,
+      "closedAt": "2026-05-21 10:00:00"
     }
   ],
   "chatMessages": [
@@ -2094,7 +2135,7 @@
       "type": "text",
       "content": "您好，我是迷因电竞客服，有什么可以帮您？",
       "time": "14:30",
-      "conversationId": "chat_service"
+      "conversationId": "chat_svc_u1"
     },
     {
       "id": "m2",
@@ -2102,7 +2143,7 @@
       "type": "text",
       "content": "我有一单想催一下打手",
       "time": "14:32",
-      "conversationId": "chat_service"
+      "conversationId": "chat_svc_u1"
     },
     {
       "id": "m3",
@@ -2110,7 +2151,7 @@
       "type": "text",
       "content": "您可以直接发送订单卡片，我会联系对应打手",
       "time": "14:33",
-      "conversationId": "chat_service"
+      "conversationId": "chat_svc_u1"
     },
     {
       "id": "m4",
@@ -2118,7 +2159,7 @@
       "type": "text",
       "content": "收到，已为您联系打手处理",
       "time": "15:20",
-      "conversationId": "chat_service"
+      "conversationId": "chat_svc_u1"
     },
     {
       "id": "p1",
@@ -2126,7 +2167,7 @@
       "type": "text",
       "content": "老板好，我是您这单的护航打手魔王",
       "time": "14:10",
-      "conversationId": "chat_player_1"
+      "conversationId": "chat_ord_D_260524154235_231533"
     },
     {
       "id": "p2",
@@ -2134,7 +2175,7 @@
       "type": "text",
       "content": "好的，大概什么时候开始？",
       "time": "14:15",
-      "conversationId": "chat_player_1"
+      "conversationId": "chat_ord_D_260524154235_231533"
     },
     {
       "id": "p3",
@@ -2142,7 +2183,7 @@
       "type": "text",
       "content": "今晚 8 点可以开局，您方便吗？",
       "time": "14:52",
-      "conversationId": "chat_player_1"
+      "conversationId": "chat_ord_D_260524154235_231533"
     },
     {
       "id": "p4",
@@ -2150,7 +2191,7 @@
       "type": "text",
       "content": "绝密单已撤离成功",
       "time": "昨天 18:00",
-      "conversationId": "chat_player_2"
+      "conversationId": "chat_ord_D_260520180000_998877"
     },
     {
       "id": "p5",
@@ -2158,7 +2199,7 @@
       "type": "text",
       "content": "订单已完成，欢迎评价～",
       "time": "昨天 18:05",
-      "conversationId": "chat_player_2"
+      "conversationId": "chat_ord_D_260520180000_998877"
     }
   ]
 }

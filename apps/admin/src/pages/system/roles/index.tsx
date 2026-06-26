@@ -3,17 +3,18 @@ import type { ColumnProps } from "@arco-design/web-react/es/Table";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AdminRoleAvatar } from "@/components/AdminRoleAvatar";
+import { AdminRoleTag } from "@/components/AdminRoleTag";
 import { ListFilterBar } from "@/components/ListFilterBar";
 import { PageShell } from "@/components/PageShell";
 import { matchKeyword } from "@/lib/list-filter";
 import { api, type AdminRoleRow } from "@/lib/api";
 import type { AdminRole } from "@/lib/session";
 
-function RoleNameCell({ role, label, locked }: { role: AdminRole; label: string; locked: boolean }) {
+function RoleNameCell({ role, locked }: { role: AdminRole; label: string; locked: boolean }) {
   return (
     <span className="roles-table__name">
       <AdminRoleAvatar role={role} size={28} />
-      <span className="roles-table__name-text">{label}</span>
+      <AdminRoleTag role={role} />
       {locked ? (
         <Tag color="gold" size="small">
           系统

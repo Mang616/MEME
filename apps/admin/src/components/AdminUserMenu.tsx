@@ -27,8 +27,7 @@ export function AdminUserMenu() {
           return;
         }
         if (key === "logout") {
-          logout();
-          navigate("/login", { replace: true });
+          void logout().then(() => navigate("/login", { replace: true }));
         }
       }}
     >
@@ -53,8 +52,8 @@ export function AdminUserMenu() {
         <button type="button" className="admin-user-trigger">
           <AdminSessionAvatar session={session} size={32} />
           <span className="admin-user-trigger__text">
-            <span className="admin-user-trigger__name">{session.displayName}</span>
-            <span className="admin-user-trigger__role">{roleText}</span>
+          <span className="admin-user-trigger__name">{session.displayName}</span>
+          <span className="admin-user-trigger__role">{roleText}</span>
           </span>
           <IconDown className="admin-user-trigger__icon" />
         </button>

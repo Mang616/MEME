@@ -67,6 +67,7 @@ export function ProfileSettingsModal({
         adminId: result.adminId,
         roles: result.roles,
         permissions: result.permissions,
+        handlerId: result.handlerId,
       };
       setAdminSession(nextSession);
       onUpdated(nextSession);
@@ -96,11 +97,11 @@ export function ProfileSettingsModal({
           <Input value={session.username} disabled />
         </Form.Item>
         <Form.Item
-          label="显示名称"
+          label="昵称"
           field="displayName"
-          rules={[{ required: true, message: "请输入显示名称" }]}
+          rules={[{ required: true, message: "请输入昵称" }]}
         >
-          <Input placeholder="在后台显示的昵称" maxLength={128} />
+          <Input placeholder="在后台顶部与消息中展示的昵称" maxLength={128} />
         </Form.Item>
         <Form.Item label="新密码" field="password">
           <Input.Password placeholder="不修改请留空" autoComplete="new-password" />

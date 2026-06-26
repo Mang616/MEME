@@ -304,3 +304,14 @@
   font-size: 22rpx;
   color: var(--color-text-secondary);
 }
+
+.chat-room__composer--closed {
+  justify-content: center;
+  padding: 24rpx 32rpx;
+}
+
+.chat-room__closed-tip {
+  font-size: 26rpx;
+  color: var(--color-text-muted);
+  text-align: center;
+}

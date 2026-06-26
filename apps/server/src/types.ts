@@ -43,6 +43,8 @@ export type Order = {
   servicePlayer: string;
   remark?: string;
   product: OrderProductSnapshot;
+  /** 订单服务类型：护航 escort / 陪玩 companion */
+  serviceType?: ServiceType;
   /** 优惠前小计 */
   subtotal?: number;
   /** 优惠券减免 */
@@ -77,6 +79,8 @@ export type Product = {
   positiveRate: number;
   intro: string;
   limitPerUser: number;
+  /** 是否允许使用优惠券 */
+  couponAllowed?: boolean;
   published?: boolean;
 };
 
@@ -90,6 +94,13 @@ export type Handler = {
   avatar: string;
   online: boolean;
   clubId: string;
+  /** 真实姓名 */
+  realName?: string;
+  /** 身份证号 */
+  idNumber?: string;
+  phone?: string;
+  wechat?: string;
+  alipay?: string;
 };
 
 export type SubCategory = { id: string; name: string };
@@ -141,6 +152,8 @@ export type ChatConversation = {
   staffUnread?: number;
   online: boolean;
   sortOrder?: number;
+  /** 打手/陪玩订单会话终止时间（客服会话不设此字段） */
+  closedAt?: string;
 };
 
 export type ChatMessage = {
@@ -171,6 +184,8 @@ export type AdminUser = {
   roles: AdminRole[];
   enabled: boolean;
   createdAt: string;
+  /** 打手角色绑定的打手档案 ID */
+  handlerId?: string;
 };
 
 export type UserLedgerType =
@@ -239,6 +254,8 @@ export type AppUser = {
   inviteCode: string;
   /** 上级用户 ID */
   inviterId: string;
+  /** 邀请奖励已发放时间，非空表示已处理 */
+  inviteRewardAt: string;
 };
 
 export type CouponType = "fixed" | "percent";

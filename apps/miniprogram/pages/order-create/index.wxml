@@ -20,7 +20,10 @@
             />
           </view>
           <view class="order-create__product-main">
-            <text class="order-create__product-title">{{product.title}}</text>
+            <view class="order-create__product-head">
+              <text class="order-create__product-type order-create__product-type--{{product.serviceType}}">{{product.serviceTypeLabel}}</text>
+              <text class="order-create__product-title">{{product.title}}</text>
+            </view>
             <text wx:if="{{product.desc}}" class="order-create__product-desc">{{product.desc}}</text>
             <view class="order-create__product-meta">
               <text class="order-create__unit-price">¥{{unitPriceDisplay}}</text>
@@ -111,7 +114,7 @@
           </view>
         </view>
 
-        <view class="order-create__section card">
+        <view wx:if="{{couponAllowed}}" class="order-create__section card">
           <text class="order-create__section-title">优惠信息</text>
 
           <form-select
@@ -127,6 +130,11 @@
             <text class="order-create__label">优惠减免</text>
             <text class="order-create__discount-value">-¥{{couponDiscountDisplay}}</text>
           </view>
+        </view>
+
+        <view wx:else class="order-create__section card">
+          <text class="order-create__section-title">优惠信息</text>
+          <text class="order-create__coupon-disabled">该商品不支持使用优惠券</text>
         </view>
 
         <view class="order-create__tip">

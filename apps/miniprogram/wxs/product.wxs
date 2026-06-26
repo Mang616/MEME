@@ -1,4 +1,6 @@
-/** 商品展示辅助：标签样式、封面色（规则须与 utils/format.js tagClass 一致） */
+/** 商品展示辅助：标签样式、封面占位渐变（规则须与 utils/cover-media.js 一致） */
+
+var DEFAULT_COVER_COLOR = '#2d4a35'
 
 function tagClass(tag) {
   if (tag === '新品') return 'tag-new'
@@ -6,8 +8,12 @@ function tagClass(tag) {
 }
 
 function coverStyle(coverColor) {
-  if (!coverColor) return ''
-  return 'background-color:' + coverColor
+  var c = coverColor || DEFAULT_COVER_COLOR
+  return (
+    'background: linear-gradient(135deg, #1a2a1f 0%, ' +
+    c +
+    ' 52%, #1e3a28 100%);'
+  )
 }
 
 module.exports = {

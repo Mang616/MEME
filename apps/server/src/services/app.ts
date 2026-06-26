@@ -18,7 +18,8 @@ import {
 } from "@meme/user-profile";
 import type { AppUser, AvatarGender, ProductReview } from "../types.js";
 import { rechargeMember, syncUserVipFromConsume } from "./vip-member.js";
-import { countActiveUserCoupons, grantDefaultCouponsForUser } from "./coupons.js";
+import { countActiveUserCoupons } from "./coupons.js";
+import { grantRegisterRewardsForUser } from "./register-rewards.js";
 import { bindInviterForUser, ensureUserInviteCode } from "./invite-user.js";
 import { resolveInviteCode } from "../lib/invite-code.js";
 
@@ -116,9 +117,10 @@ async function upsertLoginUser(
   user.lastLoginAt = now;
   user.inviteCode = "";
   user.inviterId = "";
+  user.inviteRewardAt = "";
   await insertUser(user);
   const withInviter = await applyInviterIfNeeded(user, inviterCode);
-  await grantDefaultCouponsForUser(withInviter.id);
+  await grantRegisterRewardsForUser(withInviter.id);
   return withInviter;
 }
 
@@ -135,6 +137,7 @@ function createDefaultUser(partial: Pick<AppUser, "id" | "nickname"> & Partial<A
     lastLoginAt: "",
     inviteCode: "",
     inviterId: "",
+    inviteRewardAt: "",
     ...partial,
   };
 }

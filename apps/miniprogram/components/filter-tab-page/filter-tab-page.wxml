@@ -13,7 +13,6 @@
       <slot />
       <list-empty
         wx:if="{{showEmpty}}"
-        icon="{{emptyIcon}}"
         text="{{emptyText}}"
         hint="{{emptyHint}}"
       />

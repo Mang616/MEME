@@ -2,6 +2,7 @@ import { Button, Typography } from "@arco-design/web-react";
 import { IconThunderbolt } from "@arco-design/web-react/icon";
 import { PriceBadge } from "@/components/PriceBadge";
 import { HallOrderCover } from "@/components/hall/HallOrderCover";
+import { ServiceTypeTag } from "@/components/ServiceTypeTag";
 import { formatGamePortLabel } from "@/constants/game-port";
 import type { HallOrderRow } from "@/lib/api";
 
@@ -28,7 +29,11 @@ export function OrderGrabCard({ order, accepting, onAccept }: OrderGrabCardProps
           {order.quantity > 1 ? (
             <span className="hall-order-card__qty">×{order.quantity}</span>
           ) : null}
-          <span className="hall-order-card__badge">待抢单</span>
+          {order.serviceType ? (
+            <ServiceTypeTag serviceType={order.serviceType} size="small" />
+          ) : (
+            <span className="hall-order-card__badge">待抢单</span>
+          )}
         </div>
       </div>
 
@@ -37,9 +42,12 @@ export function OrderGrabCard({ order, accepting, onAccept }: OrderGrabCardProps
           {order.productTitle}
         </Typography.Title>
 
-        <Typography.Text type="secondary" className="hall-order-card__port-inline">
-          {gamePortLabel}
-        </Typography.Text>
+        <div className="hall-order-card__meta-row">
+          {order.serviceType ? <ServiceTypeTag serviceType={order.serviceType} /> : null}
+          <Typography.Text type="secondary" className="hall-order-card__port-inline">
+            {gamePortLabel}
+          </Typography.Text>
+        </div>
 
         <Button
           type="primary"

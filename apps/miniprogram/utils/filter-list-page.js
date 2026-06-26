@@ -16,7 +16,7 @@ function filterByTab(items, tabId, getGroupKey) {
 /**
  * @param {object} options
  * @param {{ id: string, label: string }[]} options.tabDefs
- * @param {Record<string, string>} options.emptyHints
+ * @param {Record<string, string>} options.emptyHints Tab 对应的空态文案（写入 fields.hint 指定字段）
  * @param {(item: object) => string} options.getGroupKey
  * @param {() => object[]} options.getSourceItems
  * @param {(item: object) => object} [options.enrichItem] 对筛选结果逐条 enrich

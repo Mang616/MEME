@@ -14,10 +14,12 @@
           bind:event="onOrderCardEvent"
         />
       </block>
-      <view wx:else class="order-detail-empty card">
-        <text class="order-detail-empty__icon">📋</text>
-        <text class="order-detail-empty__title">订单不存在</text>
-        <text class="order-detail-empty__hint">请返回订单列表重试</text>
+      <view wx:else class="card">
+        <list-empty
+          size="compact"
+          text="订单不存在"
+          hint="请返回订单列表重试"
+        />
       </view>
     </view>
   </scroll-view>

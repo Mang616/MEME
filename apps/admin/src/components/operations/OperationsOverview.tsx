@@ -1,16 +1,9 @@
-import {
-  Button,
-  Card,
-  Grid,
-  Space,
-  Statistic,
-  Typography,
-} from "@arco-design/web-react";
+import { Button, Card, Grid, Space, Statistic, Typography } from "@arco-design/web-react";
 import {
   IconApps,
   IconCustomerService,
-  IconExclamationCircle,
   IconFile,
+  IconRight,
   IconStorage,
   IconThunderbolt,
   IconUser,
@@ -42,58 +35,37 @@ const STATUS_BAR_CLASS: Record<OrderStatus, string> = {
   after_sale: "operations-status-bar__fill--after_sale",
 };
 
-type QuickLink = {
+type Shortcut = {
   to: string;
   label: string;
-  desc: string;
   icon: ComponentType;
   permissions: AdminPermission[];
 };
 
-const QUICK_LINKS: QuickLink[] = [
-  {
-    to: "/hall",
-    label: "接单大厅",
-    desc: "抢单履约",
-    icon: IconThunderbolt,
-    permissions: ["orders.accept"],
-  },
-  {
-    to: "/orders/dispatch",
-    label: "订单派单",
-    desc: "指定打手",
-    icon: IconFile,
-    permissions: ["orders.dispatch", "orders.write"],
-  },
-  {
-    to: "/analytics",
-    label: "数据看板",
-    desc: "趋势分析",
-    icon: IconStorage,
-    permissions: ["analytics.read"],
-  },
-  {
-    to: "/products",
-    label: "商品管理",
-    desc: "上下架维护",
-    icon: IconApps,
-    permissions: ["products.read"],
-  },
-  {
-    to: "/service/chats",
-    label: "会话管理",
-    desc: "客服沟通",
-    icon: IconCustomerService,
-    permissions: ["chats.service", "chats.player"],
-  },
-  {
-    to: "/users",
-    label: "用户管理",
-    desc: "会员资料",
-    icon: IconUser,
-    permissions: ["users.read"],
-  },
+const SHORTCUTS: Shortcut[] = [
+  { to: "/analytics", label: "数据看板", icon: IconStorage, permissions: ["analytics.read"] },
+  { to: "/products", label: "商品管理", icon: IconApps, permissions: ["products.read"] },
+  { to: "/users", label: "用户管理", icon: IconUser, permissions: ["users.read"] },
+  { to: "/orders", label: "全部订单", icon: IconFile, permissions: ["orders.read"] },
 ];
+
+type PriorityItem = {
+  key: string;
+  label: string;
+  count: number;
+  urgent?: boolean;
+  to: string;
+  actionLabel: string;
+  permissions: AdminPermission[];
+};
+
+function SectionTitle({ children }: { children: ReactNode }) {
+  return (
+    <Typography.Title heading={6} className="operations-section__title">
+      {children}
+    </Typography.Title>
+  );
+}
 
 function KpiCard({
   icon,
@@ -141,35 +113,12 @@ function KpiCard({
   );
 }
 
-function TodoCard({
-  title,
-  badge,
-  badgeTone = "default",
-  description,
-  action,
-}: {
-  title: string;
-  badge?: string;
-  badgeTone?: "default" | "danger" | "muted";
-  description: string;
-  action: ReactNode;
-}) {
+function MetricRow({ label, value }: { label: string; value: ReactNode }) {
   return (
-    <Card
-      bordered={false}
-      className={`operations-todo-card operations-todo-card--${badgeTone}`}
-      title={
-        <span className="operations-todo-card__title-row">
-          <span>{title}</span>
-          {badge ? <span className="operations-todo-card__badge">{badge}</span> : null}
-        </span>
-      }
-    >
-      <Space direction="vertical" size={12} className="operations-todo-card__body">
-        <Typography.Text type="secondary">{description}</Typography.Text>
-        {action}
-      </Space>
-    </Card>
+    <div className="operations-metric-row">
+      <Typography.Text type="secondary">{label}</Typography.Text>
+      <Typography.Text bold>{value}</Typography.Text>
+    </div>
   );
 }
 
@@ -180,206 +129,206 @@ export function OperationsOverview({ data }: OperationsOverviewProps) {
   const afterSale = data.orders.byStatus.after_sale ?? 0;
   const unread = data.service.unread ?? 0;
   const feedbacks = data.service.feedbacks ?? 0;
-  const visibleQuickLinks = QUICK_LINKS.filter((item) => hasAnyPermission(item.permissions));
+
+  const priorities: PriorityItem[] = [
+    {
+      key: "accept",
+      label: "待接单",
+      count: pendingAccept,
+      urgent: pendingAccept > 0,
+      to: "/hall",
+      actionLabel: "接单大厅",
+      permissions: ["orders.accept"],
+    },
+    {
+      key: "confirm",
+      label: "待确认",
+      count: pendingConfirm,
+      urgent: pendingConfirm > 0,
+      to: "/orders/dispatch",
+      actionLabel: "订单派单",
+      permissions: ["orders.dispatch", "orders.write"],
+    },
+    {
+      key: "chat",
+      label: "未读消息",
+      count: unread,
+      urgent: unread > 0,
+      to: "/service/chats",
+      actionLabel: "会话管理",
+      permissions: ["chats.service", "chats.player"],
+    },
+    {
+      key: "feedback",
+      label: "用户反馈",
+      count: feedbacks,
+      urgent: feedbacks > 0,
+      to: "/service/feedbacks",
+      actionLabel: "查看反馈",
+      permissions: ["feedbacks.read"],
+    },
+    {
+      key: "after_sale",
+      label: "售后中",
+      count: afterSale,
+      urgent: afterSale > 0,
+      to: "/after-sales/orders",
+      actionLabel: "售后工单",
+      permissions: ["after_sales.read"],
+    },
+  ].filter((item) => hasAnyPermission(item.permissions));
+
+  const visibleShortcuts = SHORTCUTS.filter((item) => hasAnyPermission(item.permissions));
 
   return (
-    <Space direction="vertical" size={16} className="operations-overview">
-      <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} xl={6}>
-          <KpiCard
-            icon={<IconFile />}
-            iconClass="operations-kpi-card__icon--orders"
-            title="待办订单"
-            value={pendingOrders}
-            valueStyle={pendingOrders > 0 ? { color: "#F53F3F" } : undefined}
-            hint={`待接单 ${pendingAccept} · 待确认 ${pendingConfirm}`}
-          />
-        </Col>
-        <Col xs={24} sm={12} xl={6}>
-          <KpiCard
-            icon={<IconStorage />}
-            iconClass="operations-kpi-card__icon--revenue"
-            title="成交总额"
-            value={data.orders.revenue}
-            prefix="¥"
-            precision={2}
-            hint={`累计 ${data.orders.total} 单`}
-          />
-        </Col>
-        <Col xs={24} sm={12} xl={6}>
-          <KpiCard
-            icon={<IconThunderbolt />}
-            iconClass="operations-kpi-card__icon--handlers"
-            title="在线服务者"
-            value={data.handlers.online}
-            suffix={`/ ${data.handlers.total}`}
-            hint="打手与陪玩师在线数"
-          />
-        </Col>
-        <Col xs={24} sm={12} xl={6}>
-          <KpiCard
-            icon={<IconCustomerService />}
-            iconClass="operations-kpi-card__icon--service"
-            title="未读消息"
-            value={unread}
-            valueStyle={unread > 0 ? { color: "#F53F3F" } : undefined}
-            hint={`${data.service.conversations} 个会话 · ${feedbacks} 条反馈`}
-          />
-        </Col>
-      </Row>
+    <Space direction="vertical" size={20} className="operations-overview">
+      <section className="operations-section">
+        <SectionTitle>核心指标</SectionTitle>
+        <Row gutter={[16, 16]}>
+          <Col xs={24} sm={12} xl={6}>
+            <KpiCard
+              icon={<IconFile />}
+              iconClass="operations-kpi-card__icon--orders"
+              title="待办订单"
+              value={pendingOrders}
+              valueStyle={pendingOrders > 0 ? { color: "#F53F3F" } : undefined}
+              hint={`待接单 ${pendingAccept} · 待确认 ${pendingConfirm}`}
+            />
+          </Col>
+          <Col xs={24} sm={12} xl={6}>
+            <KpiCard
+              icon={<IconStorage />}
+              iconClass="operations-kpi-card__icon--revenue"
+              title="成交总额"
+              value={data.orders.revenue}
+              prefix="¥"
+              precision={2}
+              hint={`累计 ${data.orders.total} 单`}
+            />
+          </Col>
+          <Col xs={24} sm={12} xl={6}>
+            <KpiCard
+              icon={<IconThunderbolt />}
+              iconClass="operations-kpi-card__icon--handlers"
+              title="在线服务者"
+              value={data.handlers.online}
+              suffix={`/ ${data.handlers.total}`}
+            />
+          </Col>
+          <Col xs={24} sm={12} xl={6}>
+            <KpiCard
+              icon={<IconCustomerService />}
+              iconClass="operations-kpi-card__icon--service"
+              title="活跃会话"
+              value={data.service.conversations}
+              hint={unread > 0 ? `${unread} 条未读` : "暂无未读"}
+            />
+          </Col>
+        </Row>
+      </section>
 
-      <Row gutter={[16, 16]}>
-        <Col xs={24} md={12} xl={8}>
-          <TodoCard
-            title="订单履约"
-            badge={pendingOrders > 0 ? `${pendingOrders} 单待处理` : "暂无积压"}
-            badgeTone={pendingOrders > 0 ? "danger" : "muted"}
-            description="优先处理待接单与待确认订单，必要时进入派单或接单大厅。"
-            action={
-              <Space wrap>
-                {hasAnyPermission(["orders.accept"]) ? (
-                  <Link to="/hall">
-                    <Button type="primary" icon={<IconThunderbolt />}>
-                      接单大厅
-                    </Button>
-                  </Link>
-                ) : null}
-                {hasAnyPermission(["orders.dispatch", "orders.write"]) ? (
-                  <Link to="/orders/dispatch">
-                    <Button type="outline" icon={<IconFile />}>
-                      订单派单
-                    </Button>
-                  </Link>
-                ) : null}
-                {hasAnyPermission(["orders.read"]) ? (
-                  <Link to="/orders">
-                    <Button type="text">全部订单</Button>
-                  </Link>
-                ) : null}
-              </Space>
-            }
-          />
-        </Col>
-        <Col xs={24} md={12} xl={8}>
-          <TodoCard
-            title="客服与反馈"
-            badge={unread > 0 ? `${unread} 条未读` : undefined}
-            badgeTone={unread > 0 ? "danger" : "default"}
-            description={`当前 ${data.service.conversations} 个会话，累计 ${feedbacks} 条用户反馈待查阅。`}
-            action={
-              <Space wrap>
-                {hasAnyPermission(["chats.service", "chats.player"]) ? (
-                  <Link to="/service/chats">
-                    <Button type="primary" icon={<IconCustomerService />}>
-                      会话管理
-                    </Button>
-                  </Link>
-                ) : null}
-                {hasAnyPermission(["feedbacks.read"]) ? (
-                  <Link to="/service/feedbacks">
-                    <Button type="outline">意见反馈</Button>
-                  </Link>
-                ) : null}
-              </Space>
-            }
-          />
-        </Col>
-        <Col xs={24} md={12} xl={8}>
-          <TodoCard
-            title="售后跟进"
-            badge={afterSale > 0 ? `${afterSale} 单售后中` : "暂无售后"}
-            badgeTone={afterSale > 0 ? "danger" : "muted"}
-            description="跟进售后中订单，协调打手与用户并完成结案。"
-            action={
-              hasAnyPermission(["after_sales.read"]) ? (
-                <Link to="/after-sales/orders">
-                  <Button type="primary" status="warning" icon={<IconExclamationCircle />}>
-                    处理售后工单
-                  </Button>
-                </Link>
-              ) : null
-            }
-          />
-        </Col>
-      </Row>
-
-      <Row gutter={[16, 16]}>
-        <Col xs={24} xl={14}>
-          <Card bordered={false} title="订单状态分布" className="operations-status-card">
-            <Space direction="vertical" size={14} style={{ width: "100%" }}>
-              {STATUS_ORDER.map((status) => {
-                const count = data.orders.byStatus[status] ?? 0;
-                const total = data.orders.total || 1;
-                const percent = Math.round((count / total) * 100);
-                const meta = ORDER_STATUS_MAP[status];
-                return (
-                  <div key={status} className="operations-status-row">
-                    <div className="operations-status-row__head">
-                      <Typography.Text>{meta.label}</Typography.Text>
-                      <Typography.Text type="secondary">
-                        {count} 单 · {percent}%
-                      </Typography.Text>
-                    </div>
-                    <div className="operations-status-bar">
-                      <div
-                        className={`operations-status-bar__fill ${STATUS_BAR_CLASS[status]}`}
-                        style={{ width: `${percent}%` }}
-                      />
-                    </div>
+      {priorities.length > 0 ? (
+        <section className="operations-section">
+          <SectionTitle>待办事项</SectionTitle>
+          <Card bordered={false} className="operations-priority-card">
+            <div className="operations-priority-list">
+              {priorities.map((item) => (
+                <div
+                  key={item.key}
+                  className={`operations-priority-item${item.urgent ? " operations-priority-item--urgent" : ""}`}
+                >
+                  <div className="operations-priority-item__main">
+                    <Typography.Text>{item.label}</Typography.Text>
+                    <Typography.Text
+                      bold
+                      className="operations-priority-item__count"
+                      style={item.urgent ? { color: "#F53F3F" } : undefined}
+                    >
+                      {item.count}
+                    </Typography.Text>
                   </div>
-                );
-              })}
-            </Space>
-          </Card>
-        </Col>
-        <Col xs={24} xl={10}>
-          <Card bordered={false} title="资源概览" className="operations-resource-card">
-            <div className="operations-resource-grid">
-              <div className="operations-resource-item">
-                <Typography.Text type="secondary">在售商品</Typography.Text>
-                <Typography.Text bold>
-                  {data.products.published} / {data.products.total}
-                </Typography.Text>
-              </div>
-              <div className="operations-resource-item">
-                <Typography.Text type="secondary">累计销量</Typography.Text>
-                <Typography.Text bold>{data.products.sold}</Typography.Text>
-              </div>
-              <div className="operations-resource-item">
-                <Typography.Text type="secondary">活跃用户</Typography.Text>
-                <Typography.Text bold>
-                  {data.users.active} / {data.users.total}
-                </Typography.Text>
-              </div>
-              <div className="operations-resource-item">
-                <Typography.Text type="secondary">已完成订单</Typography.Text>
-                <Typography.Text bold>{data.orders.byStatus.completed ?? 0}</Typography.Text>
-              </div>
+                  <Link to={item.to}>
+                    <Button type={item.urgent ? "primary" : "text"} size="small">
+                      {item.actionLabel}
+                      <IconRight />
+                    </Button>
+                  </Link>
+                </div>
+              ))}
             </div>
           </Card>
+        </section>
+      ) : null}
 
-          {visibleQuickLinks.length > 0 ? (
-            <Card bordered={false} title="快捷入口" className="operations-quick-card">
-              <div className="operations-quick-grid">
-                {visibleQuickLinks.map((item) => {
-                  const Icon = item.icon;
+      <section className="operations-section">
+        <SectionTitle>数据概览</SectionTitle>
+        <Row gutter={[16, 16]}>
+          <Col xs={24} lg={14}>
+            <Card bordered={false} title="订单状态分布" className="operations-status-card">
+              <Space direction="vertical" size={14} style={{ width: "100%" }}>
+                {STATUS_ORDER.map((status) => {
+                  const count = data.orders.byStatus[status] ?? 0;
+                  const total = data.orders.total || 1;
+                  const percent = Math.round((count / total) * 100);
+                  const meta = ORDER_STATUS_MAP[status];
                   return (
-                    <Link key={item.to} to={item.to} className="operations-quick-link">
-                      <span className="operations-quick-link__icon">
-                        <Icon />
-                      </span>
-                      <span className="operations-quick-link__text">
-                        <span className="operations-quick-link__label">{item.label}</span>
-                        <span className="operations-quick-link__desc">{item.desc}</span>
-                      </span>
-                    </Link>
+                    <div key={status} className="operations-status-row">
+                      <div className="operations-status-row__head">
+                        <Typography.Text>{meta.label}</Typography.Text>
+                        <Typography.Text type="secondary">
+                          {count} 单 · {percent}%
+                        </Typography.Text>
+                      </div>
+                      <div className="operations-status-bar">
+                        <div
+                          className={`operations-status-bar__fill ${STATUS_BAR_CLASS[status]}`}
+                          style={{ width: `${percent}%` }}
+                        />
+                      </div>
+                    </div>
                   );
                 })}
+              </Space>
+            </Card>
+          </Col>
+          <Col xs={24} lg={10}>
+            <Card bordered={false} title="资源统计" className="operations-metrics-card">
+              <div className="operations-metrics-list">
+                <MetricRow
+                  label="在售商品"
+                  value={`${data.products.published} / ${data.products.total}`}
+                />
+                <MetricRow label="累计销量" value={data.products.sold} />
+                <MetricRow
+                  label="活跃用户"
+                  value={`${data.users.active} / ${data.users.total}`}
+                />
+                <MetricRow
+                  label="已完成订单"
+                  value={data.orders.byStatus.completed ?? 0}
+                />
               </div>
             </Card>
-          ) : null}
-        </Col>
-      </Row>
+          </Col>
+        </Row>
+      </section>
+
+      {visibleShortcuts.length > 0 ? (
+        <section className="operations-section">
+          <SectionTitle>快捷入口</SectionTitle>
+          <div className="operations-shortcuts">
+            {visibleShortcuts.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link key={item.to} to={item.to} className="operations-shortcut">
+                  <Icon />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      ) : null}
     </Space>
   );
 }

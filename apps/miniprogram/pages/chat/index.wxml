@@ -14,7 +14,6 @@
     active-id="{{activeFilter}}"
     mode="scroll"
     show-empty="{{conversations.length === 0}}"
-    empty-icon="💬"
     empty-text="暂无会话"
     empty-hint="{{emptyHint}}"
     bind:tabchange="onTabChange"

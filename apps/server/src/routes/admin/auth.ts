@@ -1,6 +1,10 @@
 import { Router } from "express";
 import { z } from "zod";
-import { adminUserService } from "../../services/admin-users.js";
+import { getAdminUser } from "../../db/index.js";
+import { isServiceProviderRole } from "@meme/admin-rbac";
+import { adminUserService, adminSessionPayload } from "../../services/admin-users.js";
+import { adminPresenceService } from "../../services/admin-presence.js";
+import type { AuthedRequest } from "../../middleware/auth.js";
 import { getBearerToken, requireAdmin, resolveAdminSession } from "../../middleware/auth.js";
 
 const loginSchema = z.object({
@@ -25,11 +29,7 @@ adminAuthRouter.post("/login", async (req, res) => {
 
   res.json({
     token: result.token,
-    username: result.session.username,
-    displayName: result.session.displayName,
-    adminId: result.session.adminId,
-    roles: result.session.roles,
-    permissions: result.session.permissions,
+    ...adminSessionPayload(result.session),
   });
 });
 
@@ -40,14 +40,10 @@ const profileSchema = z.object({
 });
 
 adminAuthRouter.get("/me", requireAdmin, (req, res) => {
-  const admin = (req as typeof req & { admin: NonNullable<ReturnType<typeof resolveAdminSession>> }).admin;
+  const admin = (req as AuthedRequest).admin!;
   res.json({
     ok: true,
-    username: admin.username,
-    displayName: admin.displayName,
-    adminId: admin.adminId,
-    roles: admin.roles,
-    permissions: admin.permissions,
+    ...adminSessionPayload(admin),
   });
 });
 
@@ -64,7 +60,7 @@ adminAuthRouter.patch("/me", requireAdmin, async (req, res) => {
     return;
   }
 
-  const admin = (req as typeof req & { admin: NonNullable<ReturnType<typeof resolveAdminSession>> }).admin;
+  const admin = (req as AuthedRequest).admin!;
   const result = await adminUserService.updateSelfProfile(admin, {
     displayName,
     currentPassword,
@@ -79,11 +75,7 @@ adminAuthRouter.patch("/me", requireAdmin, async (req, res) => {
   res.json({
     ok: true,
     token: result.token,
-    username: result.session.username,
-    displayName: result.session.displayName,
-    adminId: result.session.adminId,
-    roles: result.session.roles,
-    permissions: result.session.permissions,
+    ...adminSessionPayload(result.session),
   });
 });
 
@@ -96,10 +88,24 @@ adminAuthRouter.get("/session", (req, res) => {
   }
   res.json({
     ok: true,
-    username: session.username,
-    displayName: session.displayName,
-    adminId: session.adminId,
-    roles: session.roles,
-    permissions: session.permissions,
+    ...adminSessionPayload(session),
   });
+});
+
+adminAuthRouter.post("/presence", requireAdmin, async (req, res) => {
+  const admin = (req as AuthedRequest).admin!;
+  const user = await getAdminUser(admin.adminId);
+  if (!user?.handlerId || !user.roles.some(isServiceProviderRole)) {
+    res.json({ ok: true, linked: false });
+    return;
+  }
+
+  await adminPresenceService.touch(admin.adminId, user.handlerId);
+  res.json({ ok: true, linked: true, online: true });
+});
+
+adminAuthRouter.post("/logout", requireAdmin, async (req, res) => {
+  const admin = (req as AuthedRequest).admin!;
+  await adminPresenceService.clear(admin.adminId);
+  res.json({ ok: true });
 });

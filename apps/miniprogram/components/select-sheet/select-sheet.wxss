@@ -121,13 +121,3 @@
   font-weight: 500;
   color: var(--color-text-muted);
 }
-
-.select-sheet-empty {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 48rpx 0;
-  font-size: 26rpx;
-  color: var(--color-text-muted);
-  text-align: center;
-}

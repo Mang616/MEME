@@ -1,3 +1,10 @@
+export type InviteActivityRewards = {
+  /** 邀请人获得的优惠券模板 ID（每成功邀请 1 人发放 1 次） */
+  inviterTemplateIds: string[];
+  /** 被邀请人获得的优惠券模板 ID（每人仅 1 次，被邀请人完成首单后） */
+  inviteeTemplateIds: string[];
+};
+
 export type InviteActivityPayload = {
   enabled: boolean;
   tag: string;
@@ -11,6 +18,7 @@ export type InviteActivityPayload = {
     headline: string;
     footnote: string;
   };
+  rewards: InviteActivityRewards;
 };
 
 export type InviteBannerPayload = Pick<
@@ -19,6 +27,7 @@ export type InviteBannerPayload = Pick<
 >;
 
 export declare const INVITE_ACTIVITY_DEFAULTS: InviteActivityPayload;
+export declare const INVITE_REWARD_DEFAULTS: InviteActivityRewards;
 
 export declare function normalizeInviteActivityPayload(
   raw?: Partial<InviteActivityPayload> | null,

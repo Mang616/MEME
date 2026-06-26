@@ -92,6 +92,17 @@
   border: 1rpx solid var(--color-border);
 }
 
+.chat-item__closed {
+  flex-shrink: 0;
+  font-size: 20rpx;
+  padding: 4rpx 12rpx;
+  border-radius: var(--radius-pill);
+  line-height: 1.2;
+  color: var(--color-text-muted);
+  background: var(--color-bg-elevated);
+  border: 1rpx solid var(--color-border);
+}
+
 .chat-item__time {
   margin-left: auto;
   font-size: 22rpx;

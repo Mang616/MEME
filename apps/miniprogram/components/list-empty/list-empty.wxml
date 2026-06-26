@@ -1,5 +1,10 @@
-<view class="list-empty">
-  <text class="list-empty__icon">{{icon}}</text>
-  <text class="list-empty__text">{{text}}</text>
+<view class="list-empty {{sizeClass}}">
+  <image
+    class="list-empty__image"
+    src="{{image}}"
+    mode="aspectFit"
+    lazy-load="{{true}}"
+  />
+  <text wx:if="{{text}}" class="list-empty__text">{{text}}</text>
   <text wx:if="{{hint}}" class="list-empty__hint">{{hint}}</text>
 </view>

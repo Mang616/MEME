@@ -34,7 +34,7 @@
           <product-card product="{{item}}" bind:tap="onProductTap" />
         </view>
       </block>
-      <text wx:else class="service-panel__empty-text">暂无商品</text>
+      <list-empty wx:else size="mini" text="暂无商品" />
     </view>
   </view>
 </view>

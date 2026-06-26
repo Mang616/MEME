@@ -1,4 +1,5 @@
 import { PLATFORM_CLUB_ID, buildDefaultPlatformClub } from "../constants/clubs.js";
+import { mergeHandlerLegacyProfile } from "../constants/handler-legacy-profiles.js";
 import { DEFAULT_PRODUCT_TAGS } from "../constants/product-tags.js";
 import { withCmsDefaults } from "./cms-defaults.js";
 import type { Database } from "../types.js";
@@ -21,10 +22,12 @@ export function normalizeDatabase(data: Partial<Database>): Database {
       published: product.published ?? true,
     })),
     clubs,
-    handlers: (data.handlers ?? []).map((handler) => ({
-      ...handler,
-      clubId: handler.clubId ?? PLATFORM_CLUB_ID,
-    })),
+    handlers: (data.handlers ?? []).map((handler) =>
+      mergeHandlerLegacyProfile({
+        ...handler,
+        clubId: handler.clubId ?? PLATFORM_CLUB_ID,
+      }),
+    ),
     categories: data.categories ?? { escort: [], companion: [] },
     productTags:
       data.productTags && data.productTags.length > 0
@@ -36,6 +39,7 @@ export function normalizeDatabase(data: Partial<Database>): Database {
     chatConversations: (data.chatConversations ?? []).map((conv) => ({
       ...conv,
       staffUnread: conv.staffUnread ?? 0,
+      closedAt: conv.closedAt ?? undefined,
     })),
     chatMessages: (data.chatMessages ?? []).map((msg) => ({ ...msg })),
     feedbacks: (data.feedbacks ?? []).map((item) => ({ ...item })),

@@ -113,12 +113,24 @@ async function appendMessage(conversationId, message) {
 async function sendTextMessage(conversationId, content) {
   const text = String(content || '').trim()
   if (!text) return null
-  const message = await request(`/chats/${encodeURIComponent(conversationId)}/messages`, {
-    method: 'POST',
-    body: { content: text },
-  })
-  await appendMessage(conversationId, message)
-  return message
+  try {
+    const message = await request(`/chats/${encodeURIComponent(conversationId)}/messages`, {
+      method: 'POST',
+      body: { content: text },
+    })
+    await appendMessage(conversationId, message)
+    return message
+  } catch (err) {
+    const message = err instanceof Error ? err.message : ''
+    if (message.includes('会话已结束')) {
+      const conv = conversations.find((c) => c.id === conversationId)
+      if (conv) conv.closedAt = conv.closedAt || 'closed'
+      const closedErr = new Error('CHAT_CLOSED')
+      closedErr.code = 'CHAT_CLOSED'
+      throw closedErr
+    }
+    throw err
+  }
 }
 
 function resetChatStore() {

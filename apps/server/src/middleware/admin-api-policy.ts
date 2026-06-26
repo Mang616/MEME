@@ -5,7 +5,11 @@ import { requireAnyPermission, requirePermission } from "./auth.js";
 export const adminApiPolicy = {
   operations: { read: ["operations.read"] as const },
   analytics: { read: ["analytics.read"] as const },
-  orders: { read: ["orders.read"] as const, write: ["orders.write"] as const },
+  orders: {
+    read: ["orders.read"] as const,
+    mine: ["orders.mine"] as const,
+    write: ["orders.write"] as const,
+  },
   products: { read: ["products.read"] as const, write: ["products.write"] as const },
   categories: { read: ["categories.read"] as const, write: ["categories.write"] as const },
   productTags: { read: ["product_tags.read"] as const, write: ["product_tags.write"] as const },

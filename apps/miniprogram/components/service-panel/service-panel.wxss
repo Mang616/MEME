@@ -152,10 +152,3 @@
 .service-panel__body--empty .service-panel__content {
   padding: 40rpx var(--service-grid-pad-x);
 }
-
-.service-panel__empty-text {
-  display: block;
-  text-align: center;
-  font-size: 26rpx;
-  color: var(--color-service-empty-fg);
-}

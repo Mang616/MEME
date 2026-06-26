@@ -20,6 +20,7 @@ export type CreateOrderInput = {
   assignedPlayer: string;
   remark?: string;
   userCouponId?: string;
+  serviceType?: import("../types.js").ServiceType;
   product: Pick<OrderProductSnapshot, "title" | "desc" | "price" | "cover" | "coverColor">;
 };
 
@@ -41,6 +42,7 @@ export function buildOrder(input: CreateOrderInput, pricing?: OrderPricing): Ord
   return {
     id: buildOrderId(),
     productId: input.productId,
+    serviceType: input.serviceType ?? "escort",
     status: "pending_accept",
     statusText: ORDER_STATUS_TEXT.pending_accept,
     orderTime: formatDateTime(),

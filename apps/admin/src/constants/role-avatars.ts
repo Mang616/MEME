@@ -10,10 +10,11 @@ export const ROLE_AVATARS: Record<AdminRole, string> = {
   operator: operatorAvatar,
   cs: csAvatar,
   handler: handlerAvatar,
+  companion: handlerAvatar,
 };
 
 /** 多角色账号取优先级最高的头像 */
-const SESSION_AVATAR_PRIORITY: AdminRole[] = ["super_admin", "operator", "cs", "handler"];
+const SESSION_AVATAR_PRIORITY: AdminRole[] = ["super_admin", "operator", "cs", "handler", "companion"];
 
 export function resolveSessionAvatar(roles: readonly AdminRole[]) {
   for (const role of SESSION_AVATAR_PRIORITY) {

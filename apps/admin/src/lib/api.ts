@@ -1,6 +1,6 @@
 const AUTH_KEY = "meme_admin_token";
 
-import { clearAdminSession, setAdminSession, type AdminSession } from "./session";
+import { clearAdminSession, setAdminSession, toAdminSession, type AdminSession } from "./session";
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? "/api";
 
@@ -124,6 +124,7 @@ export type LoginResponse = {
   adminId: string;
   roles: AdminSession["roles"];
   permissions: AdminSession["permissions"];
+  handlerId?: string;
 };
 
 export type ListResponse<T> = { items: T[]; total: number };
@@ -137,6 +138,7 @@ export type OrderStatus =
 export type OrderRow = {
   id: string;
   status: OrderStatus;
+  serviceType?: "escort" | "companion";
   productTitle: string;
   productCover: string;
   productCoverColor: string;
@@ -152,6 +154,7 @@ export type OrderRow = {
 /** 接单大厅专用：仅商品信息，不含用户/订单敏感字段 */
 export type HallOrderRow = {
   id: string;
+  serviceType?: "escort" | "companion";
   productTitle: string;
   productCover: string;
   productCoverColor: string;
@@ -173,6 +176,7 @@ export type ProductRow = {
   cover: string;
   coverColor: string;
   limitPerUser: number;
+  couponAllowed: boolean;
   published: boolean;
 };
 
@@ -205,6 +209,32 @@ export type HandlerRow = {
   clubKind: "platform" | "partner";
   isOwnClub: boolean;
   clubEnabled: boolean;
+  realName: string;
+  idNumber: string;
+  phone: string;
+  wechat: string;
+  alipay: string;
+  adminUserId: string;
+  adminUsername: string;
+  adminDisplayName: string;
+};
+
+export type CreateHandlerWithAccountBody = {
+  name: string;
+  level: HandlerRow["level"];
+  region: HandlerRow["region"];
+  serviceType: HandlerRow["serviceType"];
+  gender: HandlerRow["gender"];
+  clubId: string;
+  online?: boolean;
+  realName: string;
+  idNumber: string;
+  phone: string;
+  wechat: string;
+  alipay: string;
+  username: string;
+  password: string;
+  displayName?: string;
 };
 
 export type ClubRow = {
@@ -361,6 +391,7 @@ export type CouponsPayload = {
 };
 
 export type { InviteActivityPayload } from "@/lib/invite-activity";
+export type { RegisterActivityPayload } from "@/lib/register-activity";
 
 export type CategoriesMap = Record<
   "escort" | "companion",
@@ -375,6 +406,7 @@ export type StaffUserRow = {
   roleLabels: string[];
   enabled: boolean;
   createdAt: string;
+  handlerId?: string;
 };
 
 export type AdminRoleRow = {
@@ -458,6 +490,7 @@ export type ChatRow = {
   unread: number;
   online: boolean;
   linkedOrderId: string;
+  closedAt?: string;
 };
 
 export type ChatMessageRow = {
@@ -471,6 +504,7 @@ export type ChatMessageRow = {
 export type FeedbackRow = {
   id: string;
   userId: string;
+  userNickname: string;
   typeId: string;
   typeLabel: string;
   content: string;
@@ -491,19 +525,13 @@ export const api = {
       auth: false,
     }).then((result) => {
       setToken(result.token);
-      setAdminSession({
-        username: result.username,
-        displayName: result.displayName,
-        adminId: result.adminId ?? "",
-        roles: result.roles,
-        permissions: result.permissions,
-      });
+      setAdminSession(toAdminSession(result));
       return result;
     });
   },
 
   fetchMe() {
-    return request<LoginResponse & { ok: boolean; adminId: string }>("/admin/auth/me");
+    return request<LoginResponse & { ok: boolean }>("/admin/auth/me");
   },
 
   updateProfile(body: {
@@ -518,19 +546,35 @@ export const api = {
       if (result.token) {
         setToken(result.token);
       }
-      setAdminSession({
-        username: result.username,
-        displayName: result.displayName,
-        adminId: result.adminId,
-        roles: result.roles,
-        permissions: result.permissions,
-      });
+      setAdminSession(toAdminSession(result));
       return result;
     });
   },
 
+  touchAdminPresence() {
+    return request<{ ok: boolean; linked?: boolean; online?: boolean }>("/admin/auth/presence", {
+      method: "POST",
+    });
+  },
+
+  logoutAdmin() {
+    return request<{ ok: boolean }>("/admin/auth/logout", { method: "POST" });
+  },
+
   listOrders() {
     return request<ListResponse<OrderRow>>("/admin/orders");
+  },
+
+  listMyOrders() {
+    return request<ListResponse<OrderRow>>("/admin/orders/mine");
+  },
+
+  watchMyOrders() {
+    return request<ListResponse<OrderRow>>("/admin/orders/mine/watch");
+  },
+
+  listAfterSaleOrders() {
+    return request<ListResponse<OrderRow>>("/admin/orders/after-sales");
   },
 
   listOrderHall() {
@@ -701,14 +745,48 @@ export const api = {
     return request<void>(`/admin/clubs/${id}`, { method: "DELETE" });
   },
 
-  createHandler(body: Omit<HandlerRow, "id" | "clubName" | "clubKind" | "isOwnClub" | "clubEnabled">) {
+  createHandler(
+    body: Omit<
+      HandlerRow,
+      | "id"
+      | "clubName"
+      | "clubKind"
+      | "isOwnClub"
+      | "clubEnabled"
+      | "adminUserId"
+      | "adminUsername"
+      | "adminDisplayName"
+    >,
+  ) {
     return request<HandlerRow>("/admin/handlers", {
       method: "POST",
       body,
     });
   },
 
-  updateHandler(id: string, body: Partial<Omit<HandlerRow, "id">>) {
+  createHandlerWithAccount(body: CreateHandlerWithAccountBody) {
+    return request<HandlerRow>("/admin/handlers/with-account", {
+      method: "POST",
+      body,
+    });
+  },
+
+  updateHandler(
+    id: string,
+    body: Partial<
+      Omit<
+        HandlerRow,
+        | "id"
+        | "clubName"
+        | "clubKind"
+        | "isOwnClub"
+        | "clubEnabled"
+        | "adminUserId"
+        | "adminUsername"
+        | "adminDisplayName"
+      >
+    >,
+  ) {
     return request<HandlerRow>(`/admin/handlers/${id}`, {
       method: "PUT",
       body,
@@ -853,6 +931,22 @@ export const api = {
     });
   },
 
+  getRegisterActivity() {
+    return request<ContentPageRow & { payload: RegisterActivityPayload }>(
+      "/admin/content-pages/register-activity",
+    );
+  },
+
+  updateRegisterActivity(payload: RegisterActivityPayload) {
+    return request<ContentPageRow & { payload: RegisterActivityPayload }>(
+      "/admin/content-pages/register-activity",
+      {
+        method: "PUT",
+        body: { payload },
+      },
+    );
+  },
+
   getInviteActivity() {
     return request<ContentPageRow & { payload: InviteActivityPayload }>(
       "/admin/content-pages/invite-activity",
@@ -920,6 +1014,10 @@ export const api = {
     });
   },
 
+  closeChat(id: string) {
+    return request<ChatRow>(`/admin/chats/${id}/close`, { method: "POST" });
+  },
+
   listFeedbacks() {
     return request<ListResponse<FeedbackRow>>("/admin/feedbacks");
   },
@@ -933,14 +1031,19 @@ export const api = {
   },
 
   createStaffUser(
-    body: Pick<StaffUserRow, "username" | "displayName" | "roles" | "enabled"> & { password: string },
+    body: Pick<StaffUserRow, "username" | "displayName" | "roles" | "enabled"> & {
+      password: string;
+      handlerId?: string;
+    },
   ) {
     return request<StaffUserRow>("/admin/staff", { method: "POST", body });
   },
 
   updateStaffUser(
     id: string,
-    body: Partial<Pick<StaffUserRow, "displayName" | "roles" | "enabled">> & { password?: string },
+    body: Partial<Pick<StaffUserRow, "displayName" | "roles" | "enabled" | "handlerId">> & {
+      password?: string;
+    },
   ) {
     return request<StaffUserRow>(`/admin/staff/${id}`, { method: "PUT", body });
   },

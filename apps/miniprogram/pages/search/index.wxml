@@ -32,7 +32,6 @@
       class="search-page__list"
       layout="subpage"
       products="{{products}}"
-      empty-icon="🔍"
       empty-text="{{emptyText}}"
       empty-hint="{{hasKeyword && resultCount === 0 ? '试试缩短或更换关键词' : ''}}"
       bind:producttap="onProductTap"

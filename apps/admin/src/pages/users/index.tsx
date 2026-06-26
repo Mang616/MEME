@@ -135,12 +135,6 @@ export default function UsersPage() {
       ),
     },
     {
-      title: "手机号",
-      dataIndex: "phone",
-      width: 130,
-      render: (value: string) => <span className="users-table__cell">{value || "—"}</span>,
-    },
-    {
       title: "累计消费",
       dataIndex: "totalConsume",
       width: 100,

@@ -1,20 +1,17 @@
 import { useAdminLivePoll } from "@/contexts/AdminLivePollContext";
-
-export type NavMenuBadge = "hall" | "chatUnread";
+import type { NavMenuBadge } from "@/config/navigation";
+import { formatBadgeCount } from "@/lib/chat-utils";
 
 type AdminNavMenuLabelProps = {
   label: string;
   badge?: NavMenuBadge;
 };
 
-function formatCount(count: number) {
-  return count > 99 ? "99+" : String(count);
-}
-
 export function AdminNavMenuLabel({ label, badge }: AdminNavMenuLabelProps) {
-  const { hallPendingCount, chatUnreadCount } = useAdminLivePoll();
+  const { hallPendingCount, myOrdersPendingCount, chatUnreadCount } = useAdminLivePoll();
 
   const showHallBadge = badge === "hall" && hallPendingCount > 0;
+  const showMyOrdersBadge = badge === "myOrders" && myOrdersPendingCount > 0;
   const showChatDot = badge === "chatUnread" && chatUnreadCount > 0;
 
   return (
@@ -22,7 +19,12 @@ export function AdminNavMenuLabel({ label, badge }: AdminNavMenuLabelProps) {
       <span className="admin-menu-item__text">{label}</span>
       {showHallBadge ? (
         <span className="admin-menu-badge admin-menu-badge--count" aria-label={`${hallPendingCount} 单待抢`}>
-          {formatCount(hallPendingCount)}
+          {formatBadgeCount(hallPendingCount)}
+        </span>
+      ) : null}
+      {showMyOrdersBadge ? (
+        <span className="admin-menu-badge admin-menu-badge--count" aria-label={`${myOrdersPendingCount} 单待处理`}>
+          {formatBadgeCount(myOrdersPendingCount)}
         </span>
       ) : null}
       {showChatDot ? (

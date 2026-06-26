@@ -62,6 +62,7 @@ function enrichConversation(item) {
     ...conversationLevelFields(item),
     showUnread: item.unread > 0,
     unreadText: formatCountBadge(item.unread),
+    closedText: item.closedAt ? '已结束' : '',
   }
 }
 
@@ -70,7 +71,7 @@ function enrichChatRoomConversation(raw) {
     ...raw,
     ...conversationLevelFields(raw),
     typeLabel: getChatTypeLabel(raw.type, 'room'),
-    onlineText: formatOnlineStatus(raw.online),
+    onlineText: raw.closedAt ? '会话已结束' : formatOnlineStatus(raw.online),
   }
 }
 
@@ -129,12 +130,14 @@ function buildChatRoomState(conversationId) {
       conversation: null,
       messages: [],
       canSendOrder: false,
+      canSendText: false,
       orderPickerItems: [],
       inputPlaceholder: '',
     }
   }
 
   const isService = raw.type === CHAT_TYPE.SERVICE
+  const isClosed = Boolean(raw.closedAt)
   const ownerUserId = auth.getUser()?.userId
   const ownOrders = isService && ownerUserId
     ? listOrders().filter((order) => order.ownerUserId === ownerUserId)
@@ -142,10 +145,15 @@ function buildChatRoomState(conversationId) {
   return {
     conversation: enrichChatRoomConversation(raw),
     messages: getMessages(conversationId).map(enrichMessage),
-    canSendOrder: isService,
-    orderPickerItems: isService ? buildOrderPickerList(ownOrders) : [],
+    canSendOrder: isService && !isClosed,
+    canSendText: !isClosed,
+    orderPickerItems: isService && !isClosed ? buildOrderPickerList(ownOrders) : [],
     orderPickerVisible: false,
-    inputPlaceholder: isService ? '输入消息，或发送订单给客服' : '输入消息',
+    inputPlaceholder: isClosed
+      ? '会话已结束，仅可查看记录'
+      : isService
+        ? '输入消息，或发送订单给客服'
+        : '输入消息',
     draft: '',
   }
 }

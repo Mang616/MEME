@@ -9,7 +9,6 @@
     />
     <list-empty
       wx:if="{{products.length === 0}}"
-      icon="{{emptyIcon}}"
       text="{{emptyText}}"
       hint="{{emptyHint}}"
     />

@@ -1,7 +1,11 @@
 import { Router } from "express";
 import { z } from "zod";
+import { normalizeInviteActivityPayload } from "@meme/invite-activity-defaults";
+import { normalizeRegisterActivityPayload } from "@meme/register-activity-defaults";
 import { adminApiPolicy, requireRead, requireWrite } from "../../middleware/admin-api-policy.js";
+import { ensureCouponTemplates } from "../../services/coupons.js";
 import { contentPageService } from "../../services/cms.js";
+import type { ContentPage } from "../../types.js";
 
 export const adminContentPagesRouter = Router();
 
@@ -67,6 +71,18 @@ const couponsPayloadSchema = z.object({
   items: z.array(couponItemSchema),
 });
 
+const registerActivityPayloadSchema = z.object({
+  enabled: z.boolean().optional(),
+  title: z.string().min(1),
+  subtitle: z.string().min(1),
+  templateIds: z.array(z.string().min(1)),
+});
+
+const inviteActivityRewardsSchema = z.object({
+  inviterTemplateIds: z.array(z.string().min(1)),
+  inviteeTemplateIds: z.array(z.string().min(1)),
+});
+
 const inviteActivityPayloadSchema = z.object({
   enabled: z.boolean().optional(),
   tag: z.string().min(1),
@@ -80,6 +96,7 @@ const inviteActivityPayloadSchema = z.object({
     headline: z.string().min(1),
     footnote: z.string().min(1),
   }),
+  rewards: inviteActivityRewardsSchema.optional(),
 });
 
 function validatePayload(slug: string, payload: unknown) {
@@ -107,14 +124,56 @@ function validatePayload(slug: string, payload: unknown) {
     }
     return { ok: true as const, payload: parsed.data };
   }
+  if (slug === "register-activity") {
+    const parsed = registerActivityPayloadSchema.safeParse(payload);
+    if (!parsed.success) {
+      return { ok: false as const, message: "注册活动配置格式错误" };
+    }
+    return { ok: true as const, payload: normalizeRegisterActivityPayload(parsed.data) };
+  }
   if (slug === "invite-activity") {
     const parsed = inviteActivityPayloadSchema.safeParse(payload);
     if (!parsed.success) {
       return { ok: false as const, message: "邀请活动配置格式错误" };
     }
-    return { ok: true as const, payload: parsed.data };
+    return { ok: true as const, payload: normalizeInviteActivityPayload(parsed.data) };
   }
   return { ok: true as const, payload };
+}
+
+async function validateAndPreparePayload(slug: string, payload: unknown) {
+  const validated = validatePayload(slug, payload);
+  if (!validated.ok) return validated;
+  if (slug === "register-activity" || slug === "invite-activity") {
+    const nextPayload = await ensureActivityCouponTemplates(slug, validated.payload);
+    return { ok: true as const, payload: nextPayload };
+  }
+  return validated;
+}
+
+async function ensureActivityCouponTemplates(slug: string, payload: unknown) {
+  if (slug === "register-activity") {
+    const normalized = normalizeRegisterActivityPayload(payload as Parameters<typeof normalizeRegisterActivityPayload>[0]);
+    await ensureCouponTemplates(normalized.templateIds);
+    return normalized;
+  }
+  if (slug === "invite-activity") {
+    const normalized = normalizeInviteActivityPayload(payload as Parameters<typeof normalizeInviteActivityPayload>[0]);
+    await ensureCouponTemplates([
+      ...normalized.rewards.inviterTemplateIds,
+      ...normalized.rewards.inviteeTemplateIds,
+    ]);
+    return normalized;
+  }
+  return payload;
+}
+
+async function prepareContentPageResponse(slug: string, page: ContentPage) {
+  if (slug === "register-activity" || slug === "invite-activity") {
+    const payload = await ensureActivityCouponTemplates(slug, page.payload);
+    return { ...page, payload };
+  }
+  return page;
 }
 
 adminContentPagesRouter.get(
@@ -136,7 +195,7 @@ adminContentPagesRouter.get(
       res.status(404).json({ error: "NOT_FOUND", message: "内容不存在" });
       return;
     }
-    res.json(page);
+    res.json(await prepareContentPageResponse(slug, page));
   },
 );
 
@@ -152,7 +211,7 @@ adminContentPagesRouter.put(
     }
 
     if (parsed.data.payload !== undefined) {
-      const validated = validatePayload(slug, parsed.data.payload);
+      const validated = await validateAndPreparePayload(slug, parsed.data.payload);
       if (!validated.ok) {
         res.status(400).json({ error: "INVALID_BODY", message: validated.message });
         return;
@@ -165,6 +224,6 @@ adminContentPagesRouter.put(
       res.status(404).json({ error: "NOT_FOUND", message: "内容不存在" });
       return;
     }
-    res.json(page);
+    res.json(await prepareContentPageResponse(slug, page));
   },
 );

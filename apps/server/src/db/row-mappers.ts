@@ -79,6 +79,7 @@ export function productFromRow(row: ProductRow): Product {
     positiveRate: row.positiveRate,
     intro: row.intro,
     limitPerUser: row.limitPerUser,
+    couponAllowed: row.couponAllowed !== false,
     published: row.published,
   };
 }
@@ -104,6 +105,7 @@ export function productToRow(product: Product): typeof products.$inferInsert {
     positiveRate: product.positiveRate,
     intro: product.intro,
     limitPerUser: product.limitPerUser,
+    couponAllowed: product.couponAllowed !== false,
     published: product.published ?? true,
   };
 }
@@ -119,6 +121,11 @@ export function handlerFromRow(row: HandlerRow): Handler {
     avatar: row.avatar,
     online: row.online,
     clubId: row.clubId || PLATFORM_CLUB_ID,
+    realName: row.realName || undefined,
+    idNumber: row.idNumber || undefined,
+    phone: row.phone || undefined,
+    wechat: row.wechat || undefined,
+    alipay: row.alipay || undefined,
   };
 }
 
@@ -133,6 +140,11 @@ export function handlerToRow(handler: Handler): typeof handlers.$inferInsert {
     avatar: handler.avatar,
     online: handler.online,
     clubId: handler.clubId || PLATFORM_CLUB_ID,
+    realName: handler.realName ?? "",
+    idNumber: handler.idNumber ?? "",
+    phone: handler.phone ?? "",
+    wechat: handler.wechat ?? "",
+    alipay: handler.alipay ?? "",
   };
 }
 
@@ -237,6 +249,7 @@ export function userFromRow(row: UserRow): AppUser {
     wechatOpenid: row.wechatOpenid || undefined,
     inviteCode: row.inviteCode || "",
     inviterId: row.inviterId || "",
+    inviteRewardAt: row.inviteRewardAt || "",
   };
 }
 
@@ -257,6 +270,7 @@ export function userToRow(user: AppUser): typeof users.$inferInsert {
     wechatOpenid: user.wechatOpenid ?? "",
     inviteCode: user.inviteCode ?? "",
     inviterId: user.inviterId ?? "",
+    inviteRewardAt: user.inviteRewardAt ?? "",
   };
 }
 
@@ -383,6 +397,7 @@ export function chatConversationFromRow(row: ChatConversationRow): ChatConversat
     staffUnread: row.staffUnread ?? 0,
     online: row.online,
     sortOrder: row.sortOrder,
+    closedAt: row.closedAt || undefined,
   };
 }
 
@@ -407,6 +422,7 @@ export function chatConversationToRow(
     staffUnread: conv.staffUnread ?? 0,
     online: conv.online,
     sortOrder: conv.sortOrder ?? 0,
+    closedAt: conv.closedAt ?? "",
   };
 }
 
@@ -523,6 +539,7 @@ export function adminUserFromRow(row: AdminUserRow): AdminUser {
     roles: row.roles as AdminUser["roles"],
     enabled: row.enabled,
     createdAt: row.createdAt,
+    handlerId: row.handlerId || undefined,
   };
 }
 
@@ -535,6 +552,7 @@ export function adminUserToRow(user: AdminUser): typeof adminUsers.$inferInsert 
     roles: [...user.roles],
     enabled: user.enabled,
     createdAt: user.createdAt,
+    handlerId: user.handlerId ?? "",
   };
 }
 

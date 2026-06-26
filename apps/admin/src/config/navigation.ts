@@ -18,6 +18,7 @@ import {
   IconStar,
 } from "@arco-design/web-react/icon";
 import type { ComponentType } from "react";
+import { canWatchMyOrders } from "@/lib/order-routing";
 import type { AdminPermission } from "@/lib/session";
 import AfterSalesOrdersPage from "@/pages/after-sales/orders";
 import AnalyticsPage from "@/pages/analytics";
@@ -26,6 +27,7 @@ import BannersPage from "@/pages/content/banners";
 import VipConfigPage from "@/pages/content/vip-config";
 import VipActivityPage from "@/pages/activities/vip";
 import CouponsPage from "@/pages/activities/coupons";
+import RegisterActivityPage from "@/pages/activities/register";
 import InviteActivityPage from "@/pages/activities/invite";
 import CategoriesPage from "@/pages/categories";
 import ProductTagsPage from "@/pages/product-tags";
@@ -35,6 +37,7 @@ import ClubsPage from "@/pages/clubs";
 import OperationsPage from "@/pages/operations";
 import OrderHallPage from "@/pages/hall";
 import OrdersPage from "@/pages/orders";
+import MyOrdersPage from "@/pages/orders/mine";
 import OrderDispatchPage from "@/pages/orders/dispatch";
 import ProductsPage from "@/pages/products";
 import ServiceChatsPage from "@/pages/service/chats";
@@ -44,7 +47,7 @@ import PermissionsPage from "@/pages/system/permissions";
 import StaffUsersPage from "@/pages/system/staff";
 import RolesPage from "@/pages/system/roles";
 
-export type NavMenuBadge = "hall" | "chatUnread";
+export type NavMenuBadge = "hall" | "chatUnread" | "myOrders";
 
 export type NavItem = {
   path: string;
@@ -108,6 +111,14 @@ export const NAV_GROUPS: NavGroup[] = [
     label: "订单履约",
     icon: IconFile,
     items: [
+      {
+        path: "orders/mine",
+        label: "我的订单",
+        icon: IconUser,
+        element: MyOrdersPage,
+        permissions: ["orders.mine"],
+        navBadge: "myOrders",
+      },
       {
         path: "orders/dispatch",
         label: "订单派单",
@@ -237,6 +248,13 @@ export const NAV_GROUPS: NavGroup[] = [
         permissions: ["content.read"],
       },
       {
+        path: "activities/register",
+        label: "注册活动管理",
+        icon: IconIdcard,
+        element: RegisterActivityPage,
+        permissions: ["content.read"],
+      },
+      {
         path: "activities/invite",
         label: "邀请活动管理",
         icon: IconUserGroup,
@@ -313,7 +331,9 @@ export const NAV_PERMISSION_MAP: Record<string, AdminPermission[]> = Object.from
 export function canAccessNav(path: string, hasAny: (perms: AdminPermission[]) => boolean) {
   const required = NAV_PERMISSION_MAP[path];
   if (!required?.length) return true;
-  return hasAny(required);
+  if (!hasAny(required)) return false;
+  if (path === "orders/mine") return canWatchMyOrders();
+  return true;
 }
 
 export function filterNavGroups(hasAny: (perms: AdminPermission[]) => boolean): NavGroup[] {

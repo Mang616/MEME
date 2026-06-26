@@ -40,7 +40,7 @@ export default function ServiceFeedbacksPage() {
     return rows.filter((row) => {
       if (typeFilter !== "all" && row.typeLabel !== typeFilter) return false;
       return matchKeyword(
-        [row.id, row.userId, row.contact, row.content, row.typeLabel],
+        [row.id, row.userId, row.userNickname, row.contact, row.content, row.typeLabel],
         keyword,
       );
     });
@@ -59,8 +59,7 @@ export default function ServiceFeedbacksPage() {
       width: 110,
       render: (label: string) => <Tag color="arcoblue">{label}</Tag>,
     },
-    { title: "用户", dataIndex: "userId", width: 140 },
-    { title: "联系方式", dataIndex: "contact", width: 140 },
+    { title: "用户", dataIndex: "userNickname", width: 140, ellipsis: true },
     { title: "内容", dataIndex: "content", ellipsis: true },
     { title: "提交时间", dataIndex: "createdAt", width: 180 },
   ];

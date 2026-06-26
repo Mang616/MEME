@@ -5,6 +5,11 @@ const repository = require('./api/repository')
 const { listOrderCoupons } = require('./api/user-coupons')
 const { ORDER_REGIONS, AUTO_ASSIGN_LABEL } = require('./order-form')
 const { formatMoney, formatPriceDisplay, mapProductForDisplay } = require('./format')
+const { SERVICE_TYPES } = require('./catalog-meta')
+
+const SERVICE_TYPE_LABELS = Object.fromEntries(
+  SERVICE_TYPES.map((item) => [item.id, item.tabLabel]),
+)
 const { formatLimitText, getMaxPurchaseQty } = require('./product-limit')
 const { toOrderCreateHandlerFields } = require('./handler-view-model')
 const { markOrdersListDirty } = require('./orders-refresh')
@@ -14,6 +19,7 @@ const {
   calcTotalPaid,
   enrichCouponOption,
   pickBestCoupon,
+  isProductCouponAllowed,
 } = require('./coupons')
 
 function buildRegionSheetOptions(regionOptions) {
@@ -69,6 +75,7 @@ function buildProductCard(raw) {
     cover: raw.cover || '',
     coverColor: raw.coverColor || '',
     serviceType: raw.serviceType || 'escort',
+    serviceTypeLabel: SERVICE_TYPE_LABELS[raw.serviceType] || SERVICE_TYPE_LABELS.escort,
     limitText: formatLimitText(raw.limitPerUser),
   }
 }
@@ -86,6 +93,7 @@ function buildOrderCreateState(productId) {
   const base = {
     found: true,
     product,
+    couponAllowed: isProductCouponAllowed(raw),
     quantity,
     maxQty,
     canDecrease: false,
@@ -120,6 +128,21 @@ function buildOrderCreateState(productId) {
 async function loadOrderCoupons(state) {
   if (!state.found || !state.product) return state
 
+  const couponAllowed = state.couponAllowed !== false
+  if (!couponAllowed) {
+    const cleared = {
+      ...state,
+      couponOptions: [],
+      couponLoading: false,
+      selectedCouponId: '',
+      showCouponPicker: false,
+    }
+    return withSheetOptions({
+      ...cleared,
+      ...buildPricingFields(cleared),
+    })
+  }
+
   const subtotal = calcSubtotal(state.product.price, state.quantity)
   let items = []
   try {
@@ -129,8 +152,10 @@ async function loadOrderCoupons(state) {
   }
 
   const serviceType = state.product.serviceType || 'escort'
-  const couponOptions = items.map((item) => enrichCouponOption(item, subtotal, serviceType))
-  const best = pickBestCoupon(items, subtotal, serviceType)
+  const couponOptions = items.map((item) =>
+    enrichCouponOption(item, subtotal, serviceType, couponAllowed),
+  )
+  const best = pickBestCoupon(items, subtotal, serviceType, couponAllowed)
   const selectedCouponId = state.selectedCouponId || best?.id || ''
 
   const next = {
@@ -153,13 +178,14 @@ function patchQuantity(state, delta) {
 
   const subtotal = calcSubtotal(state.product.price, quantity)
   const serviceType = state.product.serviceType || 'escort'
+  const couponAllowed = state.couponAllowed !== false
   const couponOptions = (state.couponOptions || []).map((item) =>
-    enrichCouponOption(item, subtotal, serviceType),
+    enrichCouponOption(item, subtotal, serviceType, couponAllowed),
   )
-  let selectedCouponId = state.selectedCouponId
+  let selectedCouponId = couponAllowed ? state.selectedCouponId : ''
   const selected = couponOptions.find((item) => item.id === selectedCouponId)
   if (!selected || !selected.applicable) {
-    const best = couponOptions.find((item) => item.applicable)
+    const best = couponAllowed ? couponOptions.find((item) => item.applicable) : null
     selectedCouponId = best ? best.id : ''
   }
 
@@ -203,7 +229,9 @@ function validateForm(state) {
   const gameId = String(state.gameId || '').trim()
   if (!gameId) return '请填写游戏 ID'
   if (gameId.length < 2) return '游戏 ID 至少 2 个字符'
-  if (!state.autoAssignPlayer && !state.handlerId) return '请选择打手'
+  if (!state.autoAssignPlayer && !state.handlerId) {
+    return state.product?.serviceType === 'companion' ? '请选择陪玩' : '请选择打手'
+  }
   return ''
 }
 
@@ -218,6 +246,10 @@ async function submitOrderCreate(state) {
     throw new Error(err)
   }
 
+  if (state.selectedCouponId && state.couponAllowed === false) {
+    throw new Error('该商品不支持使用优惠券')
+  }
+
   const payload = {
     productId: state.product.id,
     quantity: state.quantity,
@@ -228,7 +260,7 @@ async function submitOrderCreate(state) {
     product: state.product,
   }
 
-  if (state.selectedCouponId) {
+  if (state.selectedCouponId && state.couponAllowed !== false) {
     payload.userCouponId = state.selectedCouponId
   }
 

@@ -19,7 +19,12 @@ export async function hydrateSession() {
   }
 }
 
-export function logout() {
+export async function logout() {
+  try {
+    await api.logoutAdmin();
+  } catch {
+    // ignore offline logout failures
+  }
   clearToken();
 }
 

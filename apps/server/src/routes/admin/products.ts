@@ -22,6 +22,7 @@ const productBodySchema = z.object({
   positiveRate: z.number().int().min(0).max(100).default(90),
   intro: z.string().default(""),
   limitPerUser: z.number().int().nonnegative().default(0),
+  couponAllowed: z.boolean().default(true),
   published: z.boolean().default(true),
 });
 

@@ -2,7 +2,7 @@ import "dotenv/config";
 import cors from "cors";
 import express, { type NextFunction, type Request, type Response } from "express";
 import { PORT, USE_MYSQL, CORS_ORIGINS, PUBLIC_API_URL } from "./config.js";
-import { seedDatabaseIfEmpty, ensureCmsSeeded, ensureExtendedSeeded, ensureMissingContentPages, ensureProductTagsSeeded, ensureAdminUsersSeeded, ensureUsersVipSynced, ensureUserCouponsSeeded, ensureUserInviteCodesSeeded, storageLabel } from "./db/index.js";
+import { seedDatabaseIfEmpty, ensureCmsSeeded, ensureExtendedSeeded, ensureMissingContentPages, ensureProductTagsSeeded, ensureAdminUsersSeeded, ensureHandlerLegacyProfiles, ensureChatConversationsMigrated, ensureOrderServiceTypes, ensureRbacHandlerDefaults, ensureUsersVipSynced, ensureUserCouponsSeeded, ensureUserInviteCodesSeeded, storageLabel } from "./db/index.js";
 import { requireAdmin } from "./middleware/auth.js";
 import { adminAnalyticsRouter } from "./routes/admin/analytics.js";
 import { adminAnnouncementsRouter } from "./routes/admin/announcements.js";
@@ -106,6 +106,10 @@ async function start() {
     await ensureUserInviteCodesSeeded();
     await ensureProductTagsSeeded();
     await ensureAdminUsersSeeded();
+    await ensureHandlerLegacyProfiles();
+    await ensureChatConversationsMigrated();
+    await ensureOrderServiceTypes();
+    await ensureRbacHandlerDefaults();
     await rolePermissionService.load();
   } catch (err) {
     console.error("[meme-server] database init failed:", err);

@@ -37,16 +37,21 @@ function buildHandlerList(activeFilter, selectedId) {
     .map((item) => buildHandlerCardViewModel(item, selectedId))
 }
 
-function buildHandlerSelectState(selectedId = '', activeFilter = FILTER_ALL) {
-  const handlers = buildHandlerList(activeFilter, selectedId)
+function buildHandlerSelectState(selectedId = '', activeFilter = FILTER_ALL, lockedServiceType = '') {
+  const initialFilter =
+    lockedServiceType === 'escort' || lockedServiceType === 'companion'
+      ? lockedServiceType
+      : activeFilter
+  const handlers = buildHandlerList(initialFilter, selectedId)
   return {
     filterTabs: HANDLER_FILTER_TABS,
-    activeFilter,
+    activeFilter: initialFilter,
+    lockedServiceType,
     handlers,
     selectedId,
     resultCount: handlers.length,
-    emptyText: '暂无符合条件的打手',
-    emptyHint: '试试切换上方筛选',
+    emptyText: lockedServiceType === 'companion' ? '暂无符合条件的陪玩' : '暂无符合条件的打手',
+    emptyHint: lockedServiceType ? '当前商品仅支持该类型服务者' : '试试切换上方筛选',
   }
 }
 

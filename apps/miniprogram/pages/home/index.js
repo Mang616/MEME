@@ -9,6 +9,7 @@ const {
 } = require('../../utils/home-banner')
 const {
   buildCatalogState,
+  buildHomePageState,
   syncHomeProducts,
   loadHomePageData,
   loadHomeAnnouncement,
@@ -52,7 +53,13 @@ Page({
   },
 
   loadHomeState({ bannersOnly = false } = {}) {
-    if (bannersOnly && this.data.bannerCount > 0) return
+    if (bannersOnly) {
+      if (this.data.bannerCount > 0) return
+      if (!this._homeReady) return
+    }
+    if (this._homeLoading) return
+
+    this._homeLoading = true
     void loadHomePageData(api, this.data.activeType, {
       previousBanners: this.data.banners,
       previousProducts: this.data.products,
@@ -60,6 +67,18 @@ Page({
       .then((state) => this.applyHomeState(state, { bannersOnly }))
       .catch((err) => {
         console.warn('[home] load failed', err)
+        this.applyHomeState(
+          buildHomePageState(
+            this.data.activeType,
+            api.getBanners(),
+            this.data.banners,
+            this.data.products,
+          ),
+        )
+      })
+      .finally(() => {
+        this._homeLoading = false
+        this._homeReady = true
       })
   },
 
@@ -78,6 +97,7 @@ Page({
 
   onShow() {
     this.setData(syncHomeProducts(this.data.activeType, this.data.products))
+    if (!this._homeReady) return
     this.loadHomeState({ bannersOnly: true })
   },
 

@@ -13,6 +13,7 @@ export type AdminTokenPayload = {
   username: string;
   displayName: string;
   roles: AdminRole[];
+  handlerId?: string;
   ts: number;
 };
 
@@ -43,13 +44,16 @@ function verifyPayload<T>(token: string, prefix: string): T | null {
   }
 }
 
-export function signAdminToken(session: Pick<AdminSession, "adminId" | "username" | "displayName" | "roles">) {
+export function signAdminToken(
+  session: Pick<AdminSession, "adminId" | "username" | "displayName" | "roles" | "handlerId">,
+) {
   return signPayload(
     {
       adminId: session.adminId,
       username: session.username,
       displayName: session.displayName,
       roles: session.roles,
+      handlerId: session.handlerId ?? "",
       ts: Date.now(),
     },
     TOKEN_PREFIX,
@@ -93,6 +97,7 @@ export function resolveAdminSession(token: string): AdminSession | null {
     displayName: payload.displayName || payload.username,
     roles,
     permissions: permissionsForRoles(roles),
+    handlerId: payload.handlerId || undefined,
   };
 }
 

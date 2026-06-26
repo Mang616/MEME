@@ -109,13 +109,15 @@ userRouter.get("/coupons", requireUser, async (req, res) => {
 
   let serviceType: import("../types.js").ServiceType = "escort";
   let subtotal = 0;
+  let couponAllowed = true;
   const product = await getProduct(productId);
   if (product) {
     serviceType = product.serviceType;
     subtotal = calcOrderSubtotal(product.price, quantity);
+    couponAllowed = product.couponAllowed !== false;
   }
 
-  const items = await listAvailableUserCoupons(userId, { serviceType, subtotal });
+  const items = await listAvailableUserCoupons(userId, { serviceType, subtotal, couponAllowed });
   res.json({ items, total: items.length });
 });
 

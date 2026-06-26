@@ -8,10 +8,6 @@ Component({
       type: Array,
       value: [],
     },
-    emptyIcon: {
-      type: String,
-      value: '📦',
-    },
     emptyText: {
       type: String,
       value: '暂无商品',

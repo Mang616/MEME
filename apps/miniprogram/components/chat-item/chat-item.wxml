@@ -17,8 +17,9 @@
         />
         <text class="chat-item__name">{{conversation.name}}</text>
       </view>
-      <text class="chat-item__tag chat-item__tag--{{conversation.type}}">{{conversation.typeLabel}}</text>
-      <text class="chat-item__time">{{conversation.lastTime}}</text>
+        <text class="chat-item__tag chat-item__tag--{{conversation.type}}">{{conversation.typeLabel}}</text>
+        <text wx:if="{{conversation.closedText}}" class="chat-item__closed">{{conversation.closedText}}</text>
+        <text class="chat-item__time">{{conversation.lastTime}}</text>
     </view>
     <view class="chat-item__foot">
       <text class="chat-item__preview">{{conversation.lastMessage}}</text>

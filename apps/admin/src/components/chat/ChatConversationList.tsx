@@ -1,6 +1,6 @@
-import { Empty, Input, Typography } from "@arco-design/web-react";
+import { Empty, Input, Tag, Typography } from "@arco-design/web-react";
 import type { ChatRow } from "@/lib/api";
-import { formatUnreadBadge } from "@/lib/chat-utils";
+import { chatDisplayName, formatUnreadBadge, isChatTerminated } from "@/lib/chat-utils";
 import { ChatAvatar } from "./ChatAvatar";
 
 type ChatConversationListProps = {
@@ -53,10 +53,15 @@ export function ChatConversationList({
                 className={`chat-conv-item${active ? " chat-conv-item--active" : ""}`}
                 onClick={() => onSelect(row)}
               >
-                <ChatAvatar name={row.name} />
+                <ChatAvatar name={chatDisplayName(row)} />
                 <div className="chat-conv-item__body">
                   <div className="chat-conv-item__top">
-                    <span className="chat-conv-item__name">{row.name}</span>
+                    <span className="chat-conv-item__name">{chatDisplayName(row)}</span>
+                    {isChatTerminated(row) ? (
+                      <Tag size="small" color="gray" style={{ marginLeft: 6 }}>
+                        已终止
+                      </Tag>
+                    ) : null}
                     <span className="chat-conv-item__time">{row.lastTime}</span>
                   </div>
                   <div className="chat-conv-item__bottom">

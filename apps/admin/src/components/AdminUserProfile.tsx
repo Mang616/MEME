@@ -1,6 +1,6 @@
-import { Space, Tag, Typography } from "@arco-design/web-react";
+import { Space, Typography } from "@arco-design/web-react";
 import { AdminSessionAvatar } from "@/components/AdminSessionAvatar";
-import { ADMIN_ROLE_LABELS } from "@/constants/admin-rbac";
+import { AdminRoleTag } from "@/components/AdminRoleTag";
 import type { AdminSession } from "@/lib/session";
 
 type AdminUserProfileProps = {
@@ -23,9 +23,7 @@ export function AdminUserProfile({ session, avatarSize = 40, showTags = true }: 
         {showTags ? (
           <Space wrap size={4} style={{ marginTop: 8 }}>
             {session.roles.map((role) => (
-              <Tag key={role} color="arcoblue">
-                {ADMIN_ROLE_LABELS[role] ?? role}
-              </Tag>
+              <AdminRoleTag key={role} role={role} />
             ))}
           </Space>
         ) : null}

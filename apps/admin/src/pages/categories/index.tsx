@@ -14,6 +14,7 @@ import type { ColumnProps } from "@arco-design/web-react/es/Table";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ListFilterBar } from "@/components/ListFilterBar";
 import { DEFAULT_TABLE_PAGINATION, PageShell } from "@/components/PageShell";
+import { ServiceTypeTag } from "@/components/ServiceTypeTag";
 import { SERVICE_TYPE_LABELS } from "@/constants/labels";
 import { matchKeyword, matchSelect } from "@/lib/list-filter";
 import { api, type CategoryRow } from "@/lib/api";
@@ -131,7 +132,7 @@ export default function CategoriesPage() {
       title: "类型",
       dataIndex: "serviceType",
       width: 100,
-      render: (type: CategoryRow["serviceType"]) => SERVICE_TYPE_LABELS[type],
+      render: (type: CategoryRow["serviceType"]) => <ServiceTypeTag serviceType={type} />,
     },
     { title: "分类 ID", dataIndex: "id", width: 140 },
     { title: "名称", dataIndex: "name" },

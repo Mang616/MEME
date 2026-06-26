@@ -13,6 +13,7 @@
     "@meme/admin-rbac": "*",
     "@meme/vip-activity-defaults": "*",
     "@meme/invite-activity-defaults": "*",
+    "@meme/register-activity-defaults": "*",
     "echarts": "^6.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

@@ -1,28 +1,16 @@
 import { Message } from "@arco-design/web-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ADMIN_CHAT_POLL_MS } from "@/constants/polling";
 import { useAdminLivePoll } from "@/contexts/AdminLivePollContext";
-import { sumChatUnread } from "@/lib/chat-utils";
-import { api, type ChatMessageRow, type ChatRow } from "@/lib/api";
+import { usePollingGuard } from "@/hooks/usePollingGuard";
+import {
+  isChatTerminated,
+  isPlayerChat,
+  matchChatRow,
+  sumChatUnread,
+} from "@/lib/chat-utils";
+import { api, ApiError, type ChatMessageRow, type ChatRow } from "@/lib/api";
 import { hasPermission } from "@/lib/session";
-
-const CHAT_POLL_MS = 5_000;
-
-function matchChatRow(row: ChatRow, keyword: string) {
-  const q = keyword.trim().toLowerCase();
-  if (!q) return true;
-  return [
-    row.name,
-    row.ownerNickname,
-    row.ownerPhone,
-    row.ownerUserId,
-    row.handlerName,
-    row.lastMessage,
-    row.linkedOrderId,
-    row.typeLabel,
-  ]
-    .filter(Boolean)
-    .some((part) => String(part).toLowerCase().includes(q));
-}
 
 export function useChatWorkspace() {
   const [loading, setLoading] = useState(true);
@@ -30,13 +18,25 @@ export function useChatWorkspace() {
   const [keyword, setKeyword] = useState("");
   const [detailLoading, setDetailLoading] = useState(false);
   const [replying, setReplying] = useState(false);
+  const [closing, setClosing] = useState(false);
   const [activeChat, setActiveChat] = useState<ChatRow | null>(null);
   const [messages, setMessages] = useState<ChatMessageRow[]>([]);
   const [draft, setDraft] = useState("");
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
-  const pollingRef = useRef(false);
-  const canReply = hasPermission("chats.reply");
-  const { refresh: refreshNavIndicators, reportChatUnread } = useAdminLivePoll();
+  const runPoll = usePollingGuard();
+  const canReply = hasPermission("chats.reply") && !isChatTerminated(activeChat ?? {});
+  const { reportChatUnread } = useAdminLivePoll();
+
+  const patchRows = useCallback(
+    (updater: (prev: ChatRow[]) => ChatRow[]) => {
+      setRows((prev) => {
+        const next = updater(prev);
+        reportChatUnread(sumChatUnread(next));
+        return next;
+      });
+    },
+    [reportChatUnread],
+  );
 
   const syncRows = useCallback(
     (items: ChatRow[]) => {
@@ -76,14 +76,11 @@ export function useChatWorkspace() {
         const detail = await api.getChatMessages(row.id);
         setActiveChat(detail.conversation);
         setMessages(detail.messages);
-        setRows((prev) => {
-          const next = prev.map((item) =>
+        patchRows((prev) =>
+          prev.map((item) =>
             item.id === row.id ? { ...detail.conversation, unread: 0 } : item,
-          );
-          reportChatUnread(sumChatUnread(next));
-          return next;
-        });
-        refreshNavIndicators();
+          ),
+        );
       } catch {
         if (!silent) {
           Message.error("加载消息失败");
@@ -93,7 +90,7 @@ export function useChatWorkspace() {
         if (!silent) setDetailLoading(false);
       }
     },
-    [refreshNavIndicators, reportChatUnread],
+    [patchRows],
   );
 
   const reloadActiveConversation = useCallback(
@@ -116,15 +113,11 @@ export function useChatWorkspace() {
   );
 
   const poll = useCallback(async () => {
-    if (pollingRef.current) return;
-    pollingRef.current = true;
-    try {
+    await runPoll(async () => {
       const items = await loadList(true);
       await reloadActiveConversation(items, true);
-    } finally {
-      pollingRef.current = false;
-    }
-  }, [loadList, reloadActiveConversation]);
+    });
+  }, [loadList, reloadActiveConversation, runPoll]);
 
   useEffect(() => {
     void loadList().then((items) => {
@@ -133,7 +126,7 @@ export function useChatWorkspace() {
   }, [loadList, loadMessages]);
 
   useEffect(() => {
-    const timer = window.setInterval(() => void poll(), CHAT_POLL_MS);
+    const timer = window.setInterval(() => void poll(), ADMIN_CHAT_POLL_MS);
     return () => window.clearInterval(timer);
   }, [poll]);
 
@@ -150,17 +143,14 @@ export function useChatWorkspace() {
 
   const refresh = useCallback(async () => {
     const items = await loadList();
-    if (activeChat?.id) {
-      const hit = items.find((item) => item.id === activeChat.id);
-      if (hit) {
-        void loadMessages(hit);
-        return;
-      }
-    }
-    if (items[0]) {
-      void loadMessages(items[0]);
+    const activeId = activeChat?.id;
+    const hit = activeId ? items.find((item) => item.id === activeId) : items[0];
+
+    if (hit) {
+      void loadMessages(hit);
       return;
     }
+
     setActiveChat(null);
     setMessages([]);
   }, [activeChat?.id, loadList, loadMessages]);
@@ -172,21 +162,38 @@ export function useChatWorkspace() {
       const message = await api.replyChat(activeChat.id, draft.trim());
       setMessages((prev) => [...prev, message]);
       setDraft("");
-      setRows((prev) => {
-        const next = prev.map((row) =>
+      patchRows((prev) =>
+        prev.map((row) =>
           row.id === activeChat.id
             ? { ...row, lastMessage: message.content, lastTime: message.time, unread: 0 }
             : row,
-        );
-        reportChatUnread(sumChatUnread(next));
-        return next;
-      });
-    } catch {
-      Message.error("发送失败");
+        ),
+      );
+    } catch (err) {
+      const message =
+        err instanceof ApiError && err.code === "CHAT_CLOSED"
+          ? "会话已结束，无法发送消息"
+          : "发送失败";
+      Message.error(message);
     } finally {
       setReplying(false);
     }
-  }, [activeChat, canReply, draft, reportChatUnread]);
+  }, [activeChat, canReply, draft, patchRows]);
+
+  const handleCloseChat = useCallback(async () => {
+    if (!activeChat || isChatTerminated(activeChat) || !isPlayerChat(activeChat)) return;
+    setClosing(true);
+    try {
+      const row = await api.closeChat(activeChat.id);
+      setActiveChat(row);
+      patchRows((prev) => prev.map((item) => (item.id === row.id ? row : item)));
+      Message.success("会话已终止");
+    } catch (err) {
+      Message.error(err instanceof ApiError ? err.message : "终止会话失败");
+    } finally {
+      setClosing(false);
+    }
+  }, [activeChat, patchRows]);
 
   return {
     loading,
@@ -202,9 +209,11 @@ export function useChatWorkspace() {
     draft,
     setDraft,
     canReply,
+    closing,
     messagesEndRef,
     loadMessages,
     refresh,
     handleReply,
+    handleCloseChat,
   };
 }

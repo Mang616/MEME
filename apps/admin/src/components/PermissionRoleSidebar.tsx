@@ -1,5 +1,6 @@
 import { Tag, Typography } from "@arco-design/web-react";
 import { AdminRoleAvatar } from "@/components/AdminRoleAvatar";
+import { AdminRoleTag } from "@/components/AdminRoleTag";
 import { ADMIN_ROLE_DESCRIPTIONS, permissionsEqual } from "@/constants/admin-rbac";
 import type { AdminRoleRow } from "@/lib/api";
 import type { PermissionMatrixState } from "@/lib/rbac-ui";
@@ -44,7 +45,7 @@ export function PermissionRoleSidebar({
                 <AdminRoleAvatar role={row.id} size={36} />
                 <div className="permission-role-item__head-text">
                   <div className="permission-role-item__top">
-                    <span className="permission-role-item__name">{row.label}</span>
+                    <AdminRoleTag role={row.id} />
                     {dirty ? <span className="permission-role-item__dot" title="未保存" /> : null}
                   </div>
                   <span className="permission-role-item__desc">{ADMIN_ROLE_DESCRIPTIONS[row.id]}</span>

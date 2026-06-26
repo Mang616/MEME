@@ -1,20 +1,24 @@
 /**
- * 页面加载前确保 API 缓存就绪
+ * 页面加载前确保 API 缓存就绪（接口失败时仍用本地/缓存数据渲染）
  */
 const api = require('./api/index')
-const { showTip } = require('./ui')
 
-function createWithGuard(ensureFn, fallbackMessage) {
-  return (task) =>
-    ensureFn().then(task).catch((err) => {
-      showTip(err.message || fallbackMessage)
-      throw err
+function withResource(ensureFn, label, task) {
+  return ensureFn()
+    .catch((err) => {
+      console.warn(`[page-data] ${label}`, err.message)
     })
+    .then(() => task())
 }
 
-const withCatalog = createWithGuard(() => api.ensureCatalog(), '商品加载失败')
-const withOrders = createWithGuard(() => api.ensureOrders(), '订单加载失败')
-const withHandlers = createWithGuard(() => api.ensureHandlers(), '打手加载失败')
+const withCatalog = (task) =>
+  withResource(() => api.ensureCatalog(), 'catalog unavailable', task)
+
+const withOrders = (task) =>
+  withResource(() => api.ensureOrders(), 'orders unavailable', task)
+
+const withHandlers = (task) =>
+  withResource(() => api.ensureHandlers(), 'handlers unavailable', task)
 
 module.exports = {
   withCatalog,

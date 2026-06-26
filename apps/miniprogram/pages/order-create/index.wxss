@@ -42,6 +42,30 @@
   gap: 8rpx;
 }
 
+.order-create__product-head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.order-create__product-type {
+  align-self: flex-start;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.order-create__product-type--escort {
+  color: #ffb86c;
+  background: rgba(255, 125, 0, 0.16);
+}
+
+.order-create__product-type--companion {
+  color: #e8a0ff;
+  background: rgba(200, 100, 255, 0.16);
+}
+
 .order-create__product-title {
   font-size: 30rpx;
   font-weight: 600;
@@ -324,4 +348,11 @@
 
 .order-create-footer__submit:active {
   opacity: 0.88;
+}
+
+.order-create__coupon-disabled {
+  display: block;
+  font-size: 26rpx;
+  color: var(--color-text-muted);
+  line-height: 1.5;
 }

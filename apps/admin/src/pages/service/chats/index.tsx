@@ -20,6 +20,8 @@ export default function ServiceChatsPage() {
     draft,
     setDraft,
     canReply,
+    closing,
+    handleCloseChat,
     messagesEndRef,
     loadMessages,
     refresh,
@@ -56,6 +58,8 @@ export default function ServiceChatsPage() {
           replying={replying}
           draft={draft}
           canReply={canReply}
+          closing={closing}
+          onCloseChat={() => void handleCloseChat()}
           messagesEndRef={messagesEndRef}
           onDraftChange={setDraft}
           onSend={() => void handleReply()}

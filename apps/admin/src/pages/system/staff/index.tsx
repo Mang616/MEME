@@ -13,11 +13,15 @@ import {
 } from "@arco-design/web-react";
 import type { ColumnProps } from "@arco-design/web-react/es/Table";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { AdminRoleTag } from "@/components/AdminRoleTag";
 import { AdminSessionAvatar } from "@/components/AdminSessionAvatar";
 import { ListFilterBar } from "@/components/ListFilterBar";
 import { DEFAULT_TABLE_PAGINATION, PageShell } from "@/components/PageShell";
 import { matchBoolFilter, matchKeyword } from "@/lib/list-filter";
-import { api, type StaffUserRow } from "@/lib/api";
+import { filterHandlersByServiceType } from "@/lib/handlers-filter";
+import { serviceTypeForRoles } from "@/lib/service-provider-ui";
+import { isServiceProviderRole } from "@meme/admin-rbac";
+import { api, type HandlerRow, type StaffUserRow } from "@/lib/api";
 import type { AdminRole } from "@/lib/session";
 
 type StaffFormValues = {
@@ -26,6 +30,7 @@ type StaffFormValues = {
   displayName: string;
   roles: AdminRole[];
   enabled: boolean;
+  handlerId?: string;
 };
 
 const emptyForm: StaffFormValues = {
@@ -46,7 +51,16 @@ export default function StaffUsersPage() {
   const [keyword, setKeyword] = useState("");
   const [roleFilter, setRoleFilter] = useState<AdminRole | "all">("all");
   const [enabledFilter, setEnabledFilter] = useState<"all" | "yes" | "no">("all");
+  const [handlerOptions, setHandlerOptions] = useState<HandlerRow[]>([]);
   const [form] = Form.useForm<StaffFormValues>();
+  const watchedRoles = Form.useWatch("roles", form) as AdminRole[] | undefined;
+  const showHandlerLink = watchedRoles?.some(isServiceProviderRole) ?? false;
+  const providerServiceType = serviceTypeForRoles(watchedRoles ?? []);
+
+  useEffect(() => {
+    if (!modalOpen || !showHandlerLink) return;
+    void api.listHandlers().then((data) => setHandlerOptions(data.items)).catch(() => {});
+  }, [modalOpen, showHandlerLink]);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -96,6 +110,7 @@ export default function StaffUsersPage() {
       displayName: row.displayName,
       roles: row.roles,
       enabled: row.enabled,
+      handlerId: row.handlerId,
     });
     setModalOpen(true);
   }
@@ -110,6 +125,7 @@ export default function StaffUsersPage() {
           roles: values.roles,
           enabled: values.enabled,
           password: values.password || undefined,
+          handlerId: values.roles.some(isServiceProviderRole) ? values.handlerId || "" : "",
         });
         setRows((prev) => prev.map((row) => (row.id === editing.id ? updated : row)));
         Message.success("账号已更新");
@@ -120,6 +136,7 @@ export default function StaffUsersPage() {
           displayName: values.displayName,
           roles: values.roles,
           enabled: values.enabled,
+          handlerId: values.roles.some(isServiceProviderRole) ? values.handlerId : undefined,
         });
         setRows((prev) => [created, ...prev]);
         Message.success("账号已创建");
@@ -155,16 +172,14 @@ export default function StaffUsersPage() {
       ),
     },
     { title: "账号", dataIndex: "username", width: 120 },
-    { title: "显示名", dataIndex: "displayName", width: 120 },
+    { title: "昵称", dataIndex: "displayName", width: 120 },
     {
       title: "角色",
-      dataIndex: "roleLabels",
-      render: (labels: string[]) => (
+      dataIndex: "roles",
+      render: (roles: StaffUserRow["roles"]) => (
         <Space wrap>
-          {labels.map((label) => (
-            <Tag key={label} color="arcoblue">
-              {label}
-            </Tag>
+          {roles.map((role) => (
+            <AdminRoleTag key={role} role={role} />
           ))}
         </Space>
       ),
@@ -259,7 +274,7 @@ export default function StaffUsersPage() {
           >
             <Input.Password placeholder="至少 6 位" />
           </Form.Item>
-          <Form.Item label="显示名" field="displayName" rules={[{ required: true }]}>
+          <Form.Item label="昵称" field="displayName" rules={[{ required: true }]}>
             <Input placeholder="例如 客服小王" />
           </Form.Item>
           <Form.Item label="角色" field="roles" rules={[{ required: true }]}>
@@ -271,6 +286,31 @@ export default function StaffUsersPage() {
               ))}
             </Select>
           </Form.Item>
+          {showHandlerLink ? (
+            <Form.Item
+              label="绑定打手档案"
+              field="handlerId"
+              extra="打手登录后台后将同步该档案的在线状态"
+            >
+              <Select
+                allowClear
+                placeholder="选择打手"
+                showSearch
+                filterOption={(input, option) => {
+                  const handler = handlerOptions.find((item) => item.id === option?.value);
+                  if (!handler) return false;
+                  const haystack = `${handler.name} ${handler.clubName}`.toLowerCase();
+                  return haystack.includes(input.trim().toLowerCase());
+                }}
+              >
+                {filterHandlersByServiceType(handlerOptions, providerServiceType).map((handler) => (
+                  <Select.Option key={handler.id} value={handler.id}>
+                    {handler.name} · {handler.clubName}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          ) : null}
           <Form.Item label="启用" field="enabled" triggerPropName="checked">
             <Switch />
           </Form.Item>

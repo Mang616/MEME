@@ -5,8 +5,19 @@ import {
   roleLabels,
   roleOptions,
 } from "../constants/admin-rbac.js";
+import { isServiceProviderRole } from "@meme/admin-rbac";
 import { ADMIN_ACCOUNT } from "../config.js";
 import {
+  HANDLER_LEGACY_ADMIN_ACCOUNTS,
+  HANDLER_LEGACY_PROFILES,
+  HANDLER_LEGACY_SERVICE_TYPES,
+  buildHandlerAdminUser,
+} from "../constants/handler-legacy-profiles.js";
+import {
+  serviceTypeForProviderRole,
+} from "../lib/service-provider-role.js";
+import {
+  getHandler,
   removeAdminUser,
   getAdminUser,
   getAdminUserByUsername,
@@ -17,6 +28,7 @@ import {
 import { formatDateTime } from "../lib/format-time.js";
 import { hashPassword, verifyPassword } from "../lib/password.js";
 import { signAdminToken } from "../middleware/auth.js";
+import { adminPresenceService } from "./admin-presence.js";
 import type { AdminUser } from "../types.js";
 
 export type AdminSession = {
@@ -25,6 +37,7 @@ export type AdminSession = {
   displayName: string;
   roles: AdminRole[];
   permissions: ReturnType<typeof permissionsForRoles>;
+  handlerId?: string;
 };
 
 export type AdminUserRow = Omit<AdminUser, "passwordHash"> & {
@@ -45,6 +58,42 @@ function assertRoles(roles: string[]): AdminRole[] {
   return normalized;
 }
 
+async function assertHandlerLinkForRoles(roles: AdminRole[], handlerId?: string) {
+  const providerRoles = roles.filter(isServiceProviderRole);
+  if (!providerRoles.length) {
+    if (handlerId?.trim()) throw new Error("HANDLER_LINK_NOT_ALLOWED");
+    return;
+  }
+  if (providerRoles.length > 1) throw new Error("INVALID_ROLES");
+  const trimmedHandlerId = handlerId?.trim();
+  if (!trimmedHandlerId) throw new Error("HANDLER_ID_REQUIRED");
+
+  const handler = await getHandler(trimmedHandlerId);
+  if (!handler) throw new Error("HANDLER_NOT_FOUND");
+
+  const expectedServiceType = serviceTypeForProviderRole(providerRoles[0]!);
+  if (expectedServiceType && handler.serviceType !== expectedServiceType) {
+    throw new Error("HANDLER_SERVICE_TYPE_MISMATCH");
+  }
+}
+
+async function touchHandlerPresence(user: AdminUser) {
+  const roles = normalizeAdminRoles(user.roles);
+  if (!roles.some(isServiceProviderRole) || !user.handlerId) return;
+  await adminPresenceService.touch(user.id, user.handlerId);
+}
+
+function sessionPayload(session: AdminSession) {
+  return {
+    username: session.username,
+    displayName: session.displayName,
+    adminId: session.adminId,
+    roles: session.roles,
+    permissions: session.permissions,
+    handlerId: session.handlerId ?? "",
+  };
+}
+
 export const adminUserService = {
   async login(username: string, password: string): Promise<{ token: string; session: AdminSession } | null> {
     const trimmed = username.trim();
@@ -53,6 +102,7 @@ export const adminUserService = {
     if (dbUser) {
       if (!dbUser.enabled || !verifyPassword(password, dbUser.passwordHash)) return null;
       const session = this.toSession(dbUser);
+      await touchHandlerPresence(dbUser);
       return { token: signAdminToken(session), session };
     }
 
@@ -78,6 +128,7 @@ export const adminUserService = {
       displayName: user.displayName || user.username,
       roles,
       permissions: permissionsForRoles(roles),
+      handlerId: user.handlerId || undefined,
     };
   },
 
@@ -92,10 +143,12 @@ export const adminUserService = {
     displayName: string;
     roles: AdminRole[];
     enabled?: boolean;
+    handlerId?: string;
   }) {
     const username = input.username.trim();
     if (!username) throw new Error("INVALID_USERNAME");
     const roles = assertRoles(input.roles);
+    await assertHandlerLinkForRoles(roles, input.handlerId);
     const user: AdminUser = {
       id: `adm_${Date.now()}`,
       username,
@@ -104,6 +157,7 @@ export const adminUserService = {
       roles,
       enabled: input.enabled ?? true,
       createdAt: formatDateTime(),
+      handlerId: input.handlerId?.trim() || undefined,
     };
     await insertAdminUser(user);
     return toAdminUserRow(user);
@@ -111,21 +165,29 @@ export const adminUserService = {
 
   async update(
     id: string,
-    patch: Partial<Pick<AdminUser, "displayName" | "roles" | "enabled">> & {
+    patch: Partial<Pick<AdminUser, "displayName" | "roles" | "enabled" | "handlerId">> & {
       password?: string;
     },
   ) {
     const existing = await getAdminUser(id);
     if (!existing) return null;
+    const nextRoles = patch.roles ? assertRoles(patch.roles) : normalizeAdminRoles(existing.roles);
+    const nextHandlerId =
+      patch.handlerId !== undefined ? patch.handlerId.trim() || undefined : existing.handlerId;
+    await assertHandlerLinkForRoles(nextRoles, nextHandlerId);
+
     const nextPatch: Partial<AdminUser> = {
       displayName: patch.displayName?.trim() || existing.displayName,
       enabled: patch.enabled ?? existing.enabled,
     };
     if (patch.roles) {
-      nextPatch.roles = assertRoles(patch.roles);
+      nextPatch.roles = nextRoles;
     }
     if (patch.password) {
       nextPatch.passwordHash = hashPassword(patch.password);
+    }
+    if (patch.handlerId !== undefined) {
+      nextPatch.handlerId = nextHandlerId;
     }
     const updated = await updateAdminUser(id, nextPatch);
     return updated ? toAdminUserRow(updated) : null;
@@ -202,6 +264,8 @@ export const adminUserService = {
   },
 };
 
+export { sessionPayload as adminSessionPayload };
+
 export async function buildDefaultAdminUsers(): Promise<AdminUser[]> {
   const now = formatDateTime();
   return [
@@ -232,14 +296,17 @@ export async function buildDefaultAdminUsers(): Promise<AdminUser[]> {
       enabled: true,
       createdAt: now,
     },
-    {
-      id: "admin_handler",
-      username: "dashou",
-      passwordHash: hashPassword("dashou123"),
-      displayName: "打手专员",
-      roles: ["handler"],
-      enabled: true,
-      createdAt: now,
-    },
+    ...Object.keys(HANDLER_LEGACY_ADMIN_ACCOUNTS).map((handlerId) =>
+      buildHandlerAdminUser(
+        {
+          id: handlerId,
+          name: HANDLER_LEGACY_ADMIN_ACCOUNTS[handlerId].displayName,
+          realName: HANDLER_LEGACY_PROFILES[handlerId]?.realName ?? "",
+          serviceType: HANDLER_LEGACY_SERVICE_TYPES[handlerId] ?? "escort",
+        },
+        now,
+        hashPassword,
+      ),
+    ),
   ];
 }

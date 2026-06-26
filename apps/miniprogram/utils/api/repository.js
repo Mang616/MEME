@@ -2,6 +2,14 @@
  * 服务端业务数据内存缓存（单飞 ensure + refresh）
  */
 const { request } = require('./request')
+const { cloneFallbackBanners } = require('../offline-fallbacks')
+
+function withCacheFallback(cache, label, task) {
+  return task.catch((err) => {
+    console.warn(`[repository] ${label}`, err.message)
+    return cache.get()
+  })
+}
 
 function createResourceCache(fetcher, initial) {
   let data = initial
@@ -70,7 +78,7 @@ const handlersCache = createResourceCache(async () => {
 const bannersCache = createResourceCache(async () => {
   const res = await request('/banners')
   return res.items || []
-}, [])
+}, cloneFallbackBanners())
 
 function resetCatalogTask() {
   catalogTask = null
@@ -160,11 +168,11 @@ module.exports = {
   ensureCatalog,
   ensureOrders: (userId) => ordersCache.ensure(userId),
   ensureHandlers: () => handlersCache.ensure(),
-  ensureBanners: () => bannersCache.ensure(),
+  ensureBanners: () => withCacheFallback(bannersCache, 'banners unavailable', bannersCache.ensure()),
   refreshCatalog,
   refreshOrders: (userId) => ordersCache.refresh(userId),
   refreshHandlers: () => handlersCache.refresh(),
-  refreshBanners: () => bannersCache.refresh(),
+  refreshBanners: () => withCacheFallback(bannersCache, 'banners refresh failed', bannersCache.refresh()),
   refreshAnnouncements,
   fetchProductReviews,
   resetCatalogTask,

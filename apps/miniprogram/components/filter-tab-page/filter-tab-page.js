@@ -11,7 +11,6 @@ Component({
     activeId: { type: String, value: 'all' },
     mode: { type: String, value: 'scroll' },
     showEmpty: { type: Boolean, value: false },
-    emptyIcon: { type: String, value: '📋' },
     emptyText: { type: String, value: '暂无数据' },
     emptyHint: { type: String, value: '' },
   },

@@ -18,6 +18,7 @@ const {
   dispatchProfileMenuTap,
 } = require('../../utils/profile-actions')
 const { handleInviteTap } = require('../../utils/invite')
+const { runPullRefresh, getPullRefresh } = require('../../utils/pull-refresh')
 
 const PROFILE_REDIRECT = TAB_ROUTES.PROFILE
 
@@ -34,9 +35,13 @@ Page({
   },
 
   onLoad() {
-    void loadProfilePage().then((state) => this.setData(state))
+    void loadProfilePage().then((state) => {
+      this.setData(state)
+      this._profileReady = true
+    })
   },
   onShow() {
+    if (!this._profileReady) return
     void refreshProfilePage(this).then((state) => this.setData(state))
   },
 

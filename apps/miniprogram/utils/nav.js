@@ -68,9 +68,12 @@ function openOrderCreateWithAuth(productId) {
   return true
 }
 
-/** 选择打手（创建订单子页） */
-function openHandlerSelect(selectedId) {
-  const q = selectedId ? `?selectedId=${encodeURIComponent(selectedId)}` : ''
+/** 选择打手/陪玩（创建订单子页，可按商品类型筛选） */
+function openHandlerSelect(selectedId, serviceType) {
+  const params = []
+  if (selectedId) params.push(`selectedId=${encodeURIComponent(selectedId)}`)
+  if (serviceType) params.push(`serviceType=${encodeURIComponent(serviceType)}`)
+  const q = params.length ? `?${params.join('&')}` : ''
   wx.navigateTo({
     url: `${PAGE_ROUTES.HANDLER_SELECT}${q}`,
   })

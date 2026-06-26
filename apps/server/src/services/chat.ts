@@ -1,14 +1,19 @@
 import type { AdminRole } from "../constants/admin-rbac.js";
 import { canAccessChatType } from "../constants/admin-rbac.js";
+import { isServiceProviderRole } from "@meme/admin-rbac";
+import {
+  playerConversationId,
+  serviceConversationId,
+} from "../lib/chat-conversation-id.js";
+import { isAssignedServicePlayer, resolveHandlerByName } from "../lib/handler-resolve.js";
+import { serviceProviderRoleLabel } from "../lib/service-provider-role.js";
 import {
   getChatConversation,
   getChatConversationByOrderId,
-  getHandler,
   getOrder,
   insertChatConversation,
   insertChatMessage,
   listChatConversations,
-  listHandlers,
   updateChatConversation,
 } from "../db/index.js";
 import { formatDateTime } from "../lib/format-time.js";
@@ -25,14 +30,6 @@ const SERVICE_META = {
   avatarText: "客",
   avatarColor: "#3d5240",
 };
-
-function serviceConversationId(ownerUserId: string) {
-  return `chat_svc_${ownerUserId}`;
-}
-
-function playerConversationId(orderId: string) {
-  return `chat_ord_${orderId}`;
-}
 
 function formatChatTime(date = new Date()) {
   const now = new Date();
@@ -67,18 +64,35 @@ function canUserAccessConversation(conv: ChatConversation, ownerUserId: string) 
   return conv.ownerUserId === ownerUserId;
 }
 
-async function resolveHandlerByName(name: string): Promise<Handler | null> {
-  const trimmed = name.trim();
-  if (!trimmed || trimmed === "—") return null;
-  const handlers = await listHandlers();
-  return handlers.find((item) => item.name === trimmed) ?? null;
+function isPlayerConversationClosed(conv: ChatConversation) {
+  return conv.type === CHAT_TYPE.PLAYER && Boolean(conv.closedAt?.trim());
+}
+
+/** 发送消息前校验：客服会话始终可发；打手/陪玩会话终止后只读 */
+function assertConversationOpenForSend(conv: ChatConversation) {
+  if (conv.type === CHAT_TYPE.SERVICE) return;
+  if (isPlayerConversationClosed(conv)) {
+    throw new Error("CHAT_CLOSED");
+  }
+}
+
+function isOrderTerminalForChat(status: Order["status"]) {
+  return status === "completed";
+}
+
+/** 订单上已确定的服务者昵称（未派单时不创建打手会话） */
+function resolveActiveHandlerName(order: Order): string | null {
+  const servicePlayer = order.servicePlayer?.trim();
+  return isAssignedServicePlayer(servicePlayer) ? servicePlayer! : null;
 }
 
 function handlerDisplayMeta(handler: Handler | null, fallbackName: string) {
   if (!handler) {
+    const label =
+      !isAssignedServicePlayer(fallbackName) ? "待分配服务者" : "服务打手";
     return {
-      name: fallbackName,
-      roleLabel: "服务打手",
+      name: isAssignedServicePlayer(fallbackName) ? fallbackName : "待分配",
+      roleLabel: label,
       escortLevel: undefined,
       avatarText: fallbackName.charAt(0) || "手",
       avatarColor: "#4a5f52",
@@ -86,15 +100,31 @@ function handlerDisplayMeta(handler: Handler | null, fallbackName: string) {
       online: false,
     };
   }
+  const roleLabel = serviceProviderRoleLabel(handler.serviceType);
   return {
     name: handler.name,
-    roleLabel: "服务打手",
+    roleLabel,
     escortLevel: handler.level,
     avatarText: handler.name.charAt(0) || "手",
     avatarColor: "#4a5f52",
     handlerId: handler.id,
     online: handler.online,
   };
+}
+
+function canAdminAccessConversation(
+  conv: ChatConversation,
+  roles: AdminRole[],
+  linkedHandlerId?: string,
+) {
+  if (!canAccessChatType(roles, conv.type)) return false;
+  if (conv.type === "service" && !conv.ownerUserId) return false;
+  const isProvider = roles.some(isServiceProviderRole);
+  const isElevated = roles.includes("super_admin") || roles.includes("cs");
+  if (conv.type === "player" && isProvider && !isElevated) {
+    if (!linkedHandlerId || conv.handlerId !== linkedHandlerId) return false;
+  }
+  return true;
 }
 
 async function appendMessage(input: {
@@ -108,6 +138,9 @@ async function appendMessage(input: {
 }) {
   const conv = await getChatConversation(input.conversationId);
   if (!conv) throw new Error("CHAT_NOT_FOUND");
+  if (input.senderType !== "system") {
+    assertConversationOpenForSend(conv);
+  }
 
   const message: ChatMessage = {
     id: buildMessageId("msg"),
@@ -164,10 +197,13 @@ export const chatDomainService = {
   },
 
   async ensurePlayerConversationForOrder(order: Order) {
+    const handlerName = resolveActiveHandlerName(order);
+    if (!handlerName) {
+      throw new Error("HANDLER_NOT_ASSIGNED");
+    }
+
     const id = playerConversationId(order.id);
     let conv = await getChatConversation(id);
-    const handlerName =
-      order.servicePlayer !== "—" ? order.servicePlayer : order.assignedPlayer;
     const handler = await resolveHandlerByName(handlerName);
     const meta = handlerDisplayMeta(handler, handlerName);
 
@@ -196,7 +232,7 @@ export const chatDomainService = {
         conversationId: id,
         senderType: "system",
         senderId: meta.handlerId || "system",
-        content: `老板好，我是您订单 ${order.id} 的服务打手，有任何问题可以随时沟通。`,
+        content: `老板好，我是您订单 ${order.id} 的${meta.roleLabel}${meta.name ? `（${meta.name}）` : ""}，有任何问题可以随时沟通。`,
         increaseUnreadForUser: true,
       });
       return (await getChatConversation(id))!;
@@ -224,14 +260,17 @@ export const chatDomainService = {
     const items = await listChatConversations();
     return items
       .filter((conv) => conv.ownerUserId === ownerUserId)
-      .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+      .sort((a, b) => {
+        const closedDiff = Number(Boolean(a.closedAt)) - Number(Boolean(b.closedAt));
+        if (closedDiff !== 0) return closedDiff;
+        return (a.sortOrder ?? 0) - (b.sortOrder ?? 0);
+      });
   },
 
-  async listForAdmin(roles: AdminRole[]) {
+  async listForAdmin(roles: AdminRole[], linkedHandlerId?: string) {
     const items = await listChatConversations();
     return items
-      .filter((conv) => canAccessChatType(roles, conv.type))
-      .filter((conv) => conv.type !== "service" || conv.ownerUserId)
+      .filter((conv) => canAdminAccessConversation(conv, roles, linkedHandlerId))
       .sort((a, b) => {
         const staffDiff = (b.staffUnread ?? 0) - (a.staffUnread ?? 0);
         if (staffDiff !== 0) return staffDiff;
@@ -245,9 +284,13 @@ export const chatDomainService = {
     return conv;
   },
 
-  async getConversationForAdmin(conversationId: string, roles: AdminRole[]) {
+  async getConversationForAdmin(
+    conversationId: string,
+    roles: AdminRole[],
+    linkedHandlerId?: string,
+  ) {
     const conv = await getChatConversation(conversationId);
-    if (!conv || !canAccessChatType(roles, conv.type)) return null;
+    if (!conv || !canAdminAccessConversation(conv, roles, linkedHandlerId)) return null;
     return conv;
   },
 
@@ -262,12 +305,16 @@ export const chatDomainService = {
     };
   },
 
-  async getMessagesForAdmin(conversationId: string, roles: AdminRole[]) {
-    const conv = await this.getConversationForAdmin(conversationId, roles);
+  async getMessagesForAdmin(
+    conversationId: string,
+    roles: AdminRole[],
+    linkedHandlerId?: string,
+  ) {
+    const conv = await this.getConversationForAdmin(conversationId, roles, linkedHandlerId);
     if (!conv) return null;
     const { listChatMessages } = await import("../db/index.js");
     const messages = await listChatMessages(conversationId);
-    const conversation = (await this.markReadForStaff(conversationId, roles, conv)) ?? conv;
+    const conversation = (await this.markReadForStaff(conversationId, roles, conv, linkedHandlerId)) ?? conv;
     return {
       conversation,
       items: messages.map((message) => toClientMessage(message, "staff")),
@@ -288,8 +335,14 @@ export const chatDomainService = {
     });
   },
 
-  async sendStaffMessage(conversationId: string, adminId: string, content: string, roles: AdminRole[]) {
-    const conv = await this.getConversationForAdmin(conversationId, roles);
+  async sendStaffMessage(
+    conversationId: string,
+    adminId: string,
+    content: string,
+    roles: AdminRole[],
+    linkedHandlerId?: string,
+  ) {
+    const conv = await this.getConversationForAdmin(conversationId, roles, linkedHandlerId);
     if (!conv) throw new Error("CHAT_NOT_FOUND");
     const text = content.trim();
     if (!text) throw new Error("EMPTY_MESSAGE");
@@ -313,13 +366,14 @@ export const chatDomainService = {
     conversationId: string,
     roles: AdminRole[],
     existing?: ChatConversation | null,
+    linkedHandlerId?: string,
   ) {
     const conv =
       existing !== undefined
-        ? existing && canAccessChatType(roles, existing.type)
+        ? existing && canAdminAccessConversation(existing, roles, linkedHandlerId)
           ? existing
           : null
-        : await this.getConversationForAdmin(conversationId, roles);
+        : await this.getConversationForAdmin(conversationId, roles, linkedHandlerId);
     if (!conv) return null;
     if (!(conv.staffUnread ?? 0)) return conv;
     return updateChatConversation(conversationId, { staffUnread: 0 });
@@ -336,6 +390,9 @@ export const chatDomainService = {
       await updateOrder(orderId, { ownerUserId });
       order.ownerUserId = ownerUserId;
     }
+    if (!resolveActiveHandlerName(order)) {
+      throw new Error("HANDLER_NOT_ASSIGNED");
+    }
     return this.ensurePlayerConversationForOrder(order);
   },
 
@@ -344,9 +401,43 @@ export const chatDomainService = {
   },
 
   async syncOrderAssignment(order: Order) {
-    const playerName = order.servicePlayer !== "—" ? order.servicePlayer : "";
-    if (!playerName) return null;
     if (!order.ownerUserId) return null;
+    if (isOrderTerminalForChat(order.status)) {
+      return this.closeConversationForOrder(order);
+    }
+    if (!resolveActiveHandlerName(order)) return null;
     return this.ensurePlayerConversationForOrder(order);
+  },
+
+  /** 终止打手/陪玩订单会话（保留消息记录；客服会话不受影响） */
+  async closePlayerConversation(
+    conversationId: string,
+    reason = "订单已结束",
+  ) {
+    const conv = await getChatConversation(conversationId);
+    if (!conv || conv.type !== CHAT_TYPE.PLAYER || conv.closedAt) {
+      return conv;
+    }
+
+    const closedAt = formatDateTime();
+    await appendMessage({
+      conversationId,
+      senderType: "system",
+      senderId: "system",
+      content: `${reason}，会话已关闭，您仍可查看历史消息。`,
+    });
+    await updateChatConversation(conversationId, {
+      closedAt,
+      online: false,
+      staffUnread: 0,
+    });
+    return getChatConversation(conversationId);
+  },
+
+  async closeConversationForOrder(order: Order) {
+    if (!isOrderTerminalForChat(order.status)) return null;
+    const conv = await getChatConversationByOrderId(order.id);
+    if (!conv) return null;
+    return this.closePlayerConversation(conv.id);
   },
 };

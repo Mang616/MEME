@@ -4,6 +4,7 @@ import {
   insertUserCoupon,
   listUserCouponsByUser,
   updateUserCoupon,
+  upsertContentPage,
 } from "../db/index.js";
 import { formatDateTime } from "../lib/format-time.js";
 import {
@@ -12,6 +13,7 @@ import {
   calcOrderTotalPaid,
   type CouponTemplate,
 } from "../lib/coupons.js";
+import { COUPON_TEMPLATE_BY_ID } from "../lib/coupon-template-defaults.js";
 import type { Product, ServiceType, UserCoupon } from "../types.js";
 
 function addDays(base: Date, days: number) {
@@ -26,9 +28,48 @@ function parseTemplates(payload: unknown): CouponTemplate[] {
   return items.filter((item) => item && item.enabled !== false);
 }
 
+function parseAllTemplates(payload: unknown): CouponTemplate[] {
+  const items = (payload as { items?: CouponTemplate[] } | null)?.items;
+  if (!Array.isArray(items)) return [];
+  return items.filter(Boolean);
+}
+
 export async function listCouponTemplates() {
   const page = await getContentPageBySlug("coupons");
   return parseTemplates(page?.payload);
+}
+
+export async function getCouponTemplateMap() {
+  const page = await getContentPageBySlug("coupons");
+  const items = parseAllTemplates(page?.payload);
+  return new Map(items.map((item) => [item.id, item]));
+}
+
+/** 活动引用的券模板若不存在，则按内置默认配置自动创建 */
+export async function ensureCouponTemplates(templateIds: string[]) {
+  const ids = [...new Set(templateIds.map((id) => String(id).trim()).filter(Boolean))];
+  const creatable = ids.filter((id) => COUPON_TEMPLATE_BY_ID[id]);
+  if (!creatable.length) return [];
+
+  const page = await getContentPageBySlug("coupons");
+  const items = parseAllTemplates(page?.payload);
+  const existingIds = new Set(items.map((item) => item.id));
+  const missing = creatable.filter((id) => !existingIds.has(id));
+  if (!missing.length) return [];
+
+  const nextItems = [
+    ...items,
+    ...missing.map((id) => ({ ...COUPON_TEMPLATE_BY_ID[id] })),
+  ].sort((a, b) => a.sortOrder - b.sortOrder || a.id.localeCompare(b.id));
+
+  await upsertContentPage({
+    id: page?.id ?? "cp-coupons",
+    slug: "coupons",
+    title: page?.title ?? "优惠券",
+    payload: { items: nextItems },
+  });
+
+  return missing;
 }
 
 function isCouponActive(coupon: UserCoupon, now = new Date()) {
@@ -72,8 +113,11 @@ export async function countActiveUserCoupons(userId: string) {
 
 export async function listAvailableUserCoupons(
   userId: string,
-  input: { serviceType: ServiceType; subtotal: number },
+  input: { serviceType: ServiceType; subtotal: number; couponAllowed?: boolean },
 ) {
+  if (input.couponAllowed === false) {
+    return [];
+  }
   const items = await listUserCouponsByUser(userId);
   return items
     .filter((item) => isCouponActive(item))
@@ -111,17 +155,28 @@ export function grantCouponFromTemplate(userId: string, template: CouponTemplate
   };
 }
 
-export async function grantDefaultCouponsForUser(userId: string) {
-  const templates = await listCouponTemplates();
+export async function grantCouponsByTemplateIds(
+  userId: string,
+  templateIds: string[],
+  options?: { allowDuplicate?: boolean },
+) {
+  if (!templateIds.length) return [];
+
+  await ensureCouponTemplates(templateIds);
+
+  const templateMap = await getCouponTemplateMap();
   const existing = await listUserCouponsByUser(userId);
   const ownedTemplateIds = new Set(existing.map((item) => item.templateId));
   const created: UserCoupon[] = [];
 
-  for (const template of templates) {
-    if (ownedTemplateIds.has(template.id)) continue;
+  for (const templateId of templateIds) {
+    const template = templateMap.get(templateId);
+    if (!template || template.enabled === false) continue;
+    if (!options?.allowDuplicate && ownedTemplateIds.has(templateId)) continue;
     const coupon = grantCouponFromTemplate(userId, template);
     await insertUserCoupon(coupon);
     created.push(coupon);
+    ownedTemplateIds.add(templateId);
   }
 
   return created;
@@ -142,6 +197,10 @@ export async function resolveOrderCouponPricing(input: {
       userCouponId: undefined as string | undefined,
       couponName: undefined as string | undefined,
     };
+  }
+
+  if (input.product.couponAllowed === false) {
+    throw new Error("COUPON_NOT_ALLOWED");
   }
 
   const coupon = await getUserCoupon(input.userCouponId);

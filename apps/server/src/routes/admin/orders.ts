@@ -1,7 +1,9 @@
 import { Router } from "express";
 import { z } from "zod";
 import { paramString } from "../../lib/request-params.js";
-import { adminApiPolicy, requireRead, requireWrite } from "../../middleware/admin-api-policy.js";
+import { adminApiPolicy, requireRead } from "../../middleware/admin-api-policy.js";
+import { requireLinkedServiceProvider } from "../../middleware/require-linked-service-provider.js";
+import type { ServiceProviderAuthedRequest } from "../../middleware/require-linked-service-provider.js";
 import { requireAnyPermission, requirePermission } from "../../middleware/auth.js";
 import type { AuthedRequest } from "../../middleware/auth.js";
 import { orderService } from "../../services.js";
@@ -21,8 +23,9 @@ const assignSchema = z.object({
 
 export const adminOrdersRouter = Router();
 
-adminOrdersRouter.get("/hall", requirePermission("orders.accept"), async (_req, res) => {
-  const orders = await orderService.listHallOrders();
+adminOrdersRouter.get("/hall", requirePermission("orders.accept"), async (req, res) => {
+  const admin = (req as AuthedRequest).admin!;
+  const orders = await orderService.listHallOrdersForAdmin(admin.adminId);
   res.json({
     items: orderService.listHallRows(orders),
     total: orders.length,
@@ -48,10 +51,16 @@ adminOrdersRouter.get(
       return;
     }
 
-    const hallOrders = orders.filter((order) => orderService.isHallEligible(order));
+    const hallOrders = orders;
+    const handler = await orderService.resolveHandlerForAdmin(admin!.adminId);
+    const visibleHall =
+      handler && admin?.permissions.includes("orders.accept") && !canDispatch
+        ? await orderService.filterOrdersForServiceProvider(hallOrders, handler)
+        : hallOrders;
+
     res.json({
-      items: orderService.listHallRows(hallOrders),
-      total: hallOrders.length,
+      items: orderService.listHallRows(visibleHall),
+      total: visibleHall.length,
     });
   },
 );
@@ -61,6 +70,46 @@ adminOrdersRouter.get(
   requireAnyPermission("orders.dispatch", "orders.write"),
   async (_req, res) => {
     const orders = await orderService.listDispatchOrders();
+    res.json({
+      items: orderService.listAdminRows(orders),
+      total: orders.length,
+    });
+  },
+);
+
+adminOrdersRouter.get(
+  "/after-sales",
+  requireRead(...adminApiPolicy.afterSales.read),
+  async (_req, res) => {
+    const orders = (await orderService.list()).filter((order) => order.status === "after_sale");
+    res.json({
+      items: orderService.listAdminRows(orders),
+      total: orders.length,
+    });
+  },
+);
+
+adminOrdersRouter.get(
+  "/mine/watch",
+  requirePermission("orders.mine"),
+  requireLinkedServiceProvider,
+  async (req, res) => {
+    const { serviceProviderHandler } = req as ServiceProviderAuthedRequest;
+    const orders = await orderService.listMinePendingWatchForHandler(serviceProviderHandler);
+    res.json({
+      items: orderService.listAdminRows(orders),
+      total: orders.length,
+    });
+  },
+);
+
+adminOrdersRouter.get(
+  "/mine",
+  requirePermission("orders.mine"),
+  requireLinkedServiceProvider,
+  async (req, res) => {
+    const { serviceProviderHandler } = req as ServiceProviderAuthedRequest;
+    const orders = await orderService.listMineOrdersForHandler(serviceProviderHandler);
     res.json({
       items: orderService.listAdminRows(orders),
       total: orders.length,
@@ -84,7 +133,7 @@ adminOrdersRouter.post("/:id/accept", requirePermission("orders.accept"), async 
   }
 
   try {
-    const updated = await orderService.acceptOrder(paramString(req.params.id), admin.displayName);
+    const updated = await orderService.acceptOrder(paramString(req.params.id), admin.adminId);
     if (!updated) {
       res.status(404).json({ error: "NOT_FOUND", message: "订单不存在" });
       return;
@@ -92,7 +141,11 @@ adminOrdersRouter.post("/:id/accept", requirePermission("orders.accept"), async 
     res.json(orderService.listHallRows([updated])[0]);
   } catch (err) {
     const code = err instanceof Error ? err.message : "ACCEPT_FAILED";
-    res.status(409).json({ error: code, message: "无法接单，订单可能已被抢走或需客服派单" });
+    const message =
+      code === "ORDER_SERVICE_TYPE_MISMATCH"
+        ? "该订单类型与您的服务类型不符（陪玩不可接护航单）"
+        : "无法接单，订单可能已被抢走或需客服派单";
+    res.status(409).json({ error: code, message });
   }
 });
 
@@ -129,6 +182,13 @@ adminOrdersRouter.post(
         res.status(404).json({ error: "NOT_FOUND", message: "打手不存在" });
         return;
       }
+      if (err instanceof Error && err.message === "HANDLER_SERVICE_TYPE_MISMATCH") {
+        res.status(409).json({
+          error: "HANDLER_SERVICE_TYPE_MISMATCH",
+          message: "所选服务者与订单类型不符（护航单需打手，陪玩单需陪玩）",
+        });
+        return;
+      }
       res.status(409).json({ error: "ASSIGN_FAILED", message: "派单失败，订单可能已被接单或俱乐部已停用" });
     }
   },
@@ -143,22 +203,26 @@ adminOrdersRouter.get("/:id", requireRead(...adminApiPolicy.orders.read), async 
   res.json(order);
 });
 
-adminOrdersRouter.patch("/:id", requireWrite(...adminApiPolicy.orders.write), async (req, res) => {
-  const parsed = patchSchema.safeParse(req.body);
-  if (!parsed.success) {
-    res.status(400).json({ error: "INVALID_BODY", message: "参数错误" });
-    return;
-  }
+adminOrdersRouter.patch(
+  "/:id",
+  requireAnyPermission(...adminApiPolicy.orders.write, ...adminApiPolicy.afterSales.write),
+  async (req, res) => {
+    const parsed = patchSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: "INVALID_BODY", message: "参数错误" });
+      return;
+    }
 
-  const updated = await orderService.update(paramString(req.params.id), parsed.data as {
-    status?: OrderStatus;
-    servicePlayer?: string;
-  });
+    const updated = await orderService.update(paramString(req.params.id), parsed.data as {
+      status?: OrderStatus;
+      servicePlayer?: string;
+    });
 
-  if (!updated) {
-    res.status(404).json({ error: "NOT_FOUND", message: "订单不存在" });
-    return;
-  }
+    if (!updated) {
+      res.status(404).json({ error: "NOT_FOUND", message: "订单不存在" });
+      return;
+    }
 
-  res.json(orderService.listAdminRows([updated])[0]);
-});
+    res.json(orderService.listAdminRows([updated])[0]);
+  },
+);

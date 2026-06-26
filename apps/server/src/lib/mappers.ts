@@ -13,6 +13,7 @@ export function toAdminOrderRow(order: Order) {
   return {
     id: order.id,
     status: order.status,
+    serviceType: order.serviceType,
     productTitle: order.product.title,
     productCover: order.product.cover ?? "",
     productCoverColor: order.product.coverColor ?? "#2a3530",
@@ -30,6 +31,7 @@ export function toAdminOrderRow(order: Order) {
 export function toHallOrderRow(order: Order) {
   return {
     id: order.id,
+    serviceType: order.serviceType,
     productTitle: order.product.title,
     productCover: order.product.cover ?? "",
     productCoverColor: order.product.coverColor ?? "#2a3530",
@@ -52,11 +54,16 @@ export function toAdminProductRow(product: Product, categories: Database["catego
     cover: product.cover,
     coverColor: product.coverColor,
     limitPerUser: product.limitPerUser,
+    couponAllowed: product.couponAllowed ?? true,
     published: product.published ?? true,
   };
 }
 
-export function toAdminHandlerRow(handler: Handler, club?: Club | null) {
+export function toAdminHandlerRow(
+  handler: Handler,
+  club?: Club | null,
+  admin?: { id: string; username: string; displayName: string } | null,
+) {
   const kind = club?.kind ?? "partner";
   return {
     id: handler.id,
@@ -71,5 +78,13 @@ export function toAdminHandlerRow(handler: Handler, club?: Club | null) {
     clubKind: kind,
     isOwnClub: kind === "platform",
     clubEnabled: club?.enabled ?? true,
+    realName: handler.realName ?? "",
+    idNumber: handler.idNumber ?? "",
+    phone: handler.phone ?? "",
+    wechat: handler.wechat ?? "",
+    alipay: handler.alipay ?? "",
+    adminUserId: admin?.id ?? "",
+    adminUsername: admin?.username ?? "",
+    adminDisplayName: admin?.displayName ?? "",
   };
 }

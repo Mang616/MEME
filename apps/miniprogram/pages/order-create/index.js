@@ -48,6 +48,7 @@ Page({
     couponOptions: [],
     couponSheetOptions: [],
     couponLoading: false,
+    couponAllowed: true,
     showCouponPicker: false,
     notice: '',
     submitting: false,
@@ -112,7 +113,7 @@ Page({
 
   onPickHandler() {
     if (this.data.submitting) return
-    openHandlerSelect(this.data.handlerId)
+    openHandlerSelect(this.data.handlerId, this.data.product?.serviceType)
   },
 
   onGameIdInput(e) {
@@ -134,7 +135,7 @@ Page({
   },
 
   onOpenCouponPicker() {
-    if (this.data.submitting || this.data.couponLoading) return
+    if (this.data.submitting || this.data.couponLoading || this.data.couponAllowed === false) return
     this.setData({ showCouponPicker: true })
   },
 

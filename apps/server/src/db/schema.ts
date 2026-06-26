@@ -50,6 +50,7 @@ export const products = mysqlTable("products", {
   positiveRate: int("positive_rate").notNull().default(0),
   intro: text("intro").notNull().default(""),
   limitPerUser: int("limit_per_user").notNull().default(0),
+  couponAllowed: boolean("coupon_allowed").notNull().default(true),
   published: boolean("published").notNull().default(true),
 });
 
@@ -63,6 +64,11 @@ export const handlers = mysqlTable("handlers", {
   avatar: varchar("avatar", { length: 512 }).notNull().default(""),
   online: boolean("online").notNull().default(false),
   clubId: varchar("club_id", { length: 64 }).notNull().default("club_platform"),
+  realName: varchar("real_name", { length: 64 }).notNull().default(""),
+  idNumber: varchar("id_number", { length: 32 }).notNull().default(""),
+  phone: varchar("phone", { length: 32 }).notNull().default(""),
+  wechat: varchar("wechat", { length: 64 }).notNull().default(""),
+  alipay: varchar("alipay", { length: 128 }).notNull().default(""),
 });
 
 export const clubs = mysqlTable("clubs", {
@@ -116,6 +122,8 @@ export const users = mysqlTable("users", {
   wechatOpenid: varchar("wechat_openid", { length: 128 }).notNull().default(""),
   inviteCode: varchar("invite_code", { length: 16 }).notNull().default(""),
   inviterId: varchar("inviter_id", { length: 64 }).notNull().default(""),
+  /** 邀请奖励已发放时间（防重复） */
+  inviteRewardAt: varchar("invite_reward_at", { length: 32 }).notNull().default(""),
 });
 
 export const contentPages = mysqlTable("content_pages", {
@@ -153,6 +161,7 @@ export const chatConversations = mysqlTable("chat_conversations", {
   staffUnread: int("staff_unread").notNull().default(0),
   online: boolean("online").notNull().default(false),
   sortOrder: int("sort_order").notNull().default(0),
+  closedAt: varchar("closed_at", { length: 32 }).notNull().default(""),
 });
 
 export const chatMessages = mysqlTable("chat_messages", {
@@ -174,6 +183,7 @@ export const adminUsers = mysqlTable("admin_users", {
   roles: json("roles").$type<string[]>().notNull(),
   enabled: boolean("enabled").notNull().default(true),
   createdAt: varchar("created_at", { length: 32 }).notNull().default(""),
+  handlerId: varchar("handler_id", { length: 64 }).notNull().default(""),
 });
 
 export const feedbacks = mysqlTable("feedbacks", {

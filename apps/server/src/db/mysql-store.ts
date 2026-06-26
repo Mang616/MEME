@@ -243,7 +243,7 @@ export async function insertOrder(order: Order) {
 
 export async function updateOrderRow(
   id: string,
-  patch: Partial<Pick<Order, "status" | "servicePlayer" | "statusText" | "ownerUserId">>,
+  patch: Partial<Pick<Order, "status" | "servicePlayer" | "statusText" | "ownerUserId" | "serviceType">>,
 ) {
   const existing = await getOrder(id);
   if (!existing) return null;
@@ -703,6 +703,18 @@ export async function insertChatMessage(message: ChatMessage) {
   const db = getMysqlDb();
   await db.insert(chatMessages).values(chatMessageToRow(message));
   return message;
+}
+
+export async function replaceChatData(conversations: ChatConversation[], messages: ChatMessage[]) {
+  const db = getMysqlDb();
+  await db.delete(chatMessages);
+  await db.delete(chatConversations);
+  for (const conv of conversations) {
+    await db.insert(chatConversations).values(chatConversationToRow(conv));
+  }
+  for (const message of messages) {
+    await db.insert(chatMessages).values(chatMessageToRow(message));
+  }
 }
 
 export async function getChatConversationByOrderId(orderId: string) {

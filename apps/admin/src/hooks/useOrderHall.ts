@@ -1,10 +1,10 @@
 import { Message } from "@arco-design/web-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { ADMIN_ORDER_POLL_MS } from "@/constants/polling";
 import { useAdminLivePoll } from "@/contexts/AdminLivePollContext";
-import { playNewOrderSound, unlockOrderNotificationSound } from "@/lib/order-notification-sound";
+import { usePollingGuard } from "@/hooks/usePollingGuard";
+import { playNewOrderSound } from "@/lib/order-notification-sound";
 import { ApiError, api, type HallOrderRow } from "@/lib/api";
-
-const AUTO_REFRESH_MS = 12_000;
 
 export function useOrderHall() {
   const [loading, setLoading] = useState(true);
@@ -14,43 +14,41 @@ export function useOrderHall() {
   const [acceptingId, setAcceptingId] = useState("");
   const [autoRefresh, setAutoRefresh] = useState(true);
   const knownCountRef = useRef<number | null>(null);
-  const pollingRef = useRef(false);
+  const runPoll = usePollingGuard();
   const hasLoadedRef = useRef(false);
-  const { refresh: refreshNavIndicators } = useAdminLivePoll();
+  const { reportHallPending } = useAdminLivePoll();
 
   const load = useCallback(async (silent = false) => {
-    if (pollingRef.current) return;
-    pollingRef.current = true;
-
-    if (!silent) {
-      if (!hasLoadedRef.current) setLoading(true);
-      else setRefreshing(true);
-    }
-    if (!silent) setLoadError("");
-
-    try {
-      const data = await api.listOrderHall();
-      const incoming = data.items;
-
-      if (silent && knownCountRef.current !== null && incoming.length > knownCountRef.current) {
-        playNewOrderSound();
-        Message.info(`有 ${incoming.length - knownCountRef.current} 笔新订单可抢`);
-      }
-      knownCountRef.current = incoming.length;
-      setRows(incoming);
-      hasLoadedRef.current = true;
-      refreshNavIndicators();
-    } catch (err) {
-      if (err instanceof ApiError && err.status === 401) return;
+    await runPoll(async () => {
       if (!silent) {
-        setLoadError(err instanceof ApiError ? err.message : "加载接单大厅失败");
+        if (!hasLoadedRef.current) setLoading(true);
+        else setRefreshing(true);
       }
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-      pollingRef.current = false;
-    }
-  }, [refreshNavIndicators]);
+      if (!silent) setLoadError("");
+
+      try {
+        const data = await api.listOrderHall();
+        const incoming = data.items;
+
+        if (silent && knownCountRef.current !== null && incoming.length > knownCountRef.current) {
+          playNewOrderSound();
+          Message.info(`有 ${incoming.length - knownCountRef.current} 笔新订单可抢`);
+        }
+        knownCountRef.current = incoming.length;
+        setRows(incoming);
+        hasLoadedRef.current = true;
+        reportHallPending(data.total);
+      } catch (err) {
+        if (err instanceof ApiError && err.status === 401) return;
+        if (!silent) {
+          setLoadError(err instanceof ApiError ? err.message : "加载接单大厅失败");
+        }
+      } finally {
+        setLoading(false);
+        setRefreshing(false);
+      }
+    }, !silent);
+  }, [reportHallPending, runPoll]);
 
   useEffect(() => {
     void load();
@@ -58,19 +56,9 @@ export function useOrderHall() {
 
   useEffect(() => {
     if (!autoRefresh) return;
-    const timer = window.setInterval(() => void load(true), AUTO_REFRESH_MS);
+    const timer = window.setInterval(() => void load(true), ADMIN_ORDER_POLL_MS);
     return () => window.clearInterval(timer);
   }, [autoRefresh, load]);
-
-  useEffect(() => {
-    const unlock = () => unlockOrderNotificationSound();
-    window.addEventListener("pointerdown", unlock, { once: true });
-    window.addEventListener("keydown", unlock, { once: true });
-    return () => {
-      window.removeEventListener("pointerdown", unlock);
-      window.removeEventListener("keydown", unlock);
-    };
-  }, []);
 
   async function handleAccept(row: HallOrderRow) {
     setAcceptingId(row.id);
@@ -78,6 +66,7 @@ export function useOrderHall() {
       const updated = await api.acceptOrder(row.id);
       setRows((prev) => prev.filter((item) => item.id !== updated.id));
       knownCountRef.current = Math.max(0, (knownCountRef.current ?? 1) - 1);
+      reportHallPending(knownCountRef.current);
       Message.success(`接单成功：${updated.productTitle}`);
     } catch (err) {
       Message.error(err instanceof ApiError ? err.message : "接单失败，可能已被其他打手抢走");

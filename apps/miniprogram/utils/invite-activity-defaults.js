@@ -23,10 +23,15 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 var index_exports = {};
 __export(index_exports, {
   INVITE_ACTIVITY_DEFAULTS: () => INVITE_ACTIVITY_DEFAULTS,
+  INVITE_REWARD_DEFAULTS: () => INVITE_REWARD_DEFAULTS,
   normalizeInviteActivityPayload: () => normalizeInviteActivityPayload,
   toInviteBannerPayload: () => toInviteBannerPayload
 });
 module.exports = __toCommonJS(index_exports);
+var INVITE_REWARD_DEFAULTS = {
+  inviterTemplateIds: ["cp_invite_inviter"],
+  inviteeTemplateIds: ["cp_invite_invitee"]
+};
 var INVITE_ACTIVITY_DEFAULTS = {
   enabled: true,
   tag: "\u9650\u65F6\u6D3B\u52A8",
@@ -43,8 +48,22 @@ var INVITE_ACTIVITY_DEFAULTS = {
   poster: {
     headline: "\u9080\u8BF7\u597D\u53CB \xB7 \u9886\u53D6\u5956\u52B1",
     footnote: "\u626B\u7801\u6216\u8F93\u5165\u9080\u8BF7\u7801\uFF0C\u4E00\u8D77\u9886\u4F18\u60E0\u5238"
-  }
+  },
+  rewards: INVITE_REWARD_DEFAULTS
 };
+function normalizeTemplateIds(ids) {
+  if (!Array.isArray(ids)) return [];
+  return [...new Set(ids.map((item) => String(item).trim()).filter(Boolean))];
+}
+function normalizeRewards(raw) {
+  const input = raw && typeof raw === "object" ? raw : {};
+  const inviterTemplateIds = normalizeTemplateIds(input.inviterTemplateIds);
+  const inviteeTemplateIds = normalizeTemplateIds(input.inviteeTemplateIds);
+  return {
+    inviterTemplateIds: inviterTemplateIds.length ? inviterTemplateIds : [...INVITE_REWARD_DEFAULTS.inviterTemplateIds],
+    inviteeTemplateIds: inviteeTemplateIds.length ? inviteeTemplateIds : [...INVITE_REWARD_DEFAULTS.inviteeTemplateIds]
+  };
+}
 function normalizeRules(rules) {
   if (!Array.isArray(rules) || !rules.length) {
     return [...INVITE_ACTIVITY_DEFAULTS.rules];
@@ -66,7 +85,8 @@ function normalizeInviteActivityPayload(raw) {
     poster: {
       headline: input.poster?.headline?.trim() || title || INVITE_ACTIVITY_DEFAULTS.poster.headline,
       footnote: input.poster?.footnote?.trim() || INVITE_ACTIVITY_DEFAULTS.poster.footnote
-    }
+    },
+    rewards: normalizeRewards(input.rewards)
   };
 }
 function toInviteBannerPayload(raw) {

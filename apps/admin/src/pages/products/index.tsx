@@ -19,8 +19,9 @@ import type { ColumnProps } from "@arco-design/web-react/es/Table";
 import { IconRefresh, IconSearch } from "@arco-design/web-react/icon";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ImageUrlField } from "@/components/ImageUrlField";
+import { BoolTag } from "@/components/BoolTag";
 import { ProductCoverThumb } from "@/components/ProductCoverThumb";
-import { SERVICE_TYPE_LABELS } from "@/constants/labels";
+import { ServiceTypeTag } from "@/components/ServiceTypeTag";
 import { api, type CategoriesMap, type ProductRow, type ProductTagRow } from "@/lib/api";
 
 type ProductFormValues = {
@@ -32,6 +33,7 @@ type ProductFormValues = {
   cover: string;
   coverColor: string;
   limitPerUser: number;
+  couponAllowed: boolean;
   published: boolean;
 };
 
@@ -46,6 +48,7 @@ const emptyForm: ProductFormValues = {
   cover: "",
   coverColor: "#2a3530",
   limitPerUser: 0,
+  couponAllowed: true,
   published: true,
 };
 
@@ -155,6 +158,7 @@ export default function ProductsPage() {
       cover: row.cover ?? "",
       coverColor: row.coverColor ?? "#2a3530",
       limitPerUser: row.limitPerUser,
+      couponAllowed: row.couponAllowed !== false,
       published: row.published,
     });
     setModalOpen(true);
@@ -215,7 +219,7 @@ export default function ProductsPage() {
       title: "类型",
       dataIndex: "serviceType",
       width: 100,
-      render: (type: ProductRow["serviceType"]) => SERVICE_TYPE_LABELS[type],
+      render: (type: ProductRow["serviceType"]) => <ServiceTypeTag serviceType={type} />,
     },
     { title: "分类", dataIndex: "categoryName", width: 120 },
     {
@@ -236,6 +240,14 @@ export default function ProductsPage() {
       dataIndex: "limitPerUser",
       width: 80,
       render: (v: number) => (v > 0 ? `${v} 件/人` : "不限"),
+    },
+    {
+      title: "用券",
+      dataIndex: "couponAllowed",
+      width: 72,
+      render: (allowed: boolean) => (
+        <BoolTag value={allowed !== false} trueLabel="可用" falseLabel="不可用" />
+      ),
     },
     {
       title: "上架",
@@ -405,6 +417,14 @@ export default function ProductsPage() {
           </Form.Item>
           <Form.Item label="每人限购" field="limitPerUser">
             <InputNumber min={0} precision={0} style={{ width: "100%" }} />
+          </Form.Item>
+          <Form.Item
+            label="允许使用优惠券"
+            field="couponAllowed"
+            triggerPropName="checked"
+            extra="关闭后，小程序下单页不可选券，服务端也会拒绝用券"
+          >
+            <Switch />
           </Form.Item>
           <Form.Item label="上架" field="published" triggerPropName="checked">
             <Switch />

@@ -3,8 +3,8 @@
  */
 const { fetchAllCoupons } = require('./api/user-coupons')
 const { formatCouponHint, formatCouponValue } = require('./coupons')
-
-const { buildTabsWithCounts, FILTER_ALL } = require('./line-tabs')
+const { createFilterListHandlers } = require('./filter-list-page')
+const { FILTER_ALL } = require('./line-tabs')
 
 const COUPON_TABS = [
   { id: FILTER_ALL, label: '全部' },
@@ -19,12 +19,15 @@ const STATUS_LABELS = {
   expired: '已过期',
 }
 
-const EMPTY_HINTS = {
+/** Tab 切换时主文案（绑定 list-empty text） */
+const EMPTY_TEXT_BY_TAB = {
   [FILTER_ALL]: '暂无优惠券',
   available: '暂无可用优惠券',
   used: '暂无已使用优惠券',
   expired: '暂无已过期优惠券',
 }
+
+const EMPTY_SUBHINT = '下单或参与活动后可领取优惠券'
 
 function formatExpiresText(coupon) {
   if (coupon.status === 'used') {
@@ -48,46 +51,43 @@ function enrichCoupon(coupon) {
   }
 }
 
-function filterCoupons(items, activeFilter) {
-  if (activeFilter === FILTER_ALL) return items
-  return items.filter((item) => item.status === activeFilter)
-}
+const couponFilterApi = createFilterListHandlers({
+  tabDefs: COUPON_TABS,
+  emptyHints: EMPTY_TEXT_BY_TAB,
+  getGroupKey: (item) => item.status,
+  getSourceItems: () => [],
+  enrichOnInit: true,
+  enrichItem: enrichCoupon,
+  fields: {
+    active: 'activeFilter',
+    tabs: 'couponTabs',
+    list: 'coupons',
+    hint: 'emptyText',
+  },
+})
 
-function buildCouponsPageState(items, activeFilter = FILTER_ALL) {
-  const all = (items || []).map(enrichCoupon)
-  const filtered = filterCoupons(all, activeFilter)
-  const couponTabs = buildTabsWithCounts(COUPON_TABS, all, (item) => item.status)
+function withSummary(cache, slice) {
   return {
-    allCoupons: all,
-    coupons: filtered,
-    couponTabs,
-    activeFilter,
-    emptyHint: EMPTY_HINTS[activeFilter] || EMPTY_HINTS[FILTER_ALL],
-    totalCount: all.length,
-    availableCount: all.filter((item) => item.status === 'available').length,
-  }
-}
-
-function applyCouponFilter(allCoupons, activeFilter = FILTER_ALL) {
-  const all = allCoupons || []
-  const filtered = filterCoupons(all, activeFilter)
-  const couponTabs = buildTabsWithCounts(COUPON_TABS, all, (item) => item.status)
-  return {
-    coupons: filtered,
-    couponTabs,
-    activeFilter,
-    emptyHint: EMPTY_HINTS[activeFilter] || EMPTY_HINTS[FILTER_ALL],
+    allCoupons: cache,
+    emptySubHint: EMPTY_SUBHINT,
+    totalCount: cache.length,
+    availableCount: cache.filter((item) => item.status === 'available').length,
+    ...slice,
   }
 }
 
 async function loadCouponsPage(activeFilter = FILTER_ALL) {
   const items = await fetchAllCoupons()
-  return buildCouponsPageState(items, activeFilter)
+  const cache = (items || []).map(enrichCoupon)
+  return withSummary(cache, couponFilterApi.buildSlice(cache, activeFilter))
+}
+
+function applyCouponFilter(allCoupons, activeFilter = FILTER_ALL) {
+  return couponFilterApi.buildSlice(allCoupons || [], activeFilter)
 }
 
 module.exports = {
   FILTER_ALL,
   loadCouponsPage,
-  buildCouponsPageState,
   applyCouponFilter,
 }

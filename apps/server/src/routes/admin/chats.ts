@@ -14,7 +14,7 @@ adminChatsRouter.use(requireAdmin);
 
 adminChatsRouter.get("/", requireAnyPermission("chats.service", "chats.player"), async (req, res) => {
   const admin = (req as AuthedRequest).admin!;
-  const items = await adminSupportService.listChatRows(admin.roles);
+  const items = await adminSupportService.listChatRows(admin.roles, admin.handlerId);
   res.json({ items, total: items.length });
 });
 
@@ -27,6 +27,7 @@ adminChatsRouter.get(
       String(req.params.id),
       admin.roles,
       admin.displayName,
+      admin.handlerId,
     );
     if (!detail) {
       res.status(404).json({ error: "NOT_FOUND", message: "会话不存在或无权查看" });
@@ -51,11 +52,38 @@ adminChatsRouter.post("/:id/messages", requirePermission("chats.reply"), async (
       admin.adminId,
       parsed.data.content,
       admin.displayName,
+      admin.handlerId,
     );
     res.status(201).json(message);
   } catch (err) {
     if (err instanceof Error && err.message === "CHAT_NOT_FOUND") {
       res.status(404).json({ error: "NOT_FOUND", message: "会话不存在或无权回复" });
+      return;
+    }
+    if (err instanceof Error && err.message === "CHAT_CLOSED") {
+      res.status(409).json({ error: "CHAT_CLOSED", message: "会话已结束，无法发送消息" });
+      return;
+    }
+    throw err;
+  }
+});
+
+adminChatsRouter.post("/:id/close", requirePermission("chats.reply"), async (req, res) => {
+  const admin = (req as AuthedRequest).admin!;
+  try {
+    const row = await adminSupportService.closeChat(
+      String(req.params.id),
+      admin.roles,
+      admin.handlerId,
+    );
+    res.json(row);
+  } catch (err) {
+    if (err instanceof Error && err.message === "CHAT_NOT_FOUND") {
+      res.status(404).json({ error: "NOT_FOUND", message: "会话不存在或无权操作" });
+      return;
+    }
+    if (err instanceof Error && err.message === "CHAT_CLOSE_NOT_ALLOWED") {
+      res.status(400).json({ error: "CHAT_CLOSE_NOT_ALLOWED", message: "客服会话不可终止" });
       return;
     }
     throw err;

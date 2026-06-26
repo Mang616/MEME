@@ -31,7 +31,7 @@ export default function OperationsPage() {
   return (
     <PageShell
       title="运营概览"
-      subtitle="待办提醒、核心指标与常用入口"
+      subtitle="核心指标、待办事项与数据概览"
       loading={loading}
       action={
         <Button type="outline" icon={<IconRefresh />} onClick={() => void load()}>

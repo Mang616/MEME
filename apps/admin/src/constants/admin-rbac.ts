@@ -8,6 +8,7 @@ export {
   PERMISSION_LABELS,
   avatarInitial,
   isEditableRole,
+  isServiceProviderRole,
   permissionLabel,
   permissionsEqual,
   roleLabels,

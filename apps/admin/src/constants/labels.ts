@@ -16,6 +16,12 @@ export const SERVICE_TYPE_LABELS = {
   companion: "陪玩",
 } as const;
 
+/** 服务类型 Tag 颜色（与打手/陪玩角色色一致） */
+export const SERVICE_TYPE_TAG_COLORS: Record<keyof typeof SERVICE_TYPE_LABELS, string> = {
+  escort: "orange",
+  companion: "pinkpurple",
+};
+
 export { ESCORT_LEVEL_MAP, ESCORT_LEVELS, type EscortLevel } from "@/constants/escort-level";
 
 export const REGION_MAP = {

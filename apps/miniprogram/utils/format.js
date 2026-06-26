@@ -65,11 +65,13 @@ function mapProductForDisplay(product) {
   if (!product) return product
   const { resolveMediaIdentity, appendMediaCacheBuster } = require('./media-key')
   const { resolveTagClass } = require('./tag-class')
+  const { DEFAULT_COVER_COLOR } = require('./cover-media')
   const cover = String(product.cover || '').trim()
   const coverRev = product.coverRev || 0
   return {
     ...product,
     priceDisplay: formatPriceDisplay(product.price),
+    coverColor: product.coverColor || DEFAULT_COVER_COLOR,
     coverKey: resolveMediaIdentity(cover, coverRev),
     coverDisplay: appendMediaCacheBuster(cover, coverRev),
     tagClass: resolveTagClass(product.tag),

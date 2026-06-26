@@ -7,6 +7,8 @@ import { AdminSidebarBrand } from "@/components/AdminSidebarBrand";
 import { AdminUserMenu } from "@/components/AdminUserMenu";
 import { AdminLivePollProvider } from "@/contexts/AdminLivePollContext";
 import { VipConfigProvider } from "@/contexts/VipConfigContext";
+import { useAdminPresence } from "@/hooks/useAdminPresence";
+import { useAdminSession } from "@/hooks/useAdminSession";
 import {
   filterNavGroups,
   resolveNavPath,
@@ -18,6 +20,12 @@ import { memeColors } from "@/theme/arco-theme";
 const { Sider, Header, Content } = Layout;
 const MenuItem = Menu.Item;
 const SubMenu = Menu.SubMenu;
+
+function AdminPresenceTracker() {
+  const [session] = useAdminSession();
+  useAdminPresence(session);
+  return null;
+}
 
 function AdminLayoutShell() {
   const location = useLocation();
@@ -33,6 +41,7 @@ function AdminLayoutShell() {
 
   return (
     <Layout className="admin-layout">
+      <AdminPresenceTracker />
       <Sider
         className="admin-sider"
         theme="dark"

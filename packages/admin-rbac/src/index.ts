@@ -1,6 +1,6 @@
 /** 后台 RBAC 共享定义：角色、权限点、默认矩阵与展示文案（server / admin 单一数据源） */
 
-export const ADMIN_ROLES = ["super_admin", "operator", "cs", "handler"] as const;
+export const ADMIN_ROLES = ["super_admin", "operator", "cs", "handler", "companion"] as const;
 export type AdminRole = (typeof ADMIN_ROLES)[number];
 
 export const EDITABLE_ROLES = ADMIN_ROLES.filter(
@@ -12,19 +12,22 @@ export const ADMIN_ROLE_LABELS: Record<AdminRole, string> = {
   operator: "运营",
   cs: "客服",
   handler: "打手",
+  companion: "陪玩",
 };
 
 export const ADMIN_ROLE_DESCRIPTIONS: Record<AdminRole, string> = {
   super_admin: "拥有全部后台权限，负责系统配置与账号管理",
   operator: "负责商品、订单、内容、打手档案等日常运营",
   cs: "负责平台客服会话、意见反馈与售后跟进",
-  handler: "负责订单打手会话，与用户按单沟通服务进度",
+  handler: "护航接单：查看指派/已接订单、抢护航大厅订单、与用户沟通",
+  companion: "陪玩接单：查看指派/已接订单、抢陪玩大厅订单、与用户沟通（不可接护航单）",
 };
 
 export const ADMIN_PERMISSIONS = [
   "operations.read",
   "analytics.read",
   "orders.read",
+  "orders.mine",
   "orders.write",
   "orders.accept",
   "orders.dispatch",
@@ -58,6 +61,7 @@ export const PERMISSION_LABELS: Record<AdminPermission, string> = {
   "operations.read": "运营概览",
   "analytics.read": "数据分析",
   "orders.read": "查看订单",
+  "orders.mine": "我的订单（仅本人被指派的订单）",
   "orders.write": "编辑订单",
   "orders.accept": "接单大厅",
   "orders.dispatch": "订单派单",
@@ -94,6 +98,7 @@ export const PERMISSION_GROUPS: { label: string; permissions: AdminPermission[] 
     label: "订单与售后",
     permissions: [
       "orders.read",
+      "orders.mine",
       "orders.write",
       "orders.accept",
       "orders.dispatch",
@@ -176,7 +181,18 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermissio
     "orders.dispatch",
     "orders.write",
   ],
-  handler: ["orders.read", "orders.accept", "chats.player", "chats.reply", "after_sales.read"],
+  handler: [
+    "orders.mine",
+    "orders.accept",
+    "chats.player",
+    "chats.reply",
+  ],
+  companion: [
+    "orders.mine",
+    "orders.accept",
+    "chats.player",
+    "chats.reply",
+  ],
 };
 
 const permissionSet = new Set<string>(ADMIN_PERMISSIONS);
@@ -187,6 +203,10 @@ export function isValidAdminPermission(value: string): value is AdminPermission 
 
 export function isValidAdminRole(value: string): value is AdminRole {
   return (ADMIN_ROLES as readonly string[]).includes(value);
+}
+
+export function isServiceProviderRole(role: AdminRole) {
+  return role === "handler" || role === "companion";
 }
 
 /** 兼容历史 analyst 角色标识 */

@@ -139,8 +139,23 @@ publicOrdersRouter.post("/", async (req, res) => {
       res.status(400).json({ error: "COUPON_UNAVAILABLE", message: "优惠券已使用或已过期" });
       return;
     }
+    if (err instanceof Error && err.message === "HANDLER_SERVICE_TYPE_MISMATCH") {
+      res.status(400).json({
+        error: "HANDLER_SERVICE_TYPE_MISMATCH",
+        message: "所选服务者与商品类型不符，护航商品请选择打手，陪玩商品请选择陪玩",
+      });
+      return;
+    }
     if (err instanceof Error && err.message === "COUPON_NOT_APPLICABLE") {
       res.status(400).json({ error: "COUPON_NOT_APPLICABLE", message: "当前订单不满足优惠券使用条件" });
+      return;
+    }
+    if (err instanceof Error && err.message === "COUPON_NOT_ALLOWED") {
+      res.status(400).json({ error: "COUPON_NOT_ALLOWED", message: "该商品不支持使用优惠券" });
+      return;
+    }
+    if (err instanceof Error && err.message === "HANDLER_NOT_FOUND") {
+      res.status(400).json({ error: "HANDLER_NOT_FOUND", message: "所选打手不存在或暂不可接单" });
       return;
     }
     throw err;
@@ -207,6 +222,10 @@ publicChatsRouter.get("/by-order/:orderId", requireUser, async (req, res) => {
       res.status(403).json({ error: "FORBIDDEN", message: "无权访问该订单会话" });
       return;
     }
+    if (err instanceof Error && err.message === "HANDLER_NOT_ASSIGNED") {
+      res.status(409).json({ error: "HANDLER_NOT_ASSIGNED", message: "订单尚未分配服务者，暂无法开启会话" });
+      return;
+    }
     throw err;
   }
 });
@@ -240,6 +259,10 @@ publicChatsRouter.post("/:id/messages", requireUser, async (req, res) => {
   } catch (err) {
     if (err instanceof Error && err.message === "CHAT_NOT_FOUND") {
       res.status(404).json({ error: "NOT_FOUND", message: "会话不存在" });
+      return;
+    }
+    if (err instanceof Error && err.message === "CHAT_CLOSED") {
+      res.status(409).json({ error: "CHAT_CLOSED", message: "会话已结束，无法发送消息" });
       return;
     }
     throw err;
